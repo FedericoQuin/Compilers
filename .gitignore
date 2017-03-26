@@ -31,3 +31,14 @@
 __pycache__/
 *.py[cod]
 *$py.class
+
+
+
+# ignore generated python files in playground federico
+
+playground/federico/src/cGrammar.tokens
+playground/federico/src/cGrammarLexer.py
+playground/federico/src/cGrammarLexer.tokens
+playground/federico/src/cGrammarListener.py
+playground/federico/src/cGrammarParser.py
+playground/federico/src/cGrammarVisitor.py
