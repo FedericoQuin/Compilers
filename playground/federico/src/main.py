@@ -3,7 +3,7 @@ import sys
 from antlr4 import *
 from cGrammarLexer import cGrammarLexer
 from cGrammarParser import cGrammarParser
-# from cGrammarPrinter import cGrammarPrinter
+from ASTCreator import ASTCreator
 
 def main(argv):
     input = FileStream(argv[1])
@@ -12,10 +12,13 @@ def main(argv):
     parser = cGrammarParser(stream)
     tree = parser.program()
 
-    # printer = cGrammarPrinter()
-    # walker = ParseTreeWalker()
-    # walker.walk(printer, tree)
-    # print()
+    ASTbuilder = ASTCreator()
+    walker = ParseTreeWalker()
+    walker.walk(ASTbuilder, tree)
+    print("\nAST:\n")
+    print(ASTbuilder.printAST())
+    print()
+    print("\nFinished parsing file (and building AST) without any errors.")
 
 if __name__ == '__main__':
     main(sys.argv)
