@@ -14,5 +14,7 @@ class AST:
 		newNode.addChild("Type", ctx.TYPE())
 		newNode.addChild("ID", ctx.ID())
 
+	def addDeclaration(self, ctx):
+		self.currentPointer.addChild(str(ctx.TYPE()) + "dcl", ctx.ID())
 
 

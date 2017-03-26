@@ -56,11 +56,37 @@ class ASTCreator(cGrammarListener):
 
 
     def enterStatement(self, ctx:cGrammarParser.StatementContext):
-        self.AST.addStatement(ctx)
+        # self.AST.addStatement(ctx)
+        pass
 
     def exitStatement(self, ctx:cGrammarParser.StatementContext):
         pass
 
+
+    def enterDeclaration(self, ctx:cGrammarParser.DeclarationContext):
+        self.AST.addDeclaration(ctx)
+
+    def exitDeclaration(self, ctx:cGrammarParser.DeclarationContext):
+        pass
+
+    
+    def enterReturntype(self, ctx:cGrammarParser.ReturntypeContext):
+        pass
+
+    def exitReturntype(self, ctx:cGrammarParser.ReturntypeContext):
+        pass
+
+
+
     def printAST(self):
         return str(self.AST)
+
+    def toDot(self, filename):
+        dotFile = open(filename, 'w')
+        dotFile.write(str(self.AST))
+        dotFile.close()
+
+    
+    def getAST(self):
+        return self.AST
 

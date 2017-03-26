@@ -2,7 +2,7 @@ grammar cGrammar;
 
 
 program : function;
-function : (TYPE | 'void') ID '(' initialargument ')' '{' function_body '}';
+function : returntype ID '(' initialargument ')' '{' function_body '}';
 
 initialargument : 
 	argument arguments
@@ -18,9 +18,13 @@ statements :
 	statement statements
 	|;
 
-statement : TYPE ID ';';
+statement : declaration;
 
+declaration : TYPE ID ';';
 
+returntype : TYPE | VOID;
+
+VOID : 'void';
 TYPE : 
 	'char' '*'?
 	|'float' '*'?
