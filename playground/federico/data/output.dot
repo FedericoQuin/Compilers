@@ -1,8 +1,0 @@
-digraph AST {
-0 [label="Program"];
-1 [label="intdcl (testing)"];
-2 [label="floatdcl (sure)"];
-0 -> 1;
-0 -> 2;
-root -> 0;
-}
