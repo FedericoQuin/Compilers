@@ -42,3 +42,6 @@ playground/federico/src/cGrammarLexer.tokens
 playground/federico/src/cGrammarListener.py
 playground/federico/src/cGrammarParser.py
 playground/federico/src/cGrammarVisitor.py
+playground/federico/data/*
+
+.vscode

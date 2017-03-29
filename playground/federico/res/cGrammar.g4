@@ -1,3 +1,4 @@
+
 grammar cGrammar;
 
 
@@ -12,15 +13,38 @@ arguments :
 	|;
 argument : TYPE ID;
 
+
+
 function_body : statements;
+
 
 statements : 
 	statement statements
 	|;
+statement 
+	: declaration ';'
+	| initialization ';'
+	;
 
-statement : declaration;
+declaration : TYPE ID;
+initialization : lvalue '=' rvalue; // lack of better words
 
-declaration : TYPE ID ';';
+lvalue 
+	: declaration 
+	| ID;
+rvalue 
+	: CHARVALUE
+	| numericalvalue; 		// NOTE: no differentiation between int value and pointer value, would match the same anyways
+
+
+CHARVALUE : '\'' . '\'';
+numericalvalue : floatvalue | intvalue;
+
+intvalue : DIGIT DIGIT*;
+floatvalue : digits? '.' digits;
+DIGIT : [0-9];
+NOTZERODIGIT : [1-9];
+digits : DIGIT+;
 
 returntype : TYPE | VOID;
 
