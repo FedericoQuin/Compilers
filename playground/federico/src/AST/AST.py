@@ -37,14 +37,14 @@ class AST:
 					"." \
 					+ ''.join([str(digit) for digit in ctx.numericalvalue().floatvalue().digits(0).DIGIT()]) )
 
-	def addInitialization(self, ctx):
+	def addAssignment(self, ctx):
 		self.currentPointer = self.currentPointer.addChild("assignment")
 		if (ctx.lvalue().ID() != None):
 			self.currentPointer.addChild("lvalue", ctx.lvalue().ID())
 		else:
 			pass
 
-	def endInitilization(self):
+	def endAssignment(self):
 		self.currentPointer = self.currentPointer.parent
 
 

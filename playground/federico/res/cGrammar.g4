@@ -23,11 +23,11 @@ statements :
 	|;
 statement 
 	: declaration ';'
-	| initialization ';'
+	| assignment ';'
 	;
 
 declaration : TYPE ID;
-initialization : lvalue '=' rvalue; // lack of better words
+assignment : lvalue '=' rvalue; // lack of better words
 
 lvalue 
 	: declaration 
