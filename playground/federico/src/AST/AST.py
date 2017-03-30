@@ -1,46 +1,52 @@
 
-from AST.ASTNode import ASTNode
+from AST.ASTNode import ASTNode, ASTNodeType, getStringOfArray
+
 
 class AST:
 	def __init__(self):
-		self.root = ASTNode("Program")
+		self.root = ASTNode(ASTNodeType.Program)
 		self.currentPointer = self.root
 
 	def __str__(self):
 		return "digraph AST {\n" + str(self.root) + "}"
 
-	def addStatement(self, ctx):
-		newNode = self.currentPointer.addChild("Statement")
-		newNode.addChild("Type", ctx.TYPE())
-		newNode.addChild("ID", ctx.ID())
-
 	def addDeclaration(self, ctx):
-		self.currentPointer.addChild(str(ctx.TYPE()) + "dcl", ctx.ID())
+		_type = None
+		if (str(ctx.TYPE()) == "int"):
+			_type = ASTNodeType.IntDecl
+		elif (str(ctx.TYPE()) == "float"):
+			_type = ASTNodeType.FloatDecl
+		elif (str(ctx.TYPE()) == "char"):
+			_type = ASTNodeType.CharDecl
+
+		self.currentPointer.addChild(_type, ctx.ID())
 
 	def addRvalue(self, ctx):
 		if (ctx.CHARVALUE() != None):
-			self.currentPointer.addChild("rvalue char", ctx.CHARVALUE())
+			self.currentPointer.addChild(ASTNodeType.RValueChar, ctx.CHARVALUE())
 		elif (ctx.numericalvalue() != None):
 			if (ctx.numericalvalue().intvalue() != None):
 				self.currentPointer.addChild( \
-					"rvalue int", \
-					''.join([str(digit) for digit in ctx.numericalvalue().intvalue().DIGIT()]) )
+					ASTNodeType.RValueInt, \
+					getStringOfArray(ctx.numericalvalue().intvalue().DIGIT()) )
+
 			elif (ctx.numericalvalue().floatvalue() != None and len(ctx.numericalvalue().floatvalue().digits()) == 2 ):
 				self.currentPointer.addChild( \
-					"rvalue float", \
-					''.join([str(digit) for digit in ctx.numericalvalue().floatvalue().digits(0).DIGIT()]) \
+					ASTNodeType.RValueFloat, \
+					getStringOfArray(ctx.numericalvalue().floatvalue().digits(0).DIGIT())
 					+ "." \
-					+ ''.join([str(digit) for digit in ctx.numericalvalue().floatvalue().digits(1).DIGIT()]) )
+					+ getStringOfArray(ctx.numericalvalue().floatvalue().digits(1).DIGIT()) )
+
 			elif (ctx.numericalvalue().floatvalue() != None and len(ctx.numericalvalue().floatvalue().digits()) == 1 ):
 				self.currentPointer.addChild( \
-					"rvalue float", \
+					ASTNodeType.RValueFloat, \
 					"." \
-					+ ''.join([str(digit) for digit in ctx.numericalvalue().floatvalue().digits(0).DIGIT()]) )
+					+ getStringOfArray(ctx.numericalvalue().floatvalue().digits(0).DIGIT()) )
 
 	def addAssignment(self, ctx):
-		self.currentPointer = self.currentPointer.addChild("assignment")
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment)
 		if (ctx.lvalue().ID() != None):
-			self.currentPointer.addChild("lvalue", ctx.lvalue().ID())
+			self.currentPointer.addChild(ASTNodeType.LValue, ctx.lvalue().ID())
 		else:
 			pass
 
@@ -49,11 +55,10 @@ class AST:
 
 
 	def enterBlock(self, name):
-		self.currentPointer = self.currentPointer.addChild(name)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Block)
 	
 	def leaveBlock(self):
 		self.currentPointer = self.currentPointer.parent
-
 
 
 
