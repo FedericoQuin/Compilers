@@ -7,7 +7,7 @@ class AST:
 		self.currentPointer = self.root
 
 	def __str__(self):
-		return "digraph AST {\n" + str(self.root) + "root -> " + str(self.root.uniqueID) + ";\n" + "}"
+		return "digraph AST {\n" + str(self.root) + "}"
 
 	def addStatement(self, ctx):
 		newNode = self.currentPointer.addChild("Statement")

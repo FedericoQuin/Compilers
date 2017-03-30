@@ -18,7 +18,7 @@ class ASTNode:
 		Returns the dot representation of this node and all its children.
 		In this representation the node will have its value displayed aswell if its value is not None.
 		'''
-		return str(self.uniqueID) + ' [label="' + str(self.type) + ((' (' + str(self.value) + ')') if self.value != None else '') + '"];\n' \
+		return str(self.uniqueID) + ' [label="' + str(self.type) + ((' \\n' + str(self.value)) if self.value != None else '') + '"];\n' \
 			+ ''.join([str(child) for child in self.children]) \
 			+ ''.join([(str(self.uniqueID) + " -> " + str(child.uniqueID) + ";\n") for child in self.children])
 
