@@ -23,25 +23,27 @@ class AST:
 
 	def addRvalue(self, ctx):
 		if (ctx.CHARVALUE() != None):
-			self.currentPointer.addChild(ASTNodeType.RValueChar, ctx.CHARVALUE())
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueChar, ctx.CHARVALUE())
 		elif (ctx.numericalvalue() != None):
 			if (ctx.numericalvalue().intvalue() != None):
-				self.currentPointer.addChild( \
-					ASTNodeType.RValueInt, \
-					getStringOfArray(ctx.numericalvalue().intvalue().DIGIT()) )
+				self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueInt)
+			elif (ctx.numericalvalue().floatvalue() != None):
+				self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueFloat)
 
-			elif (ctx.numericalvalue().floatvalue() != None and len(ctx.numericalvalue().floatvalue().digits()) == 2 ):
-				self.currentPointer.addChild( \
-					ASTNodeType.RValueFloat, \
-					getStringOfArray(ctx.numericalvalue().floatvalue().digits(0).DIGIT())
-					+ "." \
-					+ getStringOfArray(ctx.numericalvalue().floatvalue().digits(1).DIGIT()) )
+	def setIntValueNode(self, ctx):
+		self.currentPointer.value = int(getStringOfArray(ctx.DIGIT()))
 
-			elif (ctx.numericalvalue().floatvalue() != None and len(ctx.numericalvalue().floatvalue().digits()) == 1 ):
-				self.currentPointer.addChild( \
-					ASTNodeType.RValueFloat, \
-					"." \
-					+ getStringOfArray(ctx.numericalvalue().floatvalue().digits(0).DIGIT()) )
+	def setFloatValueNode(self, ctx):
+		floatString = ""
+		if (len(ctx.digits()) == 1):
+			floatString = "0." + getStringOfArray(ctx.digits(0).DIGIT())
+		elif (len(ctx.digits()) == 2):
+			floatString = \
+				getStringOfArray(ctx.digits(0).DIGIT()) + \
+				"." + \
+				getStringOfArray(ctx.digits(1).DIGIT())
+		
+		self.currentPointer.value = float(floatString)
 
 	def addAssignment(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment)
@@ -50,7 +52,11 @@ class AST:
 		else:
 			pass
 
-	def endAssignment(self):
+	
+	def climbTree(self):
+		''' 
+			Name is still a WIP :p
+		'''
 		self.currentPointer = self.currentPointer.parent
 
 

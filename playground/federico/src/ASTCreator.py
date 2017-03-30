@@ -82,7 +82,7 @@ class ASTCreator(cGrammarListener):
         self.AST.addAssignment(ctx)
 
     def exitAssignment(self, ctx:cGrammarParser.AssignmentContext):
-        self.AST.endAssignment()
+        self.AST.climbTree()
 
 
     def enterLvalue(self, ctx:cGrammarParser.LvalueContext):
@@ -96,7 +96,7 @@ class ASTCreator(cGrammarListener):
         self.AST.addRvalue(ctx)
 
     def exitRvalue(self, ctx:cGrammarParser.RvalueContext):
-        pass
+        self.AST.climbTree()
 
 
     def enterNumericalvalue(self, ctx:cGrammarParser.NumericalvalueContext):
@@ -107,14 +107,14 @@ class ASTCreator(cGrammarListener):
 
 
     def enterIntvalue(self, ctx:cGrammarParser.IntvalueContext):
-        pass
+        self.AST.setIntValueNode(ctx)
 
     def exitIntvalue(self, ctx:cGrammarParser.IntvalueContext):
         pass
 
 
     def enterFloatvalue(self, ctx:cGrammarParser.FloatvalueContext):
-        pass
+        self.AST.setFloatValueNode(ctx)
 
     def exitFloatvalue(self, ctx:cGrammarParser.FloatvalueContext):
         pass
