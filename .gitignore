@@ -36,12 +36,12 @@ __pycache__/
 
 # ignore generated python files in playground federico
 
-playground/federico/src/cGrammar.tokens
-playground/federico/src/cGrammarLexer.py
-playground/federico/src/cGrammarLexer.tokens
-playground/federico/src/cGrammarListener.py
-playground/federico/src/cGrammarParser.py
-playground/federico/src/cGrammarVisitor.py
-playground/federico/data/*
+cGrammar.tokens
+cGrammarLexer.py
+cGrammarLexer.tokens
+cGrammarListener.py
+cGrammarParser.py
+cGrammarVisitor.py
+data
 
 .vscode
