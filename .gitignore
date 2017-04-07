@@ -35,6 +35,9 @@ __pycache__/
 # Cache
 .cache/
 
+# output
+*.dot
+*.p
 
 # ignore generated python files
 
