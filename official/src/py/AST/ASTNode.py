@@ -20,6 +20,19 @@ class ASTNodeType(Enum):
 	PostfixIncr = 17
 	PrefixDecr = 18
 	PostfixDecr = 19
+	IfElse = 20
+	IfTrue = 21
+	IfFalse = 22
+	IfCondition = 23
+	Or = 24
+	And = 25
+	Not = 26
+	Equals = 27
+	NotEquals = 28
+	Greater = 29
+	GreaterOrEqual = 30
+	Less = 31
+	LessOrEqual = 32
 
 
 class ASTNode:

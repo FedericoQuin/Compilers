@@ -91,3 +91,8 @@ def test_increment():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
 	parse("increment.c", "increment.dot", "increment.p")
+
+def test_ifelse():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("ifelse.c", "ifelse.dot", "ifelse.p")

@@ -170,6 +170,108 @@ class ASTCreator(cGrammarListener):
 	# Exit a parse tree produced by cGrammarParser#identifier.
 	def exitIdentifier(self, ctx:cGrammarParser.IdentifierContext):
 		pass
+
+
+
+	# if else stuff
+	def enterIfelse(self, ctx:cGrammarParser.IfelseContext):
+		self.AST.addIfElse(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#ifelse.
+	def exitIfelse(self, ctx:cGrammarParser.IfelseContext):
+		# twice because you have to return from the self-made node but also from the IfTrue-IfFalse nodes
+		# because one of them has to jump back as well, but they can't know whether the other one already jumped back or not
+		self.AST.climbTree()
+		self.AST.climbTree()
+
+	# Enter a parse tree produced by cGrammarParser#firstcondition.
+	def enterFirstcondition(self, ctx:cGrammarParser.FirstconditionContext):
+		self.AST.enterFirstcondition(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#firstcondition.
+	def exitFirstcondition(self, ctx:cGrammarParser.FirstconditionContext):
+		pass
+
+	# Enter a parse tree produced by cGrammarParser#first_true_statements.
+	def enterFirst_true_statements(self, ctx:cGrammarParser.First_true_statementsContext):
+		self.AST.enterFirst_true_statements(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_true_statements.
+	def exitFirst_true_statements(self, ctx:cGrammarParser.First_true_statementsContext):
+		pass
+
+
+	# Enter a parse tree produced by cGrammarParser#first_true_statement.
+	def enterFirst_true_statement(self, ctx:cGrammarParser.First_true_statementContext):
+		self.AST.enterFirst_true_statement(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_true_statement.
+	def exitFirst_true_statement(self, ctx:cGrammarParser.First_true_statementContext):
+		pass
+
+
+	# Enter a parse tree produced by cGrammarParser#first_false_statement.
+	def enterFirst_false_statement(self, ctx:cGrammarParser.First_false_statementContext):
+		self.AST.enterFirst_false_statement(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_false_statement.
+	def exitFirst_false_statement(self, ctx:cGrammarParser.First_false_statementContext):
+		pass
+
+
+	# Enter a parse tree produced by cGrammarParser#first_false_statements.
+	def enterFirst_false_statements(self, ctx:cGrammarParser.First_false_statementsContext):
+		self.AST.enterFirst_false_statements(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_false_statements.
+	def exitFirst_false_statements(self, ctx:cGrammarParser.First_false_statementsContext):
+		pass
+
+	# Enter a parse tree produced by cGrammarParser#else_statement.
+	def enterElse_statement(self, ctx:cGrammarParser.Else_statementContext):
+		pass
+
+	# Exit a parse tree produced by cGrammarParser#else_statement.
+	def exitElse_statement(self, ctx:cGrammarParser.Else_statementContext):
+		pass
+
+
+	# Enter a parse tree produced by cGrammarParser#condition.
+	def enterCondition(self, ctx:cGrammarParser.ConditionContext):
+		self.AST.enterCondition(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#condition.
+	def exitCondition(self, ctx:cGrammarParser.ConditionContext):
+		self.AST.exitCondition(ctx)
+
+
+	# Enter a parse tree produced by cGrammarParser#condition_and.
+	def enterCondition_and(self, ctx:cGrammarParser.Condition_andContext):
+		self.AST.enterCondition_and(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#condition_and.
+	def exitCondition_and(self, ctx:cGrammarParser.Condition_andContext):
+		self.AST.exitCondition_and(ctx)
+
+
+	# Enter a parse tree produced by cGrammarParser#condition_not.
+	def enterCondition_not(self, ctx:cGrammarParser.Condition_notContext):
+		self.AST.enterCondition_not(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#condition_not.
+	def exitCondition_not(self, ctx:cGrammarParser.Condition_notContext):
+		self.AST.exitCondition_not(ctx)
+
+
+	# Enter a parse tree produced by cGrammarParser#comparison.
+	def enterComparison(self, ctx:cGrammarParser.ComparisonContext):
+		self.AST.enterComparison(ctx)
+
+
+	# Exit a parse tree produced by cGrammarParser#comparison.
+	def exitComparison(self, ctx:cGrammarParser.ComparisonContext):
+		self.AST.exitComparison(ctx)
+
 		
 
 

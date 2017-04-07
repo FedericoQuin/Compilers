@@ -24,10 +24,10 @@ statements :
 statement
 	: expression ';'
 	| declaration ';'
+	| ifelse
 	;
 
-
-expression :
+expression :	// TODO add brackets
 	lvalue OPERATOR_AS add_sub
 	| add_sub
 	| ID POST_OPERATOR_INCR
@@ -58,10 +58,74 @@ OPERATOR_MINUS : '-';
 OPERATOR_DIV : '/';
 OPERATOR_MUL : '*';
 
+OPERATOR_EQ : '==';
+OPERATOR_NE : '!=';
+OPERATOR_GT : '>';
+OPERATOR_GE : '>=' | '=>';
+OPERATOR_LT : '<';
+OPERATOR_LE : '<=' | '=<';
+
+OPERATOR_OR :
+	'||'
+	| 'or';
+OPERATOR_AND :
+	'&&'
+	| 'and';
+OPERATOR_NOT :
+	'!'
+	| 'not';
+
 identifier : ID;
 
+ifelse : 
+	'if' '(' firstcondition ')' '{' first_true_statements '}'
+	| 'if' '(' firstcondition ')' first_true_statement else_statement
+	| 'if' '(' firstcondition ')' '{' first_true_statements '}' else_statement
+	| 'if' '(' firstcondition ')' '{' first_true_statements '}' else_statement
+	| 'if' '(' firstcondition ')' first_true_statement else_statement;
 
+else_statement :
+	 
+	| 'else' first_false_statement
+	| 'else' '{' first_false_statements '}';
 
+// Hacks to build the AST
+firstcondition : condition;
+first_true_statements : statements;
+first_true_statement : statement;
+first_false_statement : statement;
+first_false_statements : statements;
+
+condition :
+	condition OPERATOR_OR condition
+	| LBRACKET condition RBRACKET	// Not supported yet
+	| condition_and
+	| comparison;
+
+condition_and :
+	condition_and OPERATOR_AND condition_and
+	| condition_not
+	| comparison;
+
+condition_not :
+	OPERATOR_NOT comparison;
+
+comparison : 
+	rvalue comparator rvalue
+	| rvalue comparator ID
+	| ID comparator rvalue
+	| ID comparator ID;
+
+comparator :
+	OPERATOR_EQ
+	| OPERATOR_NE
+	| OPERATOR_GT
+	| OPERATOR_GE
+	| OPERATOR_LT
+	| OPERATOR_LE;
+
+LBRACKET : '(';
+RBRACKET : ')';
 
 declaration : TYPE ID;
 assignment : lvalue '=' rvalue; // lack of better words
