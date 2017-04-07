@@ -50,3 +50,6 @@ cGrammarVisitor.py
 data
 
 .vscode
+
+# Don't exclude test solutions
+!/solutions/*

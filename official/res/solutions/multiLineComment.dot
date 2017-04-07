@@ -1,0 +1,9 @@
+digraph AST {
+0 [label="Program"];
+1 [label="Block"];
+2 [label="CharDecl \nname"];
+3 [label="FloatDecl \ntesting"];
+1 -> 2;
+1 -> 3;
+0 -> 1;
+}

@@ -5,6 +5,6 @@ int main(int argc, char* argv) {
 	1
 	9
 	*/
-	char* name;
+	char name;
 	float testing;
 }

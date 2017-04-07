@@ -13,20 +13,15 @@ from cGrammarLexer import cGrammarLexer
 from cGrammarParser import cGrammarParser
 from ASTCreator import ASTCreator
 from PTranslator import PTranslator
+from filecmp import *
+from AST.ASTNode import *
 
 testdir = os.path.dirname(os.path.abspath(__file__))
 resdir = os.getcwd() + "/official/res"
 
-def func(x):
-	return x + 1
+def parse(inputFile, dotSolution, pSolution):
 
-def test_assignments1bis():
-	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
-	if not os.path.exists("output"):
-		os.makedirs("output")
-
-
-	input = FileStream(str(resdir) + "/test/assignments1bis.c")
+	input = FileStream(str(resdir) + "/test/" + inputFile)
 	lexer = cGrammarLexer(input)
 	stream = CommonTokenStream(lexer)
 	parser = cGrammarParser(stream)
@@ -43,11 +38,51 @@ def test_assignments1bis():
 		translator = PTranslator()
 		translator.translate(ast)
 
-		translator.saveProgram(str(testdir) + "/output/program.p")
-		ASTbuilder.toDot(str(testdir) + "/output/output.dot")
+		translator.saveProgram(str(testdir) + "/program.p")
+		ASTbuilder.toDot(str(testdir) + "/output.dot")
 
 	except Exception as inst:
 		fail("EXCEPTION: " + str(inst))
 
+	assert(cmp(str(testdir) + "/output.dot", str(resdir) + "/solutions/" + dotSolution))
+	assert(cmp(str(testdir) + "/program.p", str(resdir) + "/solutions/" + pSolution))
 
-	
+def test_assignments1bis():	
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("assignments1bis.c", "assignments1bis.dot", "assignments1bis.p")
+
+def test_assignments1():	
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("assignments1.c", "assignments1.dot", "assignments1.p")
+
+
+def test_assignments2():	
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("assignments1bis.c", "assignments1bis.dot", "assignments1bis.p")
+
+
+def test_mainFunction():	
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("mainFunction.c", "mainFunction.dot", "mainFunction.p")
+
+
+def test_mixedComments():	
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("mixedComments.c", "mixedComments.dot", "mixedComments.p")
+
+
+def test_multiLineComment():	
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("multiLineComment.c", "multiLineComment.dot", "multiLineComment.p")
+
+
+def test_singleLineComment():	
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("singleLineComment.c", "singleLineComment.dot", "singleLineComment.p")

@@ -23,11 +23,12 @@ statements :
 	|;
 statement
 	: expression ';'
+	| declaration ';'
 	;
 
 
 expression :
-	lvalue OPERATOR_EQ expression
+	lvalue OPERATOR_EQ add_sub
 	| add_sub;
 
 add_sub :
