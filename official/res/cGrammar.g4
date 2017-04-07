@@ -21,10 +21,39 @@ function_body : statements;
 statements : 
 	statement statements
 	|;
-statement 
-	: declaration ';'
-	| assignment ';'
+statement
+	: expression ';'
 	;
+
+
+expression :
+	lvalue OPERATOR_EQ expression
+	| add_sub;
+
+add_sub :
+	add_sub OPERATOR_PLUS add_sub
+	| add_sub OPERATOR_MINUS add_sub
+	| identifier
+	| rvalue
+	| mul_div;
+
+mul_div :
+	mul_div OPERATOR_MUL mul_div
+	| mul_div OPERATOR_DIV mul_div
+	| identifier
+	| rvalue;
+
+OPERATOR_EQ : '=';
+OPERATOR_PLUS : '+';
+OPERATOR_MINUS : '-';
+OPERATOR_DIV : '/';
+OPERATOR_MUL : '*';
+
+
+identifier : ID;
+
+
+
 
 declaration : TYPE ID;
 assignment : lvalue '=' rvalue; // lack of better words
@@ -54,6 +83,9 @@ TYPE :
 	|'float' '*'?
 	|'int' '*'?;
 ID : [a-zA-Z] ([a-zA-Z] | [0-9])*;
+
+
+
 
 WS : [ \r\t\n]+ -> skip ;
 

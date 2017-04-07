@@ -1,0 +1,29 @@
+digraph AST {
+0 [label="Program"];
+1 [label="Block"];
+2 [label="Assignment"];
+3 [label="IntDecl \na"];
+4 [label="Addition"];
+5 [label="RValueInt \n10"];
+6 [label="RValueInt \n5"];
+4 -> 5;
+4 -> 6;
+2 -> 3;
+2 -> 4;
+7 [label="Assignment"];
+8 [label="IntDecl \nb"];
+9 [label="Addition"];
+10 [label="Mul"];
+11 [label="RValueInt \n10"];
+12 [label="RValueInt \n5"];
+10 -> 11;
+10 -> 12;
+13 [label="LValue \na"];
+9 -> 10;
+9 -> 13;
+7 -> 8;
+7 -> 9;
+1 -> 2;
+1 -> 7;
+0 -> 1;
+}
