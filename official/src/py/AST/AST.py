@@ -54,8 +54,16 @@ class AST:
 			pass
 
 	def enterExpression(self, ctx):
-		if ctx.OPERATOR_EQ() != None:
+		if ctx.OPERATOR_AS() != None:
 			self.addAssignment(ctx)
+		elif ctx.POST_OPERATOR_INCR() != None:
+			self.currentPointer.addChild(ASTNodeType.PostfixIncr, ctx.ID())
+		elif ctx.PRE_OPERATOR_INCR() != None:
+			self.currentPointer.addChild(ASTNodeType.PrefixIncr, ctx.ID())
+		elif ctx.POST_OPERATOR_DECR() != None:
+			self.currentPointer.addChild(ASTNodeType.PostfixDecr, ctx.ID())
+		elif ctx.PRE_OPERATOR_DECR() != None:
+			self.currentPointer.addChild(ASTNodeType.PrefixDecr, ctx.ID())
 
 	def enterAddSub(self, ctx):
 		if ctx.OPERATOR_PLUS() != None:

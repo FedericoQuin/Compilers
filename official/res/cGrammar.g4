@@ -28,8 +28,12 @@ statement
 
 
 expression :
-	lvalue OPERATOR_EQ add_sub
-	| add_sub;
+	lvalue OPERATOR_AS add_sub
+	| add_sub
+	| ID POST_OPERATOR_INCR
+	| PRE_OPERATOR_INCR identifier		// NOTE: the prefix operators don't work for some mysterious reason
+	| ID POST_OPERATOR_DECR
+	| PRE_OPERATOR_DECR ID;
 
 add_sub :
 	add_sub OPERATOR_PLUS add_sub
@@ -44,12 +48,15 @@ mul_div :
 	| identifier
 	| rvalue;
 
-OPERATOR_EQ : '=';
+OPERATOR_AS : '=';
 OPERATOR_PLUS : '+';
+POST_OPERATOR_INCR : '++';
+POST_OPERATOR_DECR : '--';
+PRE_OPERATOR_INCR : '++';
+PRE_OPERATOR_DECR : '--';
 OPERATOR_MINUS : '-';
 OPERATOR_DIV : '/';
 OPERATOR_MUL : '*';
-
 
 identifier : ID;
 

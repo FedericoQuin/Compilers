@@ -86,3 +86,8 @@ def test_singleLineComment():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
 	parse("singleLineComment.c", "singleLineComment.dot", "singleLineComment.p")
+
+def test_increment():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("increment.c", "increment.dot", "increment.p")

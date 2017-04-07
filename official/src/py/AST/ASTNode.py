@@ -16,6 +16,10 @@ class ASTNodeType(Enum):
 	Subtraction = 13
 	Mul = 14
 	Div = 15
+	PrefixIncr = 16
+	PostfixIncr = 17
+	PrefixDecr = 18
+	PostfixDecr = 19
 
 
 class ASTNode:

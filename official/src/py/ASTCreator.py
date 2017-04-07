@@ -138,7 +138,7 @@ class ASTCreator(cGrammarListener):
 
 	# Exit a parse tree produced by cGrammarParser#expression.
 	def exitExpression(self, ctx:cGrammarParser.ExpressionContext):
-		if ctx.OPERATOR_EQ() != None:
+		if ctx.OPERATOR_AS() != None:
 			self.AST.climbTree()
 
 
