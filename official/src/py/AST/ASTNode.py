@@ -12,6 +12,10 @@ class ASTNodeType(Enum):
 	RValueExpression = 9 #not used yet
 	Program = 10
 	Block = 11
+	Addition = 12
+	Subtraction = 13
+	Mul = 14
+	Div = 15
 
 
 class ASTNode:

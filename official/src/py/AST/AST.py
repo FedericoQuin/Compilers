@@ -50,7 +50,29 @@ class AST:
 		if (ctx.lvalue().ID() != None):
 			self.currentPointer.addChild(ASTNodeType.LValue, ctx.lvalue().ID())
 		else:
+			# TODO throw exception maybe?
 			pass
+
+	def enterExpression(self, ctx):
+		if ctx.OPERATOR_EQ() != None:
+			self.addAssignment(ctx)
+
+	def enterAddSub(self, ctx):
+		if ctx.OPERATOR_PLUS() != None:
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Addition)
+		elif ctx.OPERATOR_MINUS() != None:
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Subtraction)
+
+	def enterMulDiv(self, ctx):
+		if ctx.OPERATOR_MUL() != None:
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Mul)
+		elif ctx.OPERATOR_DIV() != None:
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Div)
+
+
+	def enterID(self, ctx):
+		self.currentPointer.addChild(ASTNodeType.LValue, ctx.ID())
+
 
 	
 	def climbTree(self):
