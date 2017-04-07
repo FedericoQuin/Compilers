@@ -32,9 +32,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Cache
+.cache/
 
 
-# ignore generated python files in playground federico
+# ignore generated python files
 
 cGrammar.tokens
 cGrammarLexer.py
