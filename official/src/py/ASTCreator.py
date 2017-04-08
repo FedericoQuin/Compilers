@@ -314,6 +314,64 @@ class ASTCreator(cGrammarListener):
 	def exitFirst_while_condition(self, ctx:cGrammarParser.First_while_conditionContext):
 		self.AST.climbTree()
 
+
+
+	#################################################
+	# For stuff										#
+	#################################################
+	# Enter a parse tree produced by cGrammarParser#for_loop.
+	def enterFor_loop(self, ctx:cGrammarParser.For_loopContext):
+		self.AST.enterFor_loop(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#for_loop.
+	def exitFor_loop(self, ctx:cGrammarParser.For_loopContext):
+		self.AST.climbTree()
+
+
+	# Enter a parse tree produced by cGrammarParser#first_for_statements.
+	def enterFirst_for_statements(self, ctx:cGrammarParser.First_for_statementsContext):
+		self.AST.enterFirst_for_statements(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_for_statements.
+	def exitFirst_for_statements(self, ctx:cGrammarParser.First_for_statementsContext):
+		self.AST.climbTree()
+
+
+	# Enter a parse tree produced by cGrammarParser#first_for_statement.
+	def enterFirst_for_statement(self, ctx:cGrammarParser.First_for_statementContext):
+		self.AST.enterFirst_for_statement(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_for_statement.
+	def exitFirst_for_statement(self, ctx:cGrammarParser.First_for_statementContext):
+		self.AST.climbTree()
+
+
+	# Enter a parse tree produced by cGrammarParser#first_stmt_for.
+	def enterFirst_stmt_for(self, ctx:cGrammarParser.First_stmt_forContext):
+		self.AST.enterFirst_stmt_for(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_stmt_for.
+	def exitFirst_stmt_for(self, ctx:cGrammarParser.First_stmt_forContext):
+		self.AST.climbTree()
+
+
+	# Enter a parse tree produced by cGrammarParser#second_stmt_for.
+	def enterSecond_stmt_for(self, ctx:cGrammarParser.Second_stmt_forContext):
+		self.AST.enterSecond_stmt_for(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#second_stmt_for.
+	def exitSecond_stmt_for(self, ctx:cGrammarParser.Second_stmt_forContext):
+		self.AST.climbTree()
+
+
+	# Enter a parse tree produced by cGrammarParser#third_stmt_for.
+	def enterThird_stmt_for(self, ctx:cGrammarParser.Third_stmt_forContext):
+		self.AST.enterThird_stmt_for(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#third_stmt_for.
+	def exitThird_stmt_for(self, ctx:cGrammarParser.Third_stmt_forContext):
+		self.AST.climbTree()
+
 		
 
 

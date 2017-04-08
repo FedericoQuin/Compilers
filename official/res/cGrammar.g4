@@ -26,6 +26,7 @@ statement
 	| declaration ';'
 	| ifelse
 	| while_loop
+	| for_loop
 	;
 
 expression :	// TODO add brackets
@@ -34,7 +35,8 @@ expression :	// TODO add brackets
 	| ID POST_OPERATOR_INCR
 	| PRE_OPERATOR_INCR identifier		// NOTE: the prefix operators don't work for some mysterious reason
 	| ID POST_OPERATOR_DECR
-	| PRE_OPERATOR_DECR ID;
+	| PRE_OPERATOR_DECR ID
+	| condition;
 
 add_sub :
 	add_sub OPERATOR_PLUS add_sub
@@ -141,6 +143,33 @@ while_loop :
 first_while_statements : statements;
 first_while_statement : statement;
 first_while_condition : condition;
+
+
+//////////////////////////////////////////////////////////
+// For loop stuff 										//
+//////////////////////////////////////////////////////////
+
+for_loop : 
+	'for' '(' first_stmt_for ';' second_stmt_for ';' third_stmt_for ')' '{' first_for_statements '}'
+	| 'for' '(' first_stmt_for ';' second_stmt_for ';' third_stmt_for ')' first_for_statement;
+
+// Hacks to build the AST
+first_for_statements : statements;
+first_for_statement : statement;
+first_stmt_for :
+	expression
+	| declaration
+	| ;
+
+second_stmt_for :
+	expression
+	| declaration
+	| ;
+
+third_stmt_for :
+	expression
+	| declaration
+	| ;
 
 
 

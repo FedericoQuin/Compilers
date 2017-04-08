@@ -217,6 +217,40 @@ class AST:
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileCondition)
 
 
+
+
+
+	#################################################
+	# For stuff									#
+	#################################################
+	# Enter a parse tree produced by cGrammarParser#for_loop.
+	def enterFor_loop(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.For)
+
+
+	# Enter a parse tree produced by cGrammarParser#first_for_statements.
+	def enterFirst_for_statements(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForBody)
+
+
+	# Enter a parse tree produced by cGrammarParser#first_for_statement.
+	def enterFirst_for_statement(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForBody)
+
+
+	# Enter a parse tree produced by cGrammarParser#first_stmt_for.
+	def enterFirst_stmt_for(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt1)
+
+
+	# Enter a parse tree produced by cGrammarParser#second_stmt_for.
+	def enterSecond_stmt_for(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt2)
+
+
+	# Enter a parse tree produced by cGrammarParser#third_stmt_for.
+	def enterThird_stmt_for(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt3)
 	
 	def climbTree(self):
 		''' 

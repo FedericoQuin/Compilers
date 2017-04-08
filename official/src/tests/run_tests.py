@@ -101,3 +101,8 @@ def test_while():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
 	parse("while.c", "while.dot", "while.p")
+
+def test_for():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("for.c", "for.dot", "for.p")

@@ -36,6 +36,11 @@ class ASTNodeType(Enum):
 	While = 33
 	WhileCondition = 34
 	WhileBody = 35
+	For = 36
+	ForStmt1 = 37
+	ForStmt2 = 38
+	ForStmt3 = 39
+	ForBody = 40
 
 
 class ASTNode:
