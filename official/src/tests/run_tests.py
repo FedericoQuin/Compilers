@@ -96,3 +96,8 @@ def test_ifelse():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
 	parse("ifelse.c", "ifelse.dot", "ifelse.p")
+
+def test_while():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("while.c", "while.dot", "while.p")

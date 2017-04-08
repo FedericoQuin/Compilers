@@ -25,6 +25,7 @@ statement
 	: expression ';'
 	| declaration ';'
 	| ifelse
+	| while_loop
 	;
 
 expression :	// TODO add brackets
@@ -57,6 +58,10 @@ PRE_OPERATOR_DECR : '--';
 OPERATOR_MINUS : '-';
 OPERATOR_DIV : '/';
 OPERATOR_MUL : '*';
+
+//////////////////////////////////////////////////////////
+// If-else stuff and boolean conditions					//
+//////////////////////////////////////////////////////////
 
 OPERATOR_EQ : '==';
 OPERATOR_NE : '!=';
@@ -123,6 +128,23 @@ comparator :
 	| OPERATOR_GE
 	| OPERATOR_LT
 	| OPERATOR_LE;
+
+//////////////////////////////////////////////////////////
+// While loop stuff 									//
+//////////////////////////////////////////////////////////
+
+while_loop : 
+	'while' '(' first_while_condition ')' '{' first_while_statements '}'
+	| 'while' '(' first_while_condition ')' first_while_statement;
+
+// Hacks to build the AST
+first_while_statements : statements;
+first_while_statement : statement;
+first_while_condition : condition;
+
+
+
+
 
 LBRACKET : '(';
 RBRACKET : ')';

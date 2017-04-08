@@ -33,6 +33,9 @@ class ASTNodeType(Enum):
 	GreaterOrEqual = 30
 	Less = 31
 	LessOrEqual = 32
+	While = 33
+	WhileCondition = 34
+	WhileBody = 35
 
 
 class ASTNode:

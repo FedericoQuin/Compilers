@@ -173,7 +173,9 @@ class ASTCreator(cGrammarListener):
 
 
 
-	# if else stuff
+	#################################################
+	# Ifelse stuff									#
+	#################################################
 	def enterIfelse(self, ctx:cGrammarParser.IfelseContext):
 		self.AST.addIfElse(ctx)
 
@@ -271,6 +273,46 @@ class ASTCreator(cGrammarListener):
 	# Exit a parse tree produced by cGrammarParser#comparison.
 	def exitComparison(self, ctx:cGrammarParser.ComparisonContext):
 		self.AST.exitComparison(ctx)
+
+
+
+
+	#################################################
+	# While stuff									#
+	#################################################
+	# Enter a parse tree produced by cGrammarParser#while_loop.
+	def enterWhile_loop(self, ctx:cGrammarParser.While_loopContext):
+		self.AST.enterWhile_loop(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#while_loop.
+	def exitWhile_loop(self, ctx:cGrammarParser.While_loopContext):
+		self.AST.climbTree()
+
+
+	# Enter a parse tree produced by cGrammarParser#first_while_statements.
+	def enterFirst_while_statements(self, ctx:cGrammarParser.First_while_statementsContext):
+		self.AST.enterFirst_while_statements(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_while_statements.
+	def exitFirst_while_statements(self, ctx:cGrammarParser.First_while_statementsContext):
+		self.AST.climbTree()
+
+
+	# Enter a parse tree produced by cGrammarParser#first_while_statement.
+	def enterFirst_while_statement(self, ctx:cGrammarParser.First_while_statementContext):
+		self.AST.enterFirst_while_statement(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_while_statement.
+	def exitFirst_while_statement(self, ctx:cGrammarParser.First_while_statementContext):
+		self.AST.climbTree()
+
+	# Enter a parse tree produced by cGrammarParser#first_while_condition.
+	def enterFirst_while_condition(self, ctx:cGrammarParser.First_while_conditionContext):
+		self.AST.enterFirst_while_condition(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#first_while_condition.
+	def exitFirst_while_condition(self, ctx:cGrammarParser.First_while_conditionContext):
+		self.AST.climbTree()
 
 		
 

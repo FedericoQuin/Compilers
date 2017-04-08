@@ -83,7 +83,7 @@ class AST:
 
 
 	#################################################
-	# Ifelse stuff                                  #
+	# Ifelse stuff									#
 	#################################################
 	def addIfElse(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfElse)
@@ -196,6 +196,25 @@ class AST:
 			self.climbTree()
 		elif ctx.comparator().OPERATOR_LE() != None:
 			self.climbTree()
+
+
+	#################################################
+	# While stuff									#
+	#################################################
+	# Enter a parse tree produced by cGrammarParser#while_loop.
+	def enterWhile_loop(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.While)
+
+	# Enter a parse tree produced by cGrammarParser#first_while_statements.
+	def enterFirst_while_statements(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileBody)
+
+	# Enter a parse tree produced by cGrammarParser#first_while_statement.
+	def enterFirst_while_statement(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileBody)
+
+	def enterFirst_while_condition(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileCondition)
 
 
 	
