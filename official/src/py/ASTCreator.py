@@ -176,13 +176,18 @@ class ASTCreator(cGrammarListener):
 
 
 	# Enter a parse tree produced by cGrammarParser#identifier.
-	def enterIdentifier(self, ctx:cGrammarParser.IdentifierContext):
-		self.AST.enterID(ctx)
+	def enterLvalue_identifier(self, ctx:cGrammarParser.Lvalue_identifierContext):
+		self.AST.enterID(ctx, "lvalue")
 
 	# Exit a parse tree produced by cGrammarParser#identifier.
-	def exitIdentifier(self, ctx:cGrammarParser.IdentifierContext):
+	def exitLvalue_identifier(self, ctx:cGrammarParser.Lvalue_identifierContext):
 		pass
 
+	def enterRvalue_identifier(self, ctx:cGrammarParser.Rvalue_identifierContext):
+		self.AST.enterID(ctx, "rvalue")
+
+	def exitRvalue_identifier(self, ctx:cGrammarParser.Rvalue_identifierContext):
+		pass
 
 
 	#################################################

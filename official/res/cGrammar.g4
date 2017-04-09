@@ -33,7 +33,7 @@ expression :	// TODO add brackets
 	lvalue OPERATOR_AS add_sub
 	| add_sub
 	| ID POST_OPERATOR_INCR
-	| PRE_OPERATOR_INCR identifier		// NOTE: the prefix operators don't work for some mysterious reason
+	| PRE_OPERATOR_INCR lvalue_identifier		// NOTE: the prefix operators don't work for some mysterious reason
 	| ID POST_OPERATOR_DECR
 	| PRE_OPERATOR_DECR ID
 	| condition;
@@ -41,14 +41,14 @@ expression :	// TODO add brackets
 add_sub :
 	add_sub OPERATOR_PLUS add_sub
 	| add_sub OPERATOR_MINUS add_sub
-	| identifier
+	| rvalue_identifier
 	| rvalue
 	| mul_div;
 
 mul_div :
 	mul_div OPERATOR_MUL mul_div
 	| mul_div OPERATOR_DIV mul_div
-	| identifier
+	| rvalue_identifier
 	| rvalue
 	| bracket_expression;
 
@@ -86,7 +86,8 @@ OPERATOR_NOT :
 	'!'
 	| 'not';
 
-identifier : ID;
+lvalue_identifier : ID;
+rvalue_identifier : ID;
 
 ifelse : 
 	'if' '(' firstcondition ')' '{' first_true_statements '}'

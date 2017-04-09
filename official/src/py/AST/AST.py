@@ -78,8 +78,11 @@ class AST:
 			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Div)
 
 
-	def enterID(self, ctx):
-		self.currentPointer.addChild(ASTNodeType.LValue, ctx.ID())
+	def enterID(self, ctx, val):
+		if (val == "lvalue"):
+			self.currentPointer.addChild(ASTNodeType.LValue, ctx.ID())
+		elif (val == "rvalue"):
+			self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID())
 
 
 	#################################################

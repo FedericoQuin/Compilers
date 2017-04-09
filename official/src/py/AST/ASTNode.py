@@ -43,6 +43,7 @@ class ASTNodeType(Enum):
 	ForBody = 40
 	NegateBrackets = 41
 	Brackets = 42
+	RValueID = 43
 
 
 class ASTNode:

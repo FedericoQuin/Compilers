@@ -37,6 +37,7 @@ def main(argv):
 
     except Exception as inst:
         ASTbuilder.toDot("data/output.dot")
+        print(type(inst))
         print(inst)
         print("\nERRORS!.\n")
 
