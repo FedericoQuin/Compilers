@@ -14,7 +14,7 @@ digraph AST {
 8 [label="While"];
 9 [label="WhileCondition"];
 10 [label="Less"];
-11 [label="LValue \nx"];
+11 [label="RValueID \nx"];
 12 [label="RValueInt \n5"];
 10 -> 11;
 10 -> 12;
@@ -27,7 +27,7 @@ digraph AST {
 15 [label="While"];
 16 [label="WhileCondition"];
 17 [label="Greater"];
-18 [label="LValue \nx"];
+18 [label="RValueID \nx"];
 19 [label="RValueInt \n0"];
 17 -> 18;
 17 -> 19;
@@ -36,7 +36,7 @@ digraph AST {
 21 [label="While"];
 22 [label="WhileCondition"];
 23 [label="Greater"];
-24 [label="LValue \ny"];
+24 [label="RValueID \ny"];
 25 [label="RValueInt \n0"];
 23 -> 24;
 23 -> 25;

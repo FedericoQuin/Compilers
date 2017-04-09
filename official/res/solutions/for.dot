@@ -25,7 +25,7 @@ digraph AST {
 11 -> 12;
 15 [label="ForStmt2"];
 16 [label="Less"];
-17 [label="LValue \ni"];
+17 [label="RValueID \ni"];
 18 [label="RValueInt \n5"];
 16 -> 17;
 16 -> 18;
@@ -48,7 +48,7 @@ digraph AST {
 26 [label="ForStmt1"];
 27 [label="ForStmt2"];
 28 [label="Less"];
-29 [label="LValue \nc"];
+29 [label="RValueID \nc"];
 30 [label="RValueInt \n5"];
 28 -> 29;
 28 -> 30;
@@ -100,7 +100,7 @@ digraph AST {
 50 -> 51;
 54 [label="ForStmt2"];
 55 [label="Less"];
-56 [label="LValue \ny"];
+56 [label="RValueID \ny"];
 57 [label="RValueInt \n5"];
 55 -> 56;
 55 -> 57;
