@@ -27,7 +27,12 @@ statement
 	| ifelse
 	| while_loop
 	| for_loop
+	| break_stmt ';'
+	| continue_stmt ';'
 	;
+
+break_stmt : 'break';
+continue_stmt : 'continue';
 
 expression :	// TODO add brackets
 	lvalue OPERATOR_AS add_sub

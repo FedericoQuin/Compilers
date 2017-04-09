@@ -111,3 +111,8 @@ def test_brackets():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
 	parse("brackets.c", "brackets.dot", "brackets.p")
+
+def test_break_continue():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("break_continue.c", "break_continue.dot", "break_continue.p")

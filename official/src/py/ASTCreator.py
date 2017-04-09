@@ -345,6 +345,21 @@ class ASTCreator(cGrammarListener):
 	def exitFirst_while_condition(self, ctx:cGrammarParser.First_while_conditionContext):
 		self.AST.climbTree()
 
+	# Enter a parse tree produced by cGrammarParser#break_stmt.
+	def enterBreak_stmt(self, ctx:cGrammarParser.Break_stmtContext):
+		self.AST.enterBreak_stmt(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#break_stmt.
+	def exitBreak_stmt(self, ctx:cGrammarParser.Break_stmtContext):
+		pass
+	
+	# Enter a parse tree produced by cGrammarParser#continue_stmt.
+	def enterContinue_stmt(self, ctx:cGrammarParser.Continue_stmtContext):
+		self.AST.enterContinue_stmt(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#continue_stmt.
+	def exitContinue_stmt(self, ctx:cGrammarParser.Continue_stmtContext):
+		pass
 
 
 	#################################################

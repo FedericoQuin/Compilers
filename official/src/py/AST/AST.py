@@ -225,12 +225,23 @@ class AST:
 	def enterFirst_while_condition(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileCondition)
 
+	
+	#################################################
+	# Break-continue stuff							#
+	#################################################
+	# Enter a parse tree produced by cGrammarParser#break_stmt.
+	def enterBreak_stmt(self, ctx):
+		self.currentPointer.addChild(ASTNodeType.Break)
+	
+	# Enter a parse tree produced by cGrammarParser#continue_stmt.
+	def enterContinue_stmt(self, ctx):
+		self.currentPointer.addChild(ASTNodeType.Continue)
 
 
 
 
 	#################################################
-	# For stuff									#
+	# For stuff										#
 	#################################################
 	# Enter a parse tree produced by cGrammarParser#for_loop.
 	def enterFor_loop(self, ctx):
