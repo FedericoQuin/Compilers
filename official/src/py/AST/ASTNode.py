@@ -1,56 +1,63 @@
 from enum import Enum
 
-class ASTNodeType(Enum):
-	Assignment = 1
-	FloatDecl = 2
-	IntDecl = 3
-	CharDecl = 4
-	LValue = 5
-	RValueInt = 6
-	RValueFloat = 7
-	RValueChar = 8
-	RValueExpression = 9 #not used yet
-	Program = 10
-	Block = 11
-	Addition = 12
-	Subtraction = 13
-	Mul = 14
-	Div = 15
-	PrefixIncr = 16
-	PostfixIncr = 17
-	PrefixDecr = 18
-	PostfixDecr = 19
-	IfElse = 20
-	IfTrue = 21
-	IfFalse = 22
-	IfCondition = 23
-	Or = 24
-	And = 25
-	Not = 26
-	Equals = 27
-	NotEquals = 28
-	Greater = 29
-	GreaterOrEqual = 30
-	Less = 31
-	LessOrEqual = 32
-	While = 33
-	WhileCondition = 34
-	WhileBody = 35
-	For = 36
-	ForStmt1 = 37
-	ForStmt2 = 38
-	ForStmt3 = 39
-	ForBody = 40
-	NegateBrackets = 41
-	Brackets = 42
-	RValueID = 43
-	Break = 44
-	Continue = 45
-	Function = 46
-	FunctionArgs = 47
-	FunctionBody = 48
-	FunctionName = 49
-	Return = 50
+class AutoNumber(Enum):
+	def __new__(cls):
+		value = len(cls.__members__) + 1
+		obj = object.__new__(cls)
+		obj._value_ = value
+		return obj
+
+class ASTNodeType(AutoNumber):
+	Assignment = ()
+	FloatDecl = ()
+	IntDecl = ()
+	CharDecl = ()
+	LValue = ()
+	RValueInt = ()
+	RValueFloat = ()
+	RValueChar = ()
+	RValueExpression = () #not used yet
+	RValueID = ()
+	Program = ()
+	Block = ()
+	Addition = ()
+	Subtraction = ()
+	Mul = ()
+	Div = ()
+	PrefixIncr = ()
+	PostfixIncr = ()
+	PrefixDecr = ()
+	PostfixDecr = ()
+	IfElse = ()
+	IfTrue = ()
+	IfFalse = ()
+	IfCondition = ()
+	Or = ()
+	And = ()
+	Not = ()
+	Equals = ()
+	NotEquals = ()
+	Greater = ()
+	GreaterOrEqual = ()
+	Less = ()
+	LessOrEqual = ()
+	While = ()
+	WhileCondition = ()
+	WhileBody = ()
+	For = ()
+	ForStmt1 = ()
+	ForStmt2 = ()
+	ForStmt3 = ()
+	ForBody = ()
+	NegateBrackets = ()
+	Brackets = ()
+	Break = ()
+	Continue = ()
+	Function = ()
+	FunctionArgs = ()
+	FunctionBody = ()
+	FunctionName = ()
+	Return = ()
 
 
 class ASTNode:
