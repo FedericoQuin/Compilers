@@ -32,9 +32,14 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Cache
+.cache/
 
+# output
+*.dot
+*.p
 
-# ignore generated python files in playground federico
+# ignore generated python files
 
 cGrammar.tokens
 cGrammarLexer.py
@@ -45,3 +50,6 @@ cGrammarVisitor.py
 data
 
 .vscode
+
+# Don't exclude test solutions
+!/solutions/*

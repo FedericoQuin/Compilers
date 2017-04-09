@@ -5,7 +5,7 @@ python:
 # command to install dependencies
 install: "pip3 install -r .requirements.txt"
 # command to run tests
-script: pytest ./official/src/tests/run_tests.py
+script: sh run_tests.sh
 
 notifications:
   slack: compilers-hq:d4srnF0TrvqFnxcRf4k4w4K8

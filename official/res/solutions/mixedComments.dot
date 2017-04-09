@@ -1,0 +1,7 @@
+digraph AST {
+0 [label="Program"];
+1 [label="Block"];
+2 [label="IntDecl \njmp"];
+1 -> 2;
+0 -> 1;
+}
