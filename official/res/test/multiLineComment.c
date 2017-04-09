@@ -1,5 +1,5 @@
 
-int main(int argc, char* argv) {
+int main(int argc, char argv) {
 	/* multiline comment for the sake of it
 	a
 	1

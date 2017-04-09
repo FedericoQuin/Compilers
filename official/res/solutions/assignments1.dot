@@ -1,7 +1,17 @@
 digraph AST {
-0 [label="Program"];
-1 [label="Block"];
-2 [label="IntDecl \nmy_a"];
+1 [label="Program"];
+2 [label="Function \nint"];
+3 [label="FunctionName \nmain"];
+4 [label="FunctionArgs"];
+5 [label="IntDecl \nargc"];
+6 [label="CharDecl \nargv"];
+4 -> 5;
+4 -> 6;
+7 [label="FunctionBody"];
+8 [label="IntDecl \nmy_a"];
+7 -> 8;
+2 -> 3;
+2 -> 4;
+2 -> 7;
 1 -> 2;
-0 -> 1;
 }

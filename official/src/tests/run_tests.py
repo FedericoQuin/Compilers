@@ -61,7 +61,7 @@ def test_assignments1():
 def test_assignments2():	
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("assignments1bis.c", "assignments1bis.dot", "assignments1bis.p")
+	parse("assignments2.c", "assignments2.dot", "assignments2.p")
 
 
 def test_mainFunction():	
@@ -116,3 +116,8 @@ def test_break_continue():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
 	parse("break_continue.c", "break_continue.dot", "break_continue.p")
+
+def test_functions():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("functions.c", "functions.dot", "functions.p")

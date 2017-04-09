@@ -2,8 +2,15 @@
 grammar cGrammar;
 
 
-program : function;
+program :
+	program functiondecl
+	| program function
+	|
+	;
+
 function : returntype ID '(' initialargument ')' '{' function_body '}';
+
+functiondecl : returntype ID '(' initialargument ')' ';';
 
 initialargument : 
 	argument arguments
@@ -29,10 +36,12 @@ statement
 	| for_loop
 	| break_stmt ';'
 	| continue_stmt ';'
+	| return_stmt ';'
 	;
 
 break_stmt : 'break';
 continue_stmt : 'continue';
+return_stmt : 'return';
 
 expression :	// TODO add brackets
 	lvalue OPERATOR_AS add_sub

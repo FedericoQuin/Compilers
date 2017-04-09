@@ -237,6 +237,10 @@ class AST:
 	def enterContinue_stmt(self, ctx):
 		self.currentPointer.addChild(ASTNodeType.Continue)
 
+	# Enter a parse tree produced by cGrammarParser#return_stmt.
+	def returnStmt(self, ctx):
+		self.currentPointer.addChild(ASTNodeType.Return)
+
 
 
 
@@ -271,6 +275,33 @@ class AST:
 	# Enter a parse tree produced by cGrammarParser#third_stmt_for.
 	def enterThird_stmt_for(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt3)
+
+
+	#################################################
+	# Function stuff								#
+	#################################################
+	# Enter a parse tree produced by cGrammarParser#functiondecl.
+	def enterFunctiondecl(self, ctx):
+		if ctx.returntype().TYPE() != None:
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Function, ctx.returntype().TYPE())
+		elif ctx.returntype().VOID() != None:
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Function, ctx.returntype().VOID())
+		self.currentPointer.addChild(ASTNodeType.FunctionName, ctx.ID())
+
+	# Enter a parse tree produced by cGrammarParser#initialargument.
+	def addArgumentList(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionArgs)
+
+	# Enter a parse tree produced by cGrammarParser#argument.
+	def addArgument(self, ctx):
+		self.addDeclaration(ctx)
+
+	def addFunctionBody(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionBody)
+
+
+
+
 	
 	def climbTree(self):
 		''' 

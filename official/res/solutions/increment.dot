@@ -1,15 +1,21 @@
 digraph AST {
-0 [label="Program"];
-1 [label="Block"];
-2 [label="Assignment"];
-3 [label="IntDecl \nc"];
-4 [label="RValueInt \n5"];
+1 [label="Program"];
+2 [label="Function \nint"];
+3 [label="FunctionName \nmain"];
+4 [label="FunctionArgs"];
+5 [label="FunctionBody"];
+6 [label="Assignment"];
+7 [label="IntDecl \nc"];
+8 [label="RValueInt \n5"];
+6 -> 7;
+6 -> 8;
+9 [label="PostfixIncr \nc"];
+10 [label="PostfixDecr \nc"];
+5 -> 6;
+5 -> 9;
+5 -> 10;
 2 -> 3;
 2 -> 4;
-5 [label="PostfixIncr \nc"];
-6 [label="PostfixDecr \nc"];
+2 -> 5;
 1 -> 2;
-1 -> 5;
-1 -> 6;
-0 -> 1;
 }

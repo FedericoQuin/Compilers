@@ -1,7 +1,15 @@
 digraph AST {
-0 [label="Program"];
-1 [label="Block"];
-2 [label="IntDecl \njmp"];
+1 [label="Program"];
+2 [label="Function \nvoid"];
+3 [label="FunctionName \nmain"];
+4 [label="FunctionArgs"];
+5 [label="FloatDecl \ntest"];
+4 -> 5;
+6 [label="FunctionBody"];
+7 [label="IntDecl \njmp"];
+6 -> 7;
+2 -> 3;
+2 -> 4;
+2 -> 6;
 1 -> 2;
-0 -> 1;
 }

@@ -46,6 +46,11 @@ class ASTNodeType(Enum):
 	RValueID = 43
 	Break = 44
 	Continue = 45
+	Function = 46
+	FunctionArgs = 47
+	FunctionBody = 48
+	FunctionName = 49
+	Return = 50
 
 
 class ASTNode:
