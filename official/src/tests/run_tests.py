@@ -106,3 +106,8 @@ def test_for():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
 	parse("for.c", "for.dot", "for.p")
+
+def test_brackets():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("brackets.c", "brackets.dot", "brackets.p")

@@ -41,6 +41,8 @@ class ASTNodeType(Enum):
 	ForStmt2 = 38
 	ForStmt3 = 39
 	ForBody = 40
+	NegateBrackets = 41
+	Brackets = 42
 
 
 class ASTNode:

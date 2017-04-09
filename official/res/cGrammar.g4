@@ -49,7 +49,11 @@ mul_div :
 	mul_div OPERATOR_MUL mul_div
 	| mul_div OPERATOR_DIV mul_div
 	| identifier
-	| rvalue;
+	| rvalue
+	| bracket_expression;
+
+bracket_expression :
+	LBRACKET expression RBRACKET;
 
 OPERATOR_AS : '=';
 OPERATOR_PLUS : '+';
@@ -105,7 +109,6 @@ first_false_statements : statements;
 
 condition :
 	condition OPERATOR_OR condition
-	| LBRACKET condition RBRACKET	// Not supported yet
 	| condition_and
 	| comparison;
 
@@ -115,7 +118,12 @@ condition_and :
 	| comparison;
 
 condition_not :
-	OPERATOR_NOT comparison;
+	OPERATOR_NOT comparison
+	| bracket_condition;
+
+bracket_condition :
+	LBRACKET condition RBRACKET
+	| OPERATOR_NOT LBRACKET condition RBRACKET;
 
 comparison : 
 	rvalue comparator rvalue

@@ -197,6 +197,12 @@ class AST:
 		elif ctx.comparator().OPERATOR_LE() != None:
 			self.climbTree()
 
+	# Enter a parse tree produced by cGrammarParser#bracket_condition.
+	def makeBrackets(self, ctx, negate = False):
+		if not negate:
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Brackets)
+		else:
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.NegateBrackets)
 
 	#################################################
 	# While stuff									#

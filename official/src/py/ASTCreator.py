@@ -133,6 +133,9 @@ class ASTCreator(cGrammarListener):
 
 
 
+	#################################################
+	# Operator stuff								#
+	#################################################
 	def enterExpression(self, ctx:cGrammarParser.ExpressionContext):
 		self.AST.enterExpression(ctx)
 
@@ -161,6 +164,15 @@ class ASTCreator(cGrammarListener):
 	def exitMul_div(self, ctx:cGrammarParser.Mul_divContext):
 		if ctx.OPERATOR_MUL() != None or ctx.OPERATOR_DIV() != None:
 			self.AST.climbTree()
+
+	# Enter a parse tree produced by cGrammarParser#bracket_expression.
+	def enterBracket_expression(self, ctx:cGrammarParser.Bracket_expressionContext):
+		self.AST.makeBrackets(ctx)
+
+	# Exit a parse tree produced by cGrammarParser#bracket_expression.
+	def exitBracket_expression(self, ctx:cGrammarParser.Bracket_expressionContext):
+		self.AST.climbTree();
+
 
 
 	# Enter a parse tree produced by cGrammarParser#identifier.
@@ -238,6 +250,10 @@ class ASTCreator(cGrammarListener):
 		pass
 
 
+
+	#################################################
+	# Condition stuff								#
+	#################################################
 	# Enter a parse tree produced by cGrammarParser#condition.
 	def enterCondition(self, ctx:cGrammarParser.ConditionContext):
 		self.AST.enterCondition(ctx)
@@ -274,6 +290,16 @@ class ASTCreator(cGrammarListener):
 	def exitComparison(self, ctx:cGrammarParser.ComparisonContext):
 		self.AST.exitComparison(ctx)
 
+	# Enter a parse tree produced by cGrammarParser#bracket_condition.
+	def enterBracket_condition(self, ctx:cGrammarParser.Bracket_conditionContext):
+		if ctx.OPERATOR_NOT() != None:
+			self.AST.makeBrackets(ctx, True)
+		else:
+			self.AST.makeBrackets(ctx, False)
+
+	# Exit a parse tree produced by cGrammarParser#bracket_condition.
+	def exitBracket_condition(self, ctx:cGrammarParser.Bracket_conditionContext):
+		self.AST.climbTree()
 
 
 
