@@ -181,10 +181,10 @@ class AST:
 
 		if ctx.ID() != None:
 			if len(ctx.ID()) == 1:
-				self.currentPointer.addChild(ASTNodeType.LValue, ctx.ID()[0])
+				self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID()[0])
 			else:
-				self.currentPointer.addChild(ASTNodeType.LValue, ctx.ID()[0])
-				self.currentPointer.addChild(ASTNodeType.LValue, ctx.ID()[1])
+				self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID()[0])
+				self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID()[1])
 
 
 	# Exit a parse tree produced by cGrammarParser#comparison.
