@@ -18,7 +18,7 @@ digraph AST {
 12 [label="RValueInt \n5"];
 10 -> 11;
 10 -> 12;
-13 [label="LValue \na"];
+13 [label="RValueID \na"];
 9 -> 10;
 9 -> 13;
 7 -> 8;
