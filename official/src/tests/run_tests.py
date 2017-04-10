@@ -15,6 +15,7 @@ from ASTCreator import ASTCreator
 from PTranslator import PTranslator
 from filecmp import *
 from AST.ASTNode import *
+from MyErrorListener import MyErrorListener
 
 testdir = os.path.dirname(os.path.abspath(__file__))
 resdir = os.getcwd() + "/official/res"
@@ -25,6 +26,7 @@ def parse(inputFile, dotSolution, pSolution):
 	lexer = cGrammarLexer(input)
 	stream = CommonTokenStream(lexer)
 	parser = cGrammarParser(stream)
+	parser._listeners = [MyErrorListener(str(resdir) + "/test/" + inputFile)]
 	tree = parser.program()
 
 	ASTbuilder = ASTCreator()
@@ -46,6 +48,35 @@ def parse(inputFile, dotSolution, pSolution):
 
 	assert(cmp(str(testdir) + "/output.dot", str(resdir) + "/solutions/" + dotSolution))
 	assert(cmp(str(testdir) + "/program.p", str(resdir) + "/solutions/" + pSolution))
+
+def parseNoCatch(inputFile, dotSolution, pSolution):
+	# For exception throwing purposes
+
+	try:
+		input = FileStream(str(resdir) + "/test/" + inputFile)
+		lexer = cGrammarLexer(input)
+		stream = CommonTokenStream(lexer)
+		parser = cGrammarParser(stream)
+		parser._listeners = [MyErrorListener(str(resdir) + "/test/" + inputFile)]
+		tree = parser.program()
+
+		ASTbuilder = ASTCreator()
+
+		walker = ParseTreeWalker()
+		walker.walk(ASTbuilder, tree)
+
+		ast = ASTbuilder.getAST()
+
+		translator = PTranslator()
+		translator.translate(ast)
+
+		translator.saveProgram(str(testdir) + "/program.p")
+		ASTbuilder.toDot(str(testdir) + "/output.dot")
+	except Exception as inst:
+		raise inst
+
+	assert(False)
+
 
 def test_assignments1bis():	
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
@@ -126,3 +157,35 @@ def test_pointer():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
 	parse("pointer.c", "pointer.dot", "pointer.p")
+
+def test_errors():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	errorFiles = [
+		"error_braces1.c",
+		"error_braces2.c",
+		# "error_braces3.c"			// TODO
+		# "error_no_semicolon.c"	// TODO improve current error
+		# "error_rubbish.c",		// TODO
+		# "error_ifelse.c",		// TODO
+		# "error_for.c",		// TODO
+		# "error_while.c"		// TODO
+		]
+	errorMessages = [
+		"3:0: Error while/after parsing statement\n\n^\nBraces don't match",
+		"2:36: Error while/after parsing expression\n\tint someDecl = (5 + 8) * 3 * (5 + 4;\n\t                                   ^\nBraces don't match",
+		"",
+		"",
+		"",
+		"",
+		"",
+		""
+	]
+	for i in range(len(errorFiles)):
+		try:
+			ASTNode.ID = 0
+			parseNoCatch(errorFiles[i], "", "")
+		except Exception as inst:
+			string = str(inst)
+			print (string)
+			print(errorMessages[i])
+			assert(string == errorMessages[i])
