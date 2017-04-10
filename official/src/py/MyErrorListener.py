@@ -12,14 +12,13 @@ class MyErrorListener( ErrorListener ):
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         stack = recognizer.getRuleInvocationStack()[0]
 
-        print(line, ":", column, ": ", "Error while parsing", str(stack))
-        print(self.data[line - 1])
-        tabCount = self.data[line - 1].count("\t")
-        print(tabCount * "\t", end = "")
-        print((column - tabCount) * " ", end = "")
-        print("^")
-        print(msg)
-        sys.exit(1)
+        ex_msg = str(line) + ":" + str(column) + ": " + "Error while parsing " + str(stack) + "\n"
+        ex_msg += str(self.data[line - 1]) + "\n"
 
-if __name__ == '__main__':
-    main(sys.argv)
+        tabCount = self.data[line - 1].count("\t")
+
+        ex_msg += str(tabCount * "\t")
+        ex_msg += str((column - tabCount) * " ")
+        ex_msg += "^" + "\n"
+        ex_msg += msg + "\n"
+        raise Exception(ex_msg)

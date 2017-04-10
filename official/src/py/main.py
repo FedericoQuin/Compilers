@@ -39,10 +39,7 @@ def main(argv):
 
     except Exception as inst:
         print(inst)
-        ASTbuilder.toDot("data/output.dot")
-        print(type(inst))
-        print(inst)
-        print("\nERRORS!.\n")
 
 
-    print("Abstract Syntax Tree saved to data/output.dot.")
+if __name__ == '__main__':
+    main(sys.argv)
