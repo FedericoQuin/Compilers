@@ -1,0 +1,21 @@
+digraph AST {
+1 [label="Program"];
+2 [label="Function \nmain"];
+3 [label="IntDecl"];
+4 [label="FunctionArgs"];
+5 [label="IntDecl \nargc"];
+6 [label="CharDecl * \nargv"];
+4 -> 5;
+4 -> 6;
+7 [label="FunctionBody"];
+8 [label="Assignment"];
+9 [label="IntDecl ***** \nx"];
+10 [label="RValueInt \n0"];
+8 -> 9;
+8 -> 10;
+7 -> 8;
+2 -> 3;
+2 -> 4;
+2 -> 7;
+1 -> 2;
+}
