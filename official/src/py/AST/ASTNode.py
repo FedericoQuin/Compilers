@@ -58,6 +58,7 @@ class ASTNodeType(AutoNumber):
 	FunctionBody = ()
 	FunctionName = ()
 	Return = ()
+	Void = ()
 
 
 class ASTNode:
@@ -90,3 +91,13 @@ class ASTNode:
 		
 def getStringOfArray(array):
 	return ''.join([str(item) for item in array])
+
+class pointerType:
+	def __init__(self, _type, ptrCount):
+		self.type = _type
+		self.ptrCount = ptrCount
+
+		if ptrCount != 0:
+			self.name = str(self.type.name) + " " + "".join(["*" for i in range(ptrCount)])
+		else:
+			self.name = str(self.type.name)

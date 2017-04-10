@@ -1,5 +1,5 @@
 
-from AST.ASTNode import ASTNode, ASTNodeType, getStringOfArray
+from AST.ASTNode import ASTNode, ASTNodeType, getStringOfArray, pointerType
 
 
 class AST:
@@ -12,14 +12,22 @@ class AST:
 
 	def addDeclaration(self, ctx):
 		_type = None
-		if (str(ctx.TYPE()) == "int"):
+		if (ctx.dec_type().INT() != None):
 			_type = ASTNodeType.IntDecl
-		elif (str(ctx.TYPE()) == "float"):
+		elif (ctx.dec_type().FLOAT() != None):
 			_type = ASTNodeType.FloatDecl
-		elif (str(ctx.TYPE()) == "char"):
+		elif (ctx.dec_type().CHAR() != None):
 			_type = ASTNodeType.CharDecl
 
-		self.currentPointer.addChild(_type, ctx.ID())
+		ptrCount = 0
+		nextPtr = ctx.dec_type().ptr()
+		if nextPtr != None:
+			nextPtr = nextPtr.ptr()
+		while nextPtr != None:
+			ptrCount += 1
+			nextPtr = nextPtr.ptr()
+
+		self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
 
 	def addRvalue(self, ctx):
 		if (ctx.CHARVALUE() != None):
@@ -282,11 +290,29 @@ class AST:
 	#################################################
 	# Enter a parse tree produced by cGrammarParser#functiondecl.
 	def enterFunctiondecl(self, ctx):
-		if ctx.returntype().TYPE() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Function, ctx.returntype().TYPE())
+		_type = None
+		ptrCount = 0
+		if ctx.returntype().dec_type() != None:
+
+			if (ctx.returntype().dec_type().INT() != None):
+				_type = ASTNodeType.IntDecl
+			elif (ctx.returntype().dec_type().FLOAT() != None):
+				_type = ASTNodeType.FloatDecl
+			elif (ctx.returntype().dec_type().CHAR() != None):
+				_type = ASTNodeType.CharDecl
+
+			nextPtr = ctx.returntype().dec_type().ptr()
+			if nextPtr != None:
+				nextPtr = nextPtr.ptr()
+			while nextPtr != None:
+				ptrCount += 1
+				nextPtr = nextPtr.ptr()
+
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Function, ctx.ID())
 		elif ctx.returntype().VOID() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Function, ctx.returntype().VOID())
-		self.currentPointer.addChild(ASTNodeType.FunctionName, ctx.ID())
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Function, ctx.ID())
+			_type = ASTNodeType.Void
+		self.currentPointer.addChild(pointerType(_type, ptrCount))
 
 	# Enter a parse tree produced by cGrammarParser#initialargument.
 	def addArgumentList(self, ctx):

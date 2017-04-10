@@ -18,7 +18,7 @@ initialargument :
 arguments :	
 	',' argument arguments
 	|;
-argument : TYPE ID;
+argument : dec_type ID;
 
 
 
@@ -201,7 +201,7 @@ third_stmt_for :
 LBRACKET : '(';
 RBRACKET : ')';
 
-declaration : TYPE ID;
+declaration : dec_type ID;
 assignment : lvalue '=' rvalue; // lack of better words
 
 lvalue 
@@ -221,13 +221,22 @@ DIGIT : [0-9];
 NOTZERODIGIT : [1-9];
 digits : DIGIT+;
 
-returntype : TYPE | VOID;
+returntype : dec_type | VOID;
 
 VOID : 'void';
-TYPE : 
-	'char' '*'?
-	|'float' '*'?
-	|'int' '*'?;
+dec_type : 
+	CHAR ptr
+	| FLOAT ptr
+	| INT ptr;
+
+CHAR : 'char';
+FLOAT : 'float';
+INT : 'int';
+
+ptr : 
+	'*' ptr
+	|;
+
 ID : ([a-zA-Z] | '_') ([a-zA-Z] | [0-9] | '_')*;
 
 

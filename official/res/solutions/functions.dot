@@ -1,7 +1,7 @@
 digraph AST {
 4 [label="Program"];
-5 [label="Function \nint"];
-6 [label="FunctionName \nmain"];
+5 [label="Function \nmain"];
+6 [label="IntDecl"];
 7 [label="FunctionArgs"];
 8 [label="IntDecl \ntestArg"];
 9 [label="FloatDecl \ntestArg2"];
@@ -11,8 +11,8 @@ digraph AST {
 7 -> 10;
 5 -> 6;
 5 -> 7;
-11 [label="Function \nint"];
-12 [label="FunctionName \nmain"];
+11 [label="Function \nmain"];
+12 [label="IntDecl"];
 13 [label="FunctionArgs"];
 14 [label="IntDecl \ntestArg"];
 15 [label="FloatDecl \ntestArg2"];
@@ -30,15 +30,15 @@ digraph AST {
 11 -> 12;
 11 -> 13;
 11 -> 17;
-21 [label="Function \nvoid"];
-22 [label="FunctionName \nsomethingUseful"];
+21 [label="Function \nsomethingUseful"];
+22 [label="Void"];
 23 [label="FunctionArgs"];
 24 [label="FloatDecl \nuselessArgument"];
 23 -> 24;
 21 -> 22;
 21 -> 23;
-25 [label="Function \nvoid"];
-26 [label="FunctionName \ngetThePointOfLife"];
+25 [label="Function \ngetThePointOfLife"];
+26 [label="Void"];
 27 [label="FunctionArgs"];
 28 [label="IntDecl \nage"];
 27 -> 28;

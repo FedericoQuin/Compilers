@@ -121,3 +121,8 @@ def test_functions():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
 	parse("functions.c", "functions.dot", "functions.p")
+
+def test_pointer():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("pointer.c", "pointer.dot", "pointer.p")
