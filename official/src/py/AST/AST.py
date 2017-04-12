@@ -27,7 +27,10 @@ class AST:
 			ptrCount += 1
 			nextPtr = nextPtr.ptr()
 
-		self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
+		if (ptrCount > 0):
+			self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
+		else:
+			self.currentPointer.addChild(_type, ctx.ID())
 
 	def addRvalue(self, ctx):
 		if (ctx.CHARVALUE() != None):
