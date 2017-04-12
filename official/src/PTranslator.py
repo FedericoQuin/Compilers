@@ -8,12 +8,12 @@ class PTranslator:
         self.programText = ""
         self.symbolTable = SymbolTable()
 
-    def translate(self, ast):
+    def translate(self, ast, symbolTableFileName=""):
         self.AST = ast
         # TODO add functionality here
-        self.fillSymbolTable()
+        self.fillSymbolTable(symbolTableFileName)
 
-    def fillSymbolTable(self):
+    def fillSymbolTable(self, filename):
         astwalker = ASTWalker(self.AST)
         nodes = astwalker.getNodesDepthFirst()
 
@@ -31,7 +31,8 @@ class PTranslator:
             
 
         # save the symbol table to a text file (might be temporary)
-        self.saveSymbolTable("data/symbolTable.txt")
+        if (filename != ""):
+            self.saveSymbolTable(filename)
 
     def saveSymbolTable(self, filename):
         symbolTableFile = open(filename, 'w')

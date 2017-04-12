@@ -29,7 +29,7 @@ def main(argv):
         ast = ASTbuilder.getAST()
 
         translator = PTranslator()
-        translator.translate(ast)
+        translator.translate(ast, "data/symbolTable.txt")
 
         translator.saveProgram("data/program.p")
         ASTbuilder.toDot("data/output.dot")
