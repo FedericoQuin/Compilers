@@ -5,7 +5,7 @@ class SymbolTableBuilder:
 	def __init__(self, filename = ""):
 		self.currentLevel = 0
 		self.levelList = []
-		self.filename = ""
+		self.filename = filename
 		self.symbolTable = SymbolTable()
 
 	def buildSymbolTable(self, nodes):
