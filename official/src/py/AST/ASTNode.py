@@ -66,6 +66,9 @@ class ASTNodeType(AutoNumber):
 	Return = ()
 	Void = ()
 	Include = ()
+	Scanf = ()
+	Printf = ()
+	FormatString = ()
 
 
 class ASTNode:

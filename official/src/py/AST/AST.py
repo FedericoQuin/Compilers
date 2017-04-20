@@ -397,6 +397,20 @@ class AST:
 
 
 
+	#====================================================================
+	#= 						Scanf and Printf							=
+	#====================================================================
+
+	def addScanf(self):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Scanf)
+
+	def addPrintf(self):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Printf)
+
+	def addFormatString(self, ctx):
+		includeName = "".join([str(i) for i in ctx.getChildren()])
+		# Don't forget to cut the quotation marks
+		self.currentPointer.addChild(ASTNodeType.FormatString, includeName[1:len(includeName)-1])
 
 	
 	def climbTree(self):

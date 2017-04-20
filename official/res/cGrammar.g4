@@ -45,8 +45,8 @@ statement
 	| break_stmt ';'
 	| continue_stmt ';'
 	| return_stmt ';'
-//	| scanf ';'
-//	| printf ';'
+	| scanf ';'
+	| printf ';'
 	;
 
 break_stmt : 'break';
@@ -209,11 +209,11 @@ third_stmt_for :
 // Scanf and Printf										//
 //////////////////////////////////////////////////////////
 
-//scanf : 'scanf' '(' format_string arguments ')';
-//printf : 'printf' '(' format_string arguments ')';
+scanf : 'scanf' '(' format_string call_arguments ')';
+printf : 'printf' '(' format_string call_arguments ')';
 
-//format_string : 'idk';
-//arguments : 'test';
+// Not sure how to go about this in a decent manner
+format_string : STRING;
 
 
 //////////////////////////////////////////////////////////
@@ -327,7 +327,7 @@ DIGIT : [0-9];
 NOTZERODIGIT : [1-9];
 ID : ([a-zA-Z] | '_') ([a-zA-Z] | [0-9] | '_')*;
 POINT : '.';
-
+STRING : '"' .*? '"';
 
 WS : [ \r\t\n]+ -> skip ;
 

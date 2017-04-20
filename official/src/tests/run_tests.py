@@ -178,6 +178,15 @@ def test_includes():
 	ASTNode.ID = 0
 	parse("includes.c", "includes.dot", "includes.p")
 
+def test_scanf():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("scanf.c", "scanf.dot", "scanf.p")
+
+def test_printf():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("printf.c", "printf.dot", "printf.p")
 
 
 

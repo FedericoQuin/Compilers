@@ -485,6 +485,33 @@ class ASTCreator(cGrammarListener):
 
 
 
+	#################################################
+	# Scanf and Printf								#
+	#################################################
+
+	def enterScanf(self, ctx:cGrammarParser.ScanfContext):
+		self.AST.addScanf()
+
+	def exitScanf(self, ctx:cGrammarParser.ScanfContext):
+		self.AST.climbTree()
+
+
+	def enterPrintf(self, ctx:cGrammarParser.PrintfContext):
+		self.AST.addScanf()
+
+	def exitPrintf(self, ctx:cGrammarParser.PrintfContext):
+		self.AST.climbTree()
+
+
+	def enterFormat_string(self, ctx:cGrammarParser.Format_stringContext):
+		self.AST.addFormatString(ctx)
+
+	def exitFormat_string(self, ctx:cGrammarParser.Format_stringContext):
+		pass
+
+
+
+
 
 
 	def printAST(self):
