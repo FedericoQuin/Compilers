@@ -29,14 +29,19 @@ class AST:
 
 		self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
 
-	def addRvalue(self, ctx):
-		if (ctx.CHARVALUE() != None):
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueChar, ctx.CHARVALUE())
-		elif (ctx.numericalvalue() != None):
-			if (ctx.numericalvalue().intvalue() != None):
+
+	#====================================================================
+	#= 						RValue handling								=
+	#====================================================================
+
+	def addNumericalValue(self, ctx):
+		if (ctx.intvalue() != None):
 				self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueInt)
-			elif (ctx.numericalvalue().floatvalue() != None):
-				self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueFloat)
+		elif (ctx.floatvalue() != None):
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueFloat)
+
+	def addCharValue(self, ctx):
+		self.currentPointer.addChild(ASTNodeType.RValueChar, ctx.CHARVALUE())
 
 	def setIntValueNode(self, ctx):
 		self.currentPointer.value = int(getStringOfArray(ctx.DIGIT()))
@@ -52,6 +57,13 @@ class AST:
 				getStringOfArray(ctx.digits(1).DIGIT())
 		
 		self.currentPointer.value = float(floatString)
+
+	def addFunctionCall(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, ctx.ID())
+
+	#====================================================================
+
+
 
 	def addAssignment(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment)

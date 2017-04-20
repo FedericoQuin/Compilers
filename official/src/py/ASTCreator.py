@@ -60,18 +60,7 @@ class ASTCreator(cGrammarListener):
 		pass
 
 
-	def enterRvalue(self, ctx:cGrammarParser.RvalueContext):
-		self.AST.addRvalue(ctx)
 
-	def exitRvalue(self, ctx:cGrammarParser.RvalueContext):
-		self.AST.climbTree()
-
-
-	def enterNumericalvalue(self, ctx:cGrammarParser.NumericalvalueContext):
-		pass
-
-	def exitNumericalvalue(self, ctx:cGrammarParser.NumericalvalueContext):
-		pass
 
 
 	def enterIntvalue(self, ctx:cGrammarParser.IntvalueContext):
@@ -94,6 +83,54 @@ class ASTCreator(cGrammarListener):
 	def exitDigits(self, ctx:cGrammarParser.DigitsContext):
 		pass
 
+	#################################################
+	# RValue handling								#
+	#################################################
+
+	# Numerical values (int, float or pointer types)
+	def enterNumericalvalue(self, ctx:cGrammarParser.NumericalvalueContext):
+		self.AST.addNumericalValue(ctx)
+
+	def exitNumericalvalue(self, ctx:cGrammarParser.NumericalvalueContext):
+		self.AST.climbTree()
+
+
+	# Char values
+	def enterCharvalue(self, ctx:cGrammarParser.CharvalueContext):
+		self.AST.addCharValue(ctx)
+
+	def exitCharvalue(self, ctx:cGrammarParser.CharvalueContext):
+		# no need to climb here, the new node doesn't need to be adjusted further
+		pass
+
+
+	# Function calls
+	def enterFunctioncall(self, ctx:cGrammarParser.FunctioncallContext):
+		self.AST.addFunctionCall(ctx)
+
+	def exitFunctioncall(self, ctx:cGrammarParser.FunctioncallContext):
+		self.AST.climbTree()
+
+
+	# def enterCall_argument_initial(self, ctx:cGrammarParser.Call_argument_initialContext):
+	# 	pass
+
+	# def exitCall_argument_initial(self, ctx:cGrammarParser.Call_argument_initialContext):
+	# 	pass
+
+
+	# def enterCall_arguments(self, ctx:cGrammarParser.Call_argumentsContext):
+	# 	pass
+
+	# def exitCall_arguments(self, ctx:cGrammarParser.Call_argumentsContext):
+	# 	pass
+
+
+	# def enterCall_argument(self, ctx:cGrammarParser.Call_argumentContext):
+	# 	pass
+
+	# def exitCall_argument(self, ctx:cGrammarParser.Call_argumentContext):
+	# 	pass
 
 
 

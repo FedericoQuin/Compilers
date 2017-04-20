@@ -50,7 +50,8 @@ expression :	// TODO add brackets
 	| PRE_OPERATOR_INCR lvalue_identifier		// NOTE: the prefix operators don't work for some mysterious reason
 	| ID POST_OPERATOR_DECR
 	| PRE_OPERATOR_DECR ID
-	| condition;
+	| condition
+	| rvalue;
 
 add_sub :
 	add_sub OPERATOR_PLUS add_sub
@@ -195,7 +196,23 @@ third_stmt_for :
 	| ;
 
 
+// Function calls in function bodies
+functioncall :
+	ID '(' call_argument_initial ')';
 
+call_argument_initial :
+	rvalue call_arguments
+	| rvalue_identifier call_arguments
+	|;
+
+call_arguments :
+	',' call_argument call_arguments
+	|;
+
+// TODO verify this
+call_argument :
+	rvalue
+	| rvalue_identifier;
 
 
 LBRACKET : '(';
@@ -208,10 +225,11 @@ lvalue
 	: declaration 
 	| ID;
 rvalue 
-	: CHARVALUE
-	| numericalvalue; 		// NOTE: no differentiation between int value and pointer value, would match the same anyways
+	: charvalue
+	| numericalvalue 		// NOTE: no differentiation between int value and pointer value, would match the same anyways
+	| functioncall;
 
-
+charvalue : CHARVALUE;
 CHARVALUE : '\'' . '\'';
 numericalvalue : floatvalue | intvalue;
 
