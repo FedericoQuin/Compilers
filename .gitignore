@@ -53,3 +53,4 @@ data
 
 # Don't exclude test solutions
 !/solutions/*
+!/solutions/
