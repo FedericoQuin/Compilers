@@ -32,13 +32,45 @@ class ASTCreator(cGrammarListener):
 		pass
 
 
-	def enterDeclaration(self, ctx:cGrammarParser.DeclarationContext):
-		self.AST.addDeclaration(ctx)
+	#################################################
+	# Declarations									#
+	#################################################
 
-	def exitDeclaration(self, ctx:cGrammarParser.DeclarationContext):
+	def enterNormal_declaration(self, ctx:cGrammarParser.Normal_declarationContext):
+		self.AST.addNormalDeclaration(ctx)
+
+	def exitNormal_declaration(self, ctx:cGrammarParser.Normal_declarationContext):
 		pass
 
+
+	def enterArray_declaration(self, ctx:cGrammarParser.Array_declarationContext):
+		self.AST.addArrayDeclaration(ctx)
+
+	def exitArray_declaration(self, ctx:cGrammarParser.Array_declarationContext):
+		pass
+
+
+
+
+	#################################################
+	# Array element access							#
+	#################################################
+
+	def enterArrayelement_lvalue(self, ctx:cGrammarParser.Arrayelement_lvalueContext):
+		self.AST.addArrayElement(ctx, "lvalue")
+
+	def exitArrayelement_lvalue(self, ctx:cGrammarParser.Arrayelement_lvalueContext):
+		pass
 	
+	def enterArrayelement_rvalue(self, ctx:cGrammarParser.Arrayelement_rvalueContext):
+		self.AST.addArrayElement(ctx, "rvalue")
+
+	def exitArrayelement_rvalue(self, ctx:cGrammarParser.Arrayelement_rvalueContext):
+		pass
+
+
+	
+
 	def enterReturntype(self, ctx:cGrammarParser.ReturntypeContext):
 		pass
 
@@ -112,27 +144,6 @@ class ASTCreator(cGrammarListener):
 		self.AST.climbTree()
 
 
-	# def enterCall_argument_initial(self, ctx:cGrammarParser.Call_argument_initialContext):
-	# 	pass
-
-	# def exitCall_argument_initial(self, ctx:cGrammarParser.Call_argument_initialContext):
-	# 	pass
-
-
-	# def enterCall_arguments(self, ctx:cGrammarParser.Call_argumentsContext):
-	# 	pass
-
-	# def exitCall_arguments(self, ctx:cGrammarParser.Call_argumentsContext):
-	# 	pass
-
-
-	# def enterCall_argument(self, ctx:cGrammarParser.Call_argumentContext):
-	# 	pass
-
-	# def exitCall_argument(self, ctx:cGrammarParser.Call_argumentContext):
-	# 	pass
-
-
 
 	#################################################
 	# Operator stuff								#
@@ -172,7 +183,7 @@ class ASTCreator(cGrammarListener):
 
 	# Exit a parse tree produced by cGrammarParser#bracket_expression.
 	def exitBracket_expression(self, ctx:cGrammarParser.Bracket_expressionContext):
-		self.AST.climbTree();
+		self.AST.climbTree()
 
 
 

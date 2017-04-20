@@ -143,9 +143,9 @@ bracket_condition :
 
 comparison : 
 	rvalue comparator rvalue
-	| rvalue comparator ID
-	| ID comparator rvalue
-	| ID comparator ID;
+	| rvalue comparator rvalue_identifier
+	| rvalue_identifier comparator rvalue
+	| rvalue_identifier comparator rvalue_identifier;
 
 comparator :
 	OPERATOR_EQ
@@ -195,8 +195,9 @@ third_stmt_for :
 	| declaration
 	| ;
 
-
-// Function calls in function bodies
+//////////////////////////////////////////////////////////
+// Function calls in function bodies					//
+//////////////////////////////////////////////////////////
 functioncall :
 	ID '(' call_argument_initial ')';
 
@@ -215,49 +216,89 @@ call_argument :
 	| rvalue_identifier;
 
 
-LBRACKET : '(';
-RBRACKET : ')';
 
-declaration : dec_type ID;
+//////////////////////////////////////////////////////////
+// Declarations and assignments							//
+//////////////////////////////////////////////////////////
+
+declaration : 
+	normal_declaration
+	| array_declaration;
+
+normal_declaration :
+	dec_type ID;
+array_declaration : 
+	dec_type ID LSQUAREBRACKET digits RSQUAREBRACKET;
+
 assignment : lvalue '=' rvalue; // lack of better words
+
+
+
+
+//////////////////////////////////////////////////////////
+// LValues and RValues									//
+//////////////////////////////////////////////////////////
 
 lvalue 
 	: declaration 
-	| ID;
+	| ID
+	| arrayelement_lvalue;
+
 rvalue 
 	: charvalue
 	| numericalvalue 		// NOTE: no differentiation between int value and pointer value, would match the same anyways
-	| functioncall;
+	| functioncall
+	| arrayelement_rvalue;
+
+arrayelement_rvalue : arrayelement;
+arrayelement_lvalue : arrayelement;
+
+arrayelement :
+	ID LSQUAREBRACKET digits RSQUAREBRACKET
+	| ID LSQUAREBRACKET ID RSQUAREBRACKET;
+
+
 
 charvalue : CHARVALUE;
-CHARVALUE : '\'' . '\'';
 numericalvalue : floatvalue | intvalue;
 
 intvalue : DIGIT DIGIT*;
 floatvalue : digits? '.' digits;
-DIGIT : [0-9];
-NOTZERODIGIT : [1-9];
-digits : DIGIT+;
 
+
+
+
+
+digits : DIGIT+;
 returntype : dec_type | VOID;
 
-VOID : 'void';
 dec_type : 
 	CHAR ptr
 	| FLOAT ptr
 	| INT ptr;
 
-CHAR : 'char';
-FLOAT : 'float';
-INT : 'int';
 
 ptr : 
 	'*' ptr
 	|;
 
+
+
+
+LSQUAREBRACKET : '[';
+RSQUAREBRACKET : ']';
+LBRACKET : '(';
+RBRACKET : ')';
+CHARVALUE : '\'' . '\'';
+
+VOID : 'void';
+CHAR : 'char';
+FLOAT : 'float';
+INT : 'int';
+
+DIGIT : [0-9];
+NOTZERODIGIT : [1-9];
 ID : ([a-zA-Z] | '_') ([a-zA-Z] | [0-9] | '_')*;
-
-
 
 
 WS : [ \r\t\n]+ -> skip ;

@@ -163,6 +163,14 @@ def test_function_calls():
 	ASTNode.ID = 0
 	parse("function_calls.c", "function_calls.dot", "function_calls.p")
 
+def test_function_calls():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("arrays.c", "arrays.dot", "arrays.p")
+
+
+
+
 def test_errors():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	errorFiles = [

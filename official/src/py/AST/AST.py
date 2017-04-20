@@ -10,7 +10,10 @@ class AST:
 	def __str__(self):
 		return "digraph AST {\n" + str(self.root) + "}"
 
-	def addDeclaration(self, ctx):
+	#====================================================================
+	#= 							Declarations							=
+	#====================================================================
+	def addNormalDeclaration(self, ctx):
 		_type = None
 		if (ctx.dec_type().INT() != None):
 			_type = ASTNodeType.IntDecl
@@ -28,7 +31,58 @@ class AST:
 			nextPtr = nextPtr.ptr()
 
 		self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
+	
+	def addArrayDeclaration(self, ctx):
+		# Same as a normal declaration (the type part), with the addition of the 'array' itself
 
+		# Add the first node (arraydecl with value ID)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ArrayDecl, ctx.ID())
+
+		# Add subsequent nodes for array decl (array type and array size)
+		_type = None
+		if (ctx.dec_type().INT() != None):
+			_type = ASTNodeType.IntDecl
+		elif (ctx.dec_type().FLOAT() != None):
+			_type = ASTNodeType.FloatDecl
+		elif (ctx.dec_type().CHAR() != None):
+			_type = ASTNodeType.CharDecl
+
+		ptrCount = 0
+		nextPtr = ctx.dec_type().ptr()
+		if nextPtr != None:
+			nextPtr = nextPtr.ptr()
+		while nextPtr != None:
+			ptrCount += 1
+			nextPtr = nextPtr.ptr()
+
+		if (ptrCount > 0):
+			self.currentPointer.addChild(ASTNodeType.ArrayType, pointerType(_type, ptrCount))
+		else:
+			self.currentPointer.addChild(ASTNodeType.ArrayType, _type.name)
+	
+		self.currentPointer.addChild(ASTNodeType.ArraySize, int(getStringOfArray(ctx.digits().DIGIT())))
+		self.climbTree()
+
+
+	#====================================================================
+	#= 						Array element access						=
+	#====================================================================
+
+	def addArrayElement(self, ctx, val):
+		_type = None
+		if (val == "lvalue"):
+			_type = ASTNodeType.LValueArrayElement
+		elif (val == "rvalue"):
+			_type = ASTNodeType.RValueArrayElement
+
+		if (ctx.arrayelement().digits() != None):
+			self.currentPointer = self.currentPointer.addChild(_type, ctx.arrayelement().ID(0))
+			self.currentPointer.addChild(ASTNodeType.ArrayElementIndex, int(getStringOfArray(ctx.arrayelement().digits().DIGIT())))
+			self.climbTree()
+		elif (len(ctx.arrayelement().ID()) == 2):
+			self.currentPointer = self.currentPointer.addChild(_type, ctx.arrayelement().ID(0))
+			self.currentPointer.addChild(ASTNodeType.ArrayElementIndex, str(ctx.arrayelement().ID(1)))
+			self.climbTree()
 
 	#====================================================================
 	#= 						RValue handling								=
@@ -199,13 +253,6 @@ class AST:
 		elif ctx.comparator().OPERATOR_LE() != None:
 			self.currentPointer = self.currentPointer.addChild(ASTNodeType.LessOrEqual)
 
-		if ctx.ID() != None:
-			if len(ctx.ID()) == 1:
-				self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID()[0])
-			else:
-				self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID()[0])
-				self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID()[1])
-
 
 	# Exit a parse tree produced by cGrammarParser#comparison.
 	def exitComparison(self, ctx):
@@ -332,7 +379,7 @@ class AST:
 
 	# Enter a parse tree produced by cGrammarParser#argument.
 	def addArgument(self, ctx):
-		self.addDeclaration(ctx)
+		self.addNormalDeclaration(ctx)
 
 	def addFunctionBody(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionBody)

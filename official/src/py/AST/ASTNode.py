@@ -12,7 +12,13 @@ class ASTNodeType(AutoNumber):
 	FloatDecl = ()
 	IntDecl = ()
 	CharDecl = ()
+	ArrayDecl = ()
+	ArrayType = ()
+	ArraySize = ()
 	LValue = ()
+	LValueArrayElement = () # TODO new
+	RValueArrayElement = () # TODO new
+	ArrayElementIndex = () # TODO new
 	RValueInt = ()
 	RValueFloat = ()
 	RValueChar = ()
@@ -101,3 +107,9 @@ class pointerType:
 			self.name = str(self.type.name) + " " + "".join(["*" for i in range(ptrCount)])
 		else:
 			self.name = str(self.type.name)
+	
+	def __str__(self):
+		return str(self.type.name) + "".join(["*" for i in range(0, self.ptrCount)])
+
+	def __repr__(self):
+		return str(self)
