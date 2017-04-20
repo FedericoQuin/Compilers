@@ -16,17 +16,17 @@ include_file :
 file_name : (ID | OPERATOR_MINUS | OPERATOR_DIV | DIGIT | POINT)+;
 
 
-function : returntype ID '(' initialargument ')' '{' function_body '}';
+function : returntype ID '(' initialfunctionargument ')' '{' function_body '}';
 
-functiondecl : returntype ID '(' initialargument ')' ';';
+functiondecl : returntype ID '(' initialfunctionargument ')' ';';
 
-initialargument : 
-	argument arguments
+initialfunctionargument : 
+	type_argument type_arguments
 	|;
-arguments :	
-	',' argument arguments
+type_arguments :	
+	',' type_argument type_arguments
 	|;
-argument : dec_type ID;
+type_argument : dec_type ID;
 
 
 
@@ -45,6 +45,8 @@ statement
 	| break_stmt ';'
 	| continue_stmt ';'
 	| return_stmt ';'
+//	| scanf ';'
+//	| printf ';'
 	;
 
 break_stmt : 'break';
@@ -204,7 +206,18 @@ third_stmt_for :
 	| ;
 
 //////////////////////////////////////////////////////////
-// Function calls in function bodies					//
+// Scanf and Printf										//
+//////////////////////////////////////////////////////////
+
+//scanf : 'scanf' '(' format_string arguments ')';
+//printf : 'printf' '(' format_string arguments ')';
+
+//format_string : 'idk';
+//arguments : 'test';
+
+
+//////////////////////////////////////////////////////////
+// Function calls 										//
 //////////////////////////////////////////////////////////
 functioncall :
 	ID '(' call_argument_initial ')';

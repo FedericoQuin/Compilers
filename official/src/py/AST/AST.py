@@ -385,7 +385,7 @@ class AST:
 		self.currentPointer.addChild(pointerType(_type, ptrCount))
 
 	# Enter a parse tree produced by cGrammarParser#initialargument.
-	def addArgumentList(self, ctx):
+	def addFunctionArgumentList(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionArgs)
 
 	# Enter a parse tree produced by cGrammarParser#argument.
