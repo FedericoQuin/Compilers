@@ -10,6 +10,17 @@ class AST:
 	def __str__(self):
 		return "digraph AST {\n" + str(self.root) + "}"
 
+
+
+
+	#====================================================================
+	#= 							Includes								=
+	#====================================================================
+	def addInclude(self, ctx):
+		includeName = "".join([str(i) for i in ctx.file_name().getChildren()])
+		self.currentPointer.addChild(ASTNodeType.Include, includeName)
+
+
 	#====================================================================
 	#= 							Declarations							=
 	#====================================================================

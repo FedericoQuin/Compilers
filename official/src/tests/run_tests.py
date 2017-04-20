@@ -173,6 +173,12 @@ def test_global_vars():
 	ASTNode.ID = 0
 	parse("global_vars.c", "global_vars.dot", "global_vars.p")
 
+def test_includes():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("includes.c", "includes.dot", "includes.p")
+
+
 
 
 def test_errors():

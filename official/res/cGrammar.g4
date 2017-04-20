@@ -6,8 +6,15 @@ program :
 	program functiondecl
 	| program function
 	| program global_declaration ';'
+	| program INCLUDE_MACRO '<' include_file '>' 
 	|
 	;
+
+
+include_file : 
+	file_name;
+file_name : (ID | OPERATOR_MINUS | OPERATOR_DIV | DIGIT | POINT)+;
+
 
 function : returntype ID '(' initialargument ')' '{' function_body '}';
 
@@ -289,6 +296,9 @@ ptr :
 
 
 
+INCLUDE_MACRO : '#include';
+
+
 LSQUAREBRACKET : '[';
 RSQUAREBRACKET : ']';
 LBRACKET : '(';
@@ -303,6 +313,7 @@ INT : 'int';
 DIGIT : [0-9];
 NOTZERODIGIT : [1-9];
 ID : ([a-zA-Z] | '_') ([a-zA-Z] | [0-9] | '_')*;
+POINT : '.';
 
 
 WS : [ \r\t\n]+ -> skip ;

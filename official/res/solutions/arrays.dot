@@ -51,7 +51,7 @@ digraph AST {
 29 -> 30;
 28 -> 29;
 31 [label="ArrayDecl \npointerArray"];
-32 [label="ArrayType \nFloatDecl*"];
+32 [label="ArrayType \nFloatDecl *"];
 33 [label="ArraySize \n5"];
 31 -> 32;
 31 -> 33;

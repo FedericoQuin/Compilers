@@ -33,6 +33,18 @@ class ASTCreator(cGrammarListener):
 
 
 	#################################################
+	# Includes										#
+	#################################################
+
+	def enterInclude_file(self, ctx:cGrammarParser.Include_fileContext):
+		self.AST.addInclude(ctx)
+
+	def exitInclude_file(self, ctx:cGrammarParser.Include_fileContext):
+		pass
+
+
+
+	#################################################
 	# Declarations									#
 	#################################################
 

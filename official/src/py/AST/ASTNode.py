@@ -65,6 +65,7 @@ class ASTNodeType(AutoNumber):
 	FunctionName = ()
 	Return = ()
 	Void = ()
+	Include = ()
 
 
 class ASTNode:
@@ -109,7 +110,7 @@ class pointerType:
 			self.name = str(self.type.name)
 	
 	def __str__(self):
-		return str(self.type.name) + "".join(["*" for i in range(0, self.ptrCount)])
+		return self.name
 
 	def __repr__(self):
 		return str(self)
