@@ -5,6 +5,7 @@ grammar cGrammar;
 program :
 	program functiondecl
 	| program function
+	| program global_declaration ';'
 	|
 	;
 
@@ -233,6 +234,9 @@ array_declaration :
 assignment : lvalue '=' rvalue; // lack of better words
 
 
+global_declaration : 
+	declaration '=' rvalue
+	| declaration;
 
 
 //////////////////////////////////////////////////////////
