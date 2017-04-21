@@ -416,11 +416,12 @@ class AST:
 		self.currentPointer.addChild(ASTNodeType.FormatString, includeName[1:len(includeName)-1])
 
 	
-	def climbTree(self):
+	def climbTree(self, amt = 1):
 		''' 
 			Name is still a WIP :p
 		'''
-		self.currentPointer = self.currentPointer.parent
+		for i in range(amt):
+			self.currentPointer = self.currentPointer.parent
 
 
 	def enterBlock(self, name):

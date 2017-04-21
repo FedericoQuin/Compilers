@@ -224,8 +224,7 @@ class ASTCreator(cGrammarListener):
 	def exitIfelse(self, ctx:cGrammarParser.IfelseContext):
 		# twice because you have to return from the self-made node but also from the IfTrue-IfFalse nodes
 		# because one of them has to jump back as well, but they can't know whether the other one already jumped back or not
-		self.AST.climbTree()
-		self.AST.climbTree()
+		self.AST.climbTree(2)
 
 	# Enter a parse tree produced by cGrammarParser#firstcondition.
 	def enterFirstcondition(self, ctx:cGrammarParser.FirstconditionContext):
