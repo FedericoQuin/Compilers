@@ -6,5 +6,5 @@ int main() {
 	getCookies('a', 2.9, 8);
 
 	char var2 = 'a';
-	int b = getOtherCookies(a, var2, 0.9);
+	int b = 5 + getOtherCookies(a, var2, 0.9);
 }

@@ -25,7 +25,7 @@ class SymbolTableBuilder:
 				self.enterScope(nodeLevel)
 			elif (node.type == ASTNodeType.IfFalse):
 				self.enterScope(nodeLevel)
-			elif (node.type == ASTNodeType.While):
+			elif (node.type == ASTNodeType.WhileBody):
 				self.enterScope(nodeLevel)
 			elif (node.type == ASTNodeType.For):
 				self.enterScope(nodeLevel)
@@ -68,12 +68,14 @@ class SymbolTableBuilder:
 		"""
 			Determines and returns the index needed to slice the levelList, according to the depth level of the current node.
 		"""
+		print(self.levelList)
 		indexToSlice = 0
 		if not(nodeLevel in self.levelList):
 			# Find the nearest match in the levelList
 			for level in reversed(self.levelList):
 				if (level < nodeLevel):
 					indexToSlice = self.levelList.index(level) + 1
+					break
 		else:
 			indexToSlice = self.levelList.index(nodeLevel)
 		

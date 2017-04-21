@@ -362,6 +362,7 @@ class AST:
 	# Function stuff								#
 	#################################################
 	# Enter a parse tree produced by cGrammarParser#functiondecl.
+	# TODO change returntype to Rvalue nodes
 	def enterFunctiondecl(self, ctx):
 		_type = None
 		ptrCount = 0
