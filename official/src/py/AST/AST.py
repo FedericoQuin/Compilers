@@ -10,7 +10,21 @@ class AST:
 	def __str__(self):
 		return "digraph AST {\n" + str(self.root) + "}"
 
-	def addDeclaration(self, ctx):
+
+
+
+	#====================================================================
+	#= 							Includes								=
+	#====================================================================
+	def addInclude(self, ctx):
+		includeName = "".join([str(i) for i in ctx.file_name().getChildren()])
+		self.currentPointer.addChild(ASTNodeType.Include, includeName)
+
+
+	#====================================================================
+	#= 							Declarations							=
+	#====================================================================
+	def addNormalDeclaration(self, ctx):
 		_type = None
 		if (ctx.dec_type().INT() != None):
 			_type = ASTNodeType.IntDecl
@@ -31,15 +45,71 @@ class AST:
 			self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
 		else:
 			self.currentPointer.addChild(_type, ctx.ID())
+	
+	def addArrayDeclaration(self, ctx):
+		# Same as a normal declaration (the type part), with the addition of the 'array' itself
 
-	def addRvalue(self, ctx):
-		if (ctx.CHARVALUE() != None):
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueChar, ctx.CHARVALUE())
-		elif (ctx.numericalvalue() != None):
-			if (ctx.numericalvalue().intvalue() != None):
+		# Add the first node (arraydecl with value ID)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ArrayDecl, ctx.ID())
+
+		# Add subsequent nodes for array decl (array type and array size)
+		_type = None
+		if (ctx.dec_type().INT() != None):
+			_type = ASTNodeType.IntDecl
+		elif (ctx.dec_type().FLOAT() != None):
+			_type = ASTNodeType.FloatDecl
+		elif (ctx.dec_type().CHAR() != None):
+			_type = ASTNodeType.CharDecl
+
+		ptrCount = 0
+		nextPtr = ctx.dec_type().ptr()
+		if nextPtr != None:
+			nextPtr = nextPtr.ptr()
+		while nextPtr != None:
+			ptrCount += 1
+			nextPtr = nextPtr.ptr()
+
+		if (ptrCount > 0):
+			self.currentPointer.addChild(ASTNodeType.ArrayType, pointerType(_type, ptrCount))
+		else:
+			self.currentPointer.addChild(ASTNodeType.ArrayType, _type.name)
+	
+		self.currentPointer.addChild(ASTNodeType.ArraySize, int(getStringOfArray(ctx.digits().DIGIT())))
+		self.climbTree()
+
+
+	#====================================================================
+	#= 						Array element access						=
+	#====================================================================
+
+	def addArrayElement(self, ctx, val):
+		_type = None
+		if (val == "lvalue"):
+			_type = ASTNodeType.LValueArrayElement
+		elif (val == "rvalue"):
+			_type = ASTNodeType.RValueArrayElement
+
+		if (ctx.arrayelement().digits() != None):
+			self.currentPointer = self.currentPointer.addChild(_type, ctx.arrayelement().ID(0))
+			self.currentPointer.addChild(ASTNodeType.ArrayElementIndex, int(getStringOfArray(ctx.arrayelement().digits().DIGIT())))
+			self.climbTree()
+		elif (len(ctx.arrayelement().ID()) == 2):
+			self.currentPointer = self.currentPointer.addChild(_type, ctx.arrayelement().ID(0))
+			self.currentPointer.addChild(ASTNodeType.ArrayElementIndex, str(ctx.arrayelement().ID(1)))
+			self.climbTree()
+
+	#====================================================================
+	#= 						RValue handling								=
+	#====================================================================
+
+	def addNumericalValue(self, ctx):
+		if (ctx.intvalue() != None):
 				self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueInt)
-			elif (ctx.numericalvalue().floatvalue() != None):
-				self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueFloat)
+		elif (ctx.floatvalue() != None):
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueFloat)
+
+	def addCharValue(self, ctx):
+		self.currentPointer.addChild(ASTNodeType.RValueChar, ctx.CHARVALUE())
 
 	def setIntValueNode(self, ctx):
 		self.currentPointer.value = int(getStringOfArray(ctx.DIGIT()))
@@ -55,6 +125,13 @@ class AST:
 				getStringOfArray(ctx.digits(1).DIGIT())
 		
 		self.currentPointer.value = float(floatString)
+
+	def addFunctionCall(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, ctx.ID())
+
+	#====================================================================
+
+
 
 	def addAssignment(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment)
@@ -190,13 +267,6 @@ class AST:
 		elif ctx.comparator().OPERATOR_LE() != None:
 			self.currentPointer = self.currentPointer.addChild(ASTNodeType.LessOrEqual)
 
-		if ctx.ID() != None:
-			if len(ctx.ID()) == 1:
-				self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID()[0])
-			else:
-				self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID()[0])
-				self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID()[1])
-
 
 	# Exit a parse tree produced by cGrammarParser#comparison.
 	def exitComparison(self, ctx):
@@ -318,18 +388,32 @@ class AST:
 		self.currentPointer.addChild(pointerType(_type, ptrCount))
 
 	# Enter a parse tree produced by cGrammarParser#initialargument.
-	def addArgumentList(self, ctx):
+	def addFunctionArgumentList(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionArgs)
 
 	# Enter a parse tree produced by cGrammarParser#argument.
 	def addArgument(self, ctx):
-		self.addDeclaration(ctx)
+		self.addNormalDeclaration(ctx)
 
 	def addFunctionBody(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionBody)
 
 
 
+	#====================================================================
+	#= 						Scanf and Printf							=
+	#====================================================================
+
+	def addScanf(self):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Scanf)
+
+	def addPrintf(self):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Printf)
+
+	def addFormatString(self, ctx):
+		includeName = "".join([str(i) for i in ctx.getChildren()])
+		# Don't forget to cut the quotation marks
+		self.currentPointer.addChild(ASTNodeType.FormatString, includeName[1:len(includeName)-1])
 
 	
 	def climbTree(self):

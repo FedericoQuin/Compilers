@@ -158,6 +158,38 @@ def test_pointer():
 	ASTNode.ID = 0
 	parse("pointer.c", "pointer.dot", "pointer.p")
 
+def test_function_calls():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("function_calls.c", "function_calls.dot", "function_calls.p")
+
+def test_arrays():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("arrays.c", "arrays.dot", "arrays.p")
+
+def test_global_vars():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("global_vars.c", "global_vars.dot", "global_vars.p")
+
+def test_includes():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("includes.c", "includes.dot", "includes.p")
+
+def test_scanf():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("scanf.c", "scanf.dot", "scanf.p")
+
+def test_printf():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	ASTNode.ID = 0
+	parse("printf.c", "printf.dot", "printf.p")
+
+
+
 def test_errors():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	errorFiles = [
