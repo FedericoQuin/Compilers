@@ -8,8 +8,21 @@ class SymbolTableBuilder:
 		self.filename = filename
 		self.symbolTable = SymbolTable()
 
+		if (self.filename != ""):
+			# Add a general description of the output to the filename
+			symbolTableFile = open(self.filename, 'w')
+			symbolTableFile.write("The output of the SymbolTable is as follows:\n")
+			symbolTableFile.write(""""Scope_of_SymbolTable {entry, entry, ...}" with\n""")
+			symbolTableFile.write("\t* Scope_of_SymbolTable = The scope that is shown at that line (either GLOBAL or some LOCAL scope).\n")
+			symbolTableFile.write("\t* entry = A mapping of a symbol to a tuple consisting of the type and the starting address of the symbol in question.\n")
+			symbolTableFile.write("\t\tFor example: 'someInt' -> ('int', 0)\n")
+			symbolTableFile.write("\tNote: Functions don't have a starting address in memory, so their address is None.\n\n")
+			symbolTableFile.write("The SymbolTable is saved at the initial construction (when still empty), at every point just before some local tables are deleted, and at the end of the AST walkthrough.\n")
+			symbolTableFile.write("\n\n")
+			symbolTableFile.close()
+
 	def buildSymbolTable(self, nodes):
-		self.saveSymbolTable('w')
+		self.saveSymbolTable('a')
 
 		for (node, nodeLevel) in nodes:
 			# If the node we are visiting now is on the same/higher level than the current working scope -> leave the scope/multiple scopes
@@ -36,6 +49,17 @@ class SymbolTableBuilder:
 				self.symbolTable.insertEntry(str(node.value), "int", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 			elif (node.type == ASTNodeType.CharDecl):
 				self.symbolTable.insertEntry(str(node.value), "char", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+			elif (node.type == ASTNodeType.FunctionDecl):
+				children = node.children
+
+				# TODO Func is a placeholder until subclassed
+				functionSignature = mapToPrimitiveName(children[0].value.type) + ''.join([str(i) for i in range(children[0].value.ptrCount)]) + " func("
+				
+				# Iterate over the function arguments and add their types to the signature
+				# NOTE: The type attribute of the function arguments nodes are objects of the class PointerType.
+				#		The actual type has to be accessed by getting the type attribute from that class.
+				functionSignature += ",".join([ mapToPrimitiveName(child.type.type) for child in children[1].children ]) + ")"
+				self.symbolTable.insertEntry(str(node.value), str(functionSignature) , Scope.GLOBAL)
 
 		self.saveSymbolTable('a')
 		return self.symbolTable
@@ -68,7 +92,6 @@ class SymbolTableBuilder:
 		"""
 			Determines and returns the index needed to slice the levelList, according to the depth level of the current node.
 		"""
-		print(self.levelList)
 		indexToSlice = 0
 		if not(nodeLevel in self.levelList):
 			# Find the nearest match in the levelList
@@ -97,3 +120,20 @@ class SymbolTableBuilder:
 		symbolTableFile = open(self.filename, mode)
 		symbolTableFile.write(str(self.symbolTable) + "\n\n")
 		symbolTableFile.close()
+
+
+def mapToPrimitiveName(nodeType):
+	if (nodeType == ASTNodeType.IntDecl):
+		return "int"
+	elif (nodeType == ASTNodeType.FloatDecl):
+		return "float"
+	elif (nodeType == ASTNodeType.CharDecl):
+		return "char"
+	if (nodeType == ASTNodeType.IntSignature):
+		return "int"
+	elif (nodeType == ASTNodeType.FloatSignature):
+		return "float"
+	elif (nodeType == ASTNodeType.CharSignature):
+		return "char"
+		
+	return ""

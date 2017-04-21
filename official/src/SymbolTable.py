@@ -84,6 +84,8 @@ class SymbolTable:
 			SymbolTable.AllocationAddress += 4 
 		elif _type == "char":
 			SymbolTable.AllocationAddress += 1
+		else:
+			address = None
 			
 		return address
 

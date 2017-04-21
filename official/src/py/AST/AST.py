@@ -415,10 +415,7 @@ class AST:
 			ptrCount += 1
 			nextPtr = nextPtr.ptr()
 
-		if (ptrCount > 0):
-			self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
-		else:
-			self.currentPointer.addChild(_type, ctx.ID())
+		self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
 
 	def addFunctionBody(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionBody)
