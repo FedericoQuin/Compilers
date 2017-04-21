@@ -3,7 +3,7 @@ digraph AST {
 5 [label="IntDecl \nGLOBALVAR1"];
 6 [label="RValueInt \n0"];
 7 [label="Function \nmain"];
-8 [label="IntDecl"];
+8 [label="ReturnType \nIntDecl"];
 9 [label="FunctionArgs"];
 10 [label="FunctionBody"];
 11 [label="Assignment"];
@@ -18,7 +18,7 @@ digraph AST {
 14 [label="FloatDecl \nglobalvar2"];
 15 [label="RValueFloat \n4.96"];
 16 [label="Function \ntestFunction"];
-17 [label="FloatDecl"];
+17 [label="ReturnType \nFloatDecl"];
 18 [label="FunctionArgs"];
 19 [label="IntDecl \na"];
 18 -> 19;

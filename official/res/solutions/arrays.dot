@@ -1,7 +1,7 @@
 digraph AST {
 1 [label="Program"];
 2 [label="Function \nmain"];
-3 [label="IntDecl"];
+3 [label="ReturnType \nIntDecl"];
 4 [label="FunctionArgs"];
 5 [label="FunctionBody"];
 6 [label="ArrayDecl \na"];

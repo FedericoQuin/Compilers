@@ -16,9 +16,9 @@ class ASTNodeType(AutoNumber):
 	ArrayType = ()
 	ArraySize = ()
 	LValue = ()
-	LValueArrayElement = () # TODO new
-	RValueArrayElement = () # TODO new
-	ArrayElementIndex = () # TODO new
+	LValueArrayElement = ()
+	RValueArrayElement = ()
+	ArrayElementIndex = ()
 	RValueInt = ()
 	RValueFloat = ()
 	RValueChar = ()
@@ -64,6 +64,7 @@ class ASTNodeType(AutoNumber):
 	FunctionBody = ()
 	FunctionName = ()
 	Return = ()
+	ReturnType = ()
 	Void = ()
 	Include = ()
 	Scanf = ()

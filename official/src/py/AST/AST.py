@@ -386,7 +386,7 @@ class AST:
 		elif ctx.returntype().VOID() != None:
 			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Function, ctx.ID())
 			_type = ASTNodeType.Void
-		self.currentPointer.addChild(pointerType(_type, ptrCount))
+		self.currentPointer.addChild(ASTNodeType.ReturnType, pointerType(_type, ptrCount))
 
 	# Enter a parse tree produced by cGrammarParser#initialargument.
 	def addFunctionArgumentList(self, ctx):

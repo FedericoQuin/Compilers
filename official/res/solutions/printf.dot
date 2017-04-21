@@ -2,7 +2,7 @@ digraph AST {
 2 [label="Program"];
 3 [label="Include \nstdio.h"];
 4 [label="Function \nmain"];
-5 [label="IntDecl"];
+5 [label="ReturnType \nIntDecl"];
 6 [label="FunctionArgs"];
 7 [label="FunctionBody"];
 8 [label="Assignment"];

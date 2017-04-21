@@ -4,7 +4,7 @@ digraph AST {
 7 [label="Include \ntest.hpp"];
 8 [label="Include \nsupersecretproject/idk.myownformat"];
 9 [label="Function \nmain"];
-10 [label="IntDecl"];
+10 [label="ReturnType \nIntDecl"];
 11 [label="FunctionArgs"];
 12 [label="IntDecl \nargc"];
 13 [label="CharDecl * \nargv"];

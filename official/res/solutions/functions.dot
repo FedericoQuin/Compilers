@@ -1,7 +1,7 @@
 digraph AST {
 4 [label="Program"];
 5 [label="Function \nmain"];
-6 [label="IntDecl"];
+6 [label="ReturnType \nIntDecl"];
 7 [label="FunctionArgs"];
 8 [label="IntDecl \ntestArg"];
 9 [label="FloatDecl \ntestArg2"];
@@ -12,7 +12,7 @@ digraph AST {
 5 -> 6;
 5 -> 7;
 11 [label="Function \nmain"];
-12 [label="IntDecl"];
+12 [label="ReturnType \nIntDecl"];
 13 [label="FunctionArgs"];
 14 [label="IntDecl \ntestArg"];
 15 [label="FloatDecl \ntestArg2"];
@@ -31,14 +31,14 @@ digraph AST {
 11 -> 13;
 11 -> 17;
 21 [label="Function \nsomethingUseful"];
-22 [label="Void"];
+22 [label="ReturnType \nVoid"];
 23 [label="FunctionArgs"];
 24 [label="FloatDecl \nuselessArgument"];
 23 -> 24;
 21 -> 22;
 21 -> 23;
 25 [label="Function \ngetThePointOfLife"];
-26 [label="Void"];
+26 [label="ReturnType \nVoid"];
 27 [label="FunctionArgs"];
 28 [label="IntDecl \nage"];
 27 -> 28;
