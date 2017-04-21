@@ -497,7 +497,7 @@ class ASTCreator(cGrammarListener):
 
 
 	def enterPrintf(self, ctx:cGrammarParser.PrintfContext):
-		self.AST.addScanf()
+		self.AST.addPrintf()
 
 	def exitPrintf(self, ctx:cGrammarParser.PrintfContext):
 		self.AST.climbTree()

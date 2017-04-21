@@ -17,8 +17,8 @@ class AST:
 	#= 							Includes								=
 	#====================================================================
 	def addInclude(self, ctx):
-		includeName = "".join([str(i) for i in ctx.file_name().getChildren()])
-		self.currentPointer.addChild(ASTNodeType.Include, includeName)
+		includeName = str(ctx.INCLUDE_FILE())
+		self.currentPointer.addChild(ASTNodeType.Include, includeName[includeName.find('<') + 1 : len(includeName) - 1])
 
 
 	#====================================================================

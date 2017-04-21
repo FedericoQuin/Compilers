@@ -6,14 +6,13 @@ program :
 	program functiondecl
 	| program function
 	| program global_declaration ';'
-	| program INCLUDE_MACRO '<' include_file '>' 
+	| program include_file  
 	|
 	;
 
 
 include_file : 
-	file_name;
-file_name : (ID | OPERATOR_MINUS | OPERATOR_DIV | DIGIT | POINT)+;
+	INCLUDE_FILE;
 
 
 function : returntype ID '(' initialfunctionargument ')' '{' function_body '}';
@@ -310,6 +309,9 @@ ptr :
 
 
 INCLUDE_MACRO : '#include';
+INCLUDE_FILE : 
+	INCLUDE_MACRO OPERATOR_LT .*? OPERATOR_GT
+	| INCLUDE_MACRO ' '* OPERATOR_LT .*? OPERATOR_GT;
 
 
 LSQUAREBRACKET : '[';
