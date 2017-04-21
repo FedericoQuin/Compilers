@@ -73,17 +73,26 @@ class SymbolTableBuilder:
 			self.symbolTable.insertEntry(str(node.value), "char", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 		elif (node.type == ASTNodeType.FunctionDecl):
 			self.addFunctionSignature(node)
+		elif (node.type == ASTNodeType.ArrayDecl):
+			# The type part of the symbol (for example: int****)
+			typePart = mapToPrimitiveName(node.children[0].value.type) + ''.join(['*' for i in range(node.children[0].value.ptrCount)])
+			# The whole type of the symbol (for example: int**** [10])
+			symbolType = typePart + " [" + str(node.children[1].value) + "]" 
+			self.symbolTable.insertEntry(str(node.value), symbolType, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 		elif (type(node.type) is pointerType):
 			# Exception for functionDecls -> do not add the 'declared' symbols to the table
-			# if node.parent != None and node.parent.parent != None and node.parent.parent.type == ASTNodeType.FunctionDecl:
-			# 	return
 			if self.isSignatureType(node.type.type):
 				return
+			
+			# Type consists of the primitive type + optionally pointer operators
+			symbolType = mapToPrimitiveName(node.type.type) + ''.join(['*' for i in range(node.type.ptrCount)])
+			self.symbolTable.insertEntry(str(node.value), symbolType, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 
-			self.symbolTable.insertEntry(str(node.value), mapToPrimitiveName(node.type.type) + ''.join(['*' for i in range(node.type.ptrCount)]), \
-				Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 
 	def isSignatureType(self, _type):
+		"""
+			Method that checks is given type is a signature type (signature type being a type that is used in function signatures/declarations)
+		"""
 		if _type == ASTNodeType.IntSignature:
 			return True
 		elif _type == ASTNodeType.FloatSignature:

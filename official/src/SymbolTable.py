@@ -95,19 +95,41 @@ class SymbolTable:
 		"""
 			Provides (virtual) space for a variable of type _type.
 		"""
-		# TODO add support for pointers
+		# TODO not sure if values are accurate
 		address = SymbolTable.AllocationAddress
 
-		if _type == "int":
-			SymbolTable.AllocationAddress += 4 
-		elif _type == "float":
-			SymbolTable.AllocationAddress += 4 
-		elif _type == "char":
-			SymbolTable.AllocationAddress += 1
-		else:
-			address = None
-
+		SymbolTable.AllocationAddress += self.getMemorySize(_type)
+		if address == SymbolTable.AllocationAddress:
+			return None
 		return address
+
+	def getMemorySize(self, _type):
+		if _type == "int":
+			return 4
+		elif _type == "float":
+			return 4
+		elif _type == "char":
+			return 1
+		elif self.isPointerType(_type):
+			return 1
+		elif self.isArrayType(_type):
+			amtElements = int(_type[_type.index('[') + 1 : len(_type) - 1])
+			typeSize = self.getMemorySize(_type.split(" ")[0])
+			return amtElements * typeSize
+
+		return 0
+
+	def isPointerType(self, _type):
+		if _type[-1] == '*':
+			return True
+		return False
+
+
+	def isArrayType(self, _type):
+		if _type[-1] == ']':
+			return True
+		return False
+
 
 class STSingleScope:
 	"""

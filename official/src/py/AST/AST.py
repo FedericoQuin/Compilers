@@ -66,10 +66,7 @@ class AST:
 			ptrCount += 1
 			nextPtr = nextPtr.ptr()
 
-		if (ptrCount > 0):
-			self.currentPointer.addChild(ASTNodeType.ArrayType, pointerType(_type, ptrCount))
-		else:
-			self.currentPointer.addChild(ASTNodeType.ArrayType, _type.name)
+		self.currentPointer.addChild(ASTNodeType.ArrayType, pointerType(_type, ptrCount))
 	
 		self.currentPointer.addChild(ASTNodeType.ArraySize, int(getStringOfArray(ctx.digits().DIGIT())))
 		self.climbTree()
