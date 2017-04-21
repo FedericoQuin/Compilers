@@ -1,5 +1,5 @@
 from SymbolTable import SymbolTable, Scope
-from AST.ASTNode import ASTNodeType, ASTNode
+from AST.ASTNode import ASTNodeType, ASTNode, pointerType
 
 class SymbolTableBuilder:
 	def __init__(self, filename = ""):
@@ -32,8 +32,6 @@ class SymbolTableBuilder:
 
 			if (node.type == ASTNodeType.Block):
 				self.enterScope(nodeLevel)
-			elif (node.type == ASTNodeType.Function):
-				self.enterScope(nodeLevel)
 			elif (node.type == ASTNodeType.IfTrue):
 				self.enterScope(nodeLevel)
 			elif (node.type == ASTNodeType.IfFalse):
@@ -42,28 +40,59 @@ class SymbolTableBuilder:
 				self.enterScope(nodeLevel)
 			elif (node.type == ASTNodeType.For):
 				self.enterScope(nodeLevel)
-				
-			elif (node.type == ASTNodeType.FloatDecl):
-				self.symbolTable.insertEntry(str(node.value), "float", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
-			elif (node.type == ASTNodeType.IntDecl):
-				self.symbolTable.insertEntry(str(node.value), "int", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
-			elif (node.type == ASTNodeType.CharDecl):
-				self.symbolTable.insertEntry(str(node.value), "char", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
-			elif (node.type == ASTNodeType.FunctionDecl):
-				children = node.children
+			elif (node.type == ASTNodeType.Function):
+				self.enterScope(nodeLevel)
+				if (self.symbolTable.symbolExists(str(node.value), Scope.GLOBAL) == False):
+					self.addFunctionSignature(node)
 
-				# TODO Func is a placeholder until subclassed
-				functionSignature = mapToPrimitiveName(children[0].value.type) + ''.join([str(i) for i in range(children[0].value.ptrCount)]) + " func("
-				
-				# Iterate over the function arguments and add their types to the signature
-				# NOTE: The type attribute of the function arguments nodes are objects of the class PointerType.
-				#		The actual type has to be accessed by getting the type attribute from that class.
-				functionSignature += ",".join([ mapToPrimitiveName(child.type.type) for child in children[1].children ]) + ")"
-				self.symbolTable.insertEntry(str(node.value), str(functionSignature) , Scope.GLOBAL)
+			self.checkForDeclarations(node, nodeLevel)
+			
 
 		self.saveSymbolTable('a')
 		return self.symbolTable
 
+	
+	def addFunctionSignature(self, node):
+		children = node.children
+		# TODO Func is a placeholder until subclassed
+		functionSignature = mapToPrimitiveName(children[0].value.type) + ''.join([str(i) for i in range(children[0].value.ptrCount)]) + " func("
+		
+		# Iterate over the function arguments and add their types to the signature
+		# NOTE: The type attribute of the function arguments nodes are objects of the class PointerType.
+		#		The actual type has to be accessed by getting the type attribute from that class.
+		functionSignature += ",".join([ mapToPrimitiveName(child.type.type) for child in children[1].children ]) + ")"
+		self.symbolTable.insertEntry(str(node.value), str(functionSignature) , Scope.GLOBAL)
+
+
+	def checkForDeclarations(self, node, nodeLevel):
+		if (node.type == ASTNodeType.FloatDecl):
+			self.symbolTable.insertEntry(str(node.value), "float", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+		elif (node.type == ASTNodeType.IntDecl):
+			self.symbolTable.insertEntry(str(node.value), "int", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+		elif (node.type == ASTNodeType.CharDecl):
+			self.symbolTable.insertEntry(str(node.value), "char", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+		elif (node.type == ASTNodeType.FunctionDecl):
+			self.addFunctionSignature(node)
+		elif (type(node.type) is pointerType):
+			# Exception for functionDecls -> do not add the 'declared' symbols to the table
+			# if node.parent != None and node.parent.parent != None and node.parent.parent.type == ASTNodeType.FunctionDecl:
+			# 	return
+			if self.isSignatureType(node.type.type):
+				return
+
+			self.symbolTable.insertEntry(str(node.value), mapToPrimitiveName(node.type.type) + ''.join(['*' for i in range(node.type.ptrCount)]), \
+				Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+
+	def isSignatureType(self, _type):
+		if _type == ASTNodeType.IntSignature:
+			return True
+		elif _type == ASTNodeType.FloatSignature:
+			return True
+		elif _type == ASTNodeType.CharSignature: 
+			return True
+		elif _type == ASTNodeType.ArraySignature:
+			return True
+		return False
 
 	def leaveScopes(self, nodeLevel):
 		"""

@@ -43,7 +43,17 @@ class SymbolTable:
 			None is returned in case the symbol is not found in any table.
 		"""
 		localResult = self.searchSymbolLocal(symbol)
-		return localResult if localResult != None else self.globalScopeTable[symbol]
+		return localResult if localResult != None else self.searchSymbolGlobal(symbol)
+
+	def symbolExists(self, symbol, scope=None):
+		if (scope == None):
+			return True if self.lookupSymbol(symbol) != None else False
+		elif (scope == Scope.LOCAL):
+			return True if self.searchSymbolLocal(symbol) != None else False
+		elif (scope == Scope.GLOBAL):
+			return True if symbol in self.globalScopeTable else False
+		
+		return False
 
 	def enterScope(self):
 		"""
@@ -71,6 +81,16 @@ class SymbolTable:
 
 		return None
 
+	def searchSymbolGlobal(self, symbol):
+		"""
+			Searches for the symbol in the global symbol table.
+			Returns None if the symbol is not found.
+		"""
+		if symbol in self.globalScopeTable:
+			return self.globalScopeTable[symbol]
+
+		return None
+
 	def assignAddress(self, _type):
 		"""
 			Provides (virtual) space for a variable of type _type.
@@ -86,7 +106,7 @@ class SymbolTable:
 			SymbolTable.AllocationAddress += 1
 		else:
 			address = None
-			
+
 		return address
 
 class STSingleScope:
