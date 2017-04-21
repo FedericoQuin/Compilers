@@ -362,10 +362,10 @@ class AST:
 	# Function stuff								#
 	#################################################
 	# Enter a parse tree produced by cGrammarParser#functiondecl.
-	# TODO change returntype to Rvalue nodes
-	def enterFunctiondecl(self, ctx):
+	def enterFunctiondecl(self, ctx, val):
 		_type = None
 		ptrCount = 0
+		typeNode = ASTNodeType.Function if val == "Function" else ASTNodeType.FunctionDecl
 		if ctx.returntype().dec_type() != None:
 
 			if (ctx.returntype().dec_type().INT() != None):
@@ -382,9 +382,9 @@ class AST:
 				ptrCount += 1
 				nextPtr = nextPtr.ptr()
 
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Function, ctx.ID())
+			self.currentPointer = self.currentPointer.addChild(typeNode, ctx.ID())
 		elif ctx.returntype().VOID() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Function, ctx.ID())
+			self.currentPointer = self.currentPointer.addChild(typeNode, ctx.ID())
 			_type = ASTNodeType.Void
 		self.currentPointer.addChild(ASTNodeType.ReturnType, pointerType(_type, ptrCount))
 

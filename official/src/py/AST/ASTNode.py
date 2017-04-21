@@ -13,6 +13,7 @@ class ASTNodeType(AutoNumber):
 	IntDecl = ()
 	CharDecl = ()
 	ArrayDecl = ()
+	FunctionDecl = ()
 	ArrayType = ()
 	ArraySize = ()
 	LValue = ()

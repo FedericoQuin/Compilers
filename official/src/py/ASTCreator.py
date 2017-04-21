@@ -452,7 +452,7 @@ class ASTCreator(cGrammarListener):
 	#################################################
 	# Enter a parse tree produced by cGrammarParser#functiondecl.
 	def enterFunctiondecl(self, ctx:cGrammarParser.FunctiondeclContext):
-		self.AST.enterFunctiondecl(ctx)
+		self.AST.enterFunctiondecl(ctx, "FunctionDecl")
 
 	# Exit a parse tree produced by cGrammarParser#functiondecl.
 	def exitFunctiondecl(self, ctx:cGrammarParser.FunctiondeclContext):
@@ -477,7 +477,7 @@ class ASTCreator(cGrammarListener):
 		self.AST.climbTree()
 
 	def enterFunction(self, ctx:cGrammarParser.FunctionContext):
-		self.AST.enterFunctiondecl(ctx)
+		self.AST.enterFunctiondecl(ctx, "Function")
 
 	def exitFunction(self, ctx:cGrammarParser.FunctionContext):
 		self.AST.climbTree()
