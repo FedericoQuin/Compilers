@@ -361,7 +361,7 @@ class AST:
 	#################################################
 	# Function stuff								#
 	#################################################
-	# Enter a parse tree produced by cGrammarParser#functiondecl.
+
 	def enterFunctiondecl(self, ctx, val):
 		_type = None
 		ptrCount = 0
@@ -388,13 +388,37 @@ class AST:
 			_type = ASTNodeType.Void
 		self.currentPointer.addChild(ASTNodeType.ReturnType, pointerType(_type, ptrCount))
 
-	# Enter a parse tree produced by cGrammarParser#initialargument.
 	def addFunctionArgumentList(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionArgs)
 
-	# Enter a parse tree produced by cGrammarParser#argument.
 	def addArgument(self, ctx):
-		self.addNormalDeclaration(ctx)
+		if (self.currentPointer.parent.type == ASTNodeType.FunctionDecl):
+			self.addSignatureArgument(ctx)
+		elif (self.currentPointer.parent.type == ASTNodeType.Function):
+			self.addNormalDeclaration(ctx)
+			
+	
+	def addSignatureArgument(self, ctx):
+		_type = None
+		if (ctx.dec_type().INT() != None):
+			_type = ASTNodeType.IntSignature
+		elif (ctx.dec_type().FLOAT() != None):
+			_type = ASTNodeType.FloatSignature
+		elif (ctx.dec_type().CHAR() != None):
+			_type = ASTNodeType.CharSignature
+
+		ptrCount = 0
+		nextPtr = ctx.dec_type().ptr()
+		if nextPtr != None:
+			nextPtr = nextPtr.ptr()
+		while nextPtr != None:
+			ptrCount += 1
+			nextPtr = nextPtr.ptr()
+
+		if (ptrCount > 0):
+			self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
+		else:
+			self.currentPointer.addChild(_type, ctx.ID())
 
 	def addFunctionBody(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionBody)
