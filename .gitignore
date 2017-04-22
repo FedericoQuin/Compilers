@@ -51,5 +51,7 @@ data
 
 .vscode
 
+official/c2p.py
+
 # Don't exclude test solutions
 !/solutions/*

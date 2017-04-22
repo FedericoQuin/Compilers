@@ -14,22 +14,29 @@ from cGrammarParser import cGrammarParser
 from ASTCreator import ASTCreator
 from PTranslator import PTranslator
 from filecmp import *
-from AST.ASTNode import *
+from src.py.AST.ASTNode import *
 from MyErrorListener import MyErrorListener
 
 testdir = os.path.dirname(os.path.abspath(__file__))
-resdir = os.getcwd() + "/official/res"
+resdir = os.getcwd() + "/res"
 
 def parse(inputFile, dotSolution, pSolution):
-
-	input = FileStream(str(resdir) + "/test/" + inputFile)
+	inputFilePath = str(resdir) + "/test/" + inputFile
+	input = FileStream(inputFilePath)
 	lexer = cGrammarLexer(input)
 	stream = CommonTokenStream(lexer)
 	parser = cGrammarParser(stream)
-	parser._listeners = [MyErrorListener(str(resdir) + "/test/" + inputFile)]
+	parser._listeners = [MyErrorListener(inputFilePath)]
 	tree = parser.program()
 
 	ASTbuilder = ASTCreator()
+
+	pResultPath = str(testdir) + "/program.p"
+	dotResultPath = str(testdir) + "/output.dot"
+
+	pSolutionsFilePath = str(resdir) + "/solutions/" + pSolution
+	dotSolutionsFilePath = str(resdir) + "/solutions/" + dotSolution
+
 
 	try:
 		walker = ParseTreeWalker()
@@ -40,14 +47,14 @@ def parse(inputFile, dotSolution, pSolution):
 		translator = PTranslator()
 		translator.translate(ast)
 
-		translator.saveProgram(str(testdir) + "/program.p")
-		ASTbuilder.toDot(str(testdir) + "/output.dot")
+		translator.saveProgram(pResultPath)
+		ASTbuilder.toDot(dotResultPath)
 
 	except Exception as inst:
 		fail("EXCEPTION: " + str(inst))
-
-	assert(cmp(str(testdir) + "/output.dot", str(resdir) + "/solutions/" + dotSolution))
-	assert(cmp(str(testdir) + "/program.p", str(resdir) + "/solutions/" + pSolution))
+	
+	assert(cmp(dotResultPath, dotSolutionsFilePath))
+	assert(cmp(pResultPath, pSolutionsFilePath))
 
 def parseNoCatch(inputFile, dotSolution, pSolution):
 	# For exception throwing purposes

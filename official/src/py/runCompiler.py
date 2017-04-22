@@ -8,9 +8,9 @@ import sys
 from antlr4 import *
 from cGrammarLexer import cGrammarLexer
 from cGrammarParser import cGrammarParser
-from ASTCreator import ASTCreator
-from PTranslator import PTranslator
-from MyErrorListener import MyErrorListener
+from src.py.ASTCreator import ASTCreator
+from src.PTranslator import PTranslator
+from src.py.MyErrorListener import MyErrorListener
 
 def main(argv):
     try:
@@ -36,6 +36,32 @@ def main(argv):
 
         # print("Created program text according to the Abstract Syntax Tree. (currently non functional)")
         # print("\nFinished parsing file (and building AST) without any errors.\n")
+
+    except Exception as inst:
+        print(inst)
+
+def runCompiler(cFilename, pFilename):
+    try:
+        input = FileStream(cFilename)
+        lexer = cGrammarLexer(input)
+        stream = CommonTokenStream(lexer)
+        parser = cGrammarParser(stream)
+        parser._listeners = [MyErrorListener(cFilename)]
+        tree = parser.program()
+
+        ASTbuilder = ASTCreator()
+
+        walker = ParseTreeWalker()
+        walker.walk(ASTbuilder, tree)
+
+        ast = ASTbuilder.getAST()
+
+        translator = PTranslator()
+        translator.translate(ast)
+
+        translator.saveProgram(pFilename)
+        ASTbuilder.toDot("data/output.dot")
+
 
     except Exception as inst:
         print(inst)

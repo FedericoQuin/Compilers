@@ -1,5 +1,5 @@
 
-from AST.ASTNode import ASTNode, ASTNodeType, getStringOfArray, pointerType
+from src.py.AST.ASTNode import ASTNode, ASTNodeType, getStringOfArray, pointerType
 
 
 class AST:
