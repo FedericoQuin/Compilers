@@ -20,7 +20,7 @@ from MyErrorListener import MyErrorListener
 testdir = os.path.dirname(os.path.abspath(__file__))
 resdir = os.getcwd() + "/official/res"
 
-def parse(inputFile, dotSolution, pSolution):
+def parse(inputFile, dotSolution, pSolution, symbolTableSolution = ""):
 
 	input = FileStream(str(resdir) + "/test/" + inputFile)
 	lexer = cGrammarLexer(input)
@@ -38,7 +38,7 @@ def parse(inputFile, dotSolution, pSolution):
 		ast = ASTbuilder.getAST()
 
 		translator = PTranslator()
-		translator.translate(ast)
+		translator.translate(ast, symbolTableSolution)
 
 		translator.saveProgram(str(testdir) + "/program.p")
 		ASTbuilder.toDot(str(testdir) + "/output.dot")
@@ -81,112 +81,112 @@ def parseNoCatch(inputFile, dotSolution, pSolution):
 def test_assignments1bis():	
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("assignments1bis.c", "assignments1bis.dot", "assignments1bis.p")
+	parse("assignments1bis.c", "assignments1bis.dot", "assignments1bis.p", "assignments1bis.symboltable")
 
 def test_assignments1():	
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("assignments1.c", "assignments1.dot", "assignments1.p")
+	parse("assignments1.c", "assignments1.dot", "assignments1.p", "assignments1.symboltable")
 
 
 def test_assignments2():	
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("assignments2.c", "assignments2.dot", "assignments2.p")
+	parse("assignments2.c", "assignments2.dot", "assignments2.p", "assignments2.symboltable")
 
 
 def test_mainFunction():	
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("mainFunction.c", "mainFunction.dot", "mainFunction.p")
+	parse("mainFunction.c", "mainFunction.dot", "mainFunction.p", "mainFunction.symboltable")
 
 
 def test_mixedComments():	
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("mixedComments.c", "mixedComments.dot", "mixedComments.p")
+	parse("mixedComments.c", "mixedComments.dot", "mixedComments.p", "mixedComments.symboltable")
 
 
 def test_multiLineComment():	
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("multiLineComment.c", "multiLineComment.dot", "multiLineComment.p")
+	parse("multiLineComment.c", "multiLineComment.dot", "multiLineComment.p", "multiLineComment.symboltable")
 
 
 def test_singleLineComment():	
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("singleLineComment.c", "singleLineComment.dot", "singleLineComment.p")
+	parse("singleLineComment.c", "singleLineComment.dot", "singleLineComment.p", "singleLineComment.symboltable")
 
 def test_increment():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("increment.c", "increment.dot", "increment.p")
+	parse("increment.c", "increment.dot", "increment.p", "increment.symboltable")
 
 def test_ifelse():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("ifelse.c", "ifelse.dot", "ifelse.p")
+	parse("ifelse.c", "ifelse.dot", "ifelse.p", "ifelse.symboltable")
 
 def test_while():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("while.c", "while.dot", "while.p")
+	parse("while.c", "while.dot", "while.p", "while.symboltable")
 
 def test_for():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("for.c", "for.dot", "for.p")
+	parse("for.c", "for.dot", "for.p", "for.symboltable")
 
 def test_brackets():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("brackets.c", "brackets.dot", "brackets.p")
+	parse("brackets.c", "brackets.dot", "brackets.p", "brackets.symboltable")
 
 def test_break_continue():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("break_continue.c", "break_continue.dot", "break_continue.p")
+	parse("break_continue.c", "break_continue.dot", "break_continue.p", "break_continue.symboltable")
 
 def test_functions():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("functions.c", "functions.dot", "functions.p")
+	parse("functions.c", "functions.dot", "functions.p", "functions.symboltable")
 
 def test_pointer():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("pointer.c", "pointer.dot", "pointer.p")
+	parse("pointer.c", "pointer.dot", "pointer.p", "pointer.symboltable")
 
 def test_function_calls():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("function_calls.c", "function_calls.dot", "function_calls.p")
+	parse("function_calls.c", "function_calls.dot", "function_calls.p", "function_calls.symboltable")
 
 def test_arrays():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("arrays.c", "arrays.dot", "arrays.p")
+	parse("arrays.c", "arrays.dot", "arrays.p", "arrays.symboltable")
 
 def test_global_vars():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("global_vars.c", "global_vars.dot", "global_vars.p")
+	parse("global_vars.c", "global_vars.dot", "global_vars.p", "global_vars.symboltable")
 
 def test_includes():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("includes.c", "includes.dot", "includes.p")
+	parse("includes.c", "includes.dot", "includes.p", "includes.symboltable")
 
 def test_scanf():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("scanf.c", "scanf.dot", "scanf.p")
+	parse("scanf.c", "scanf.dot", "scanf.p", "scanf.symboltable")
 
 def test_printf():
 	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	ASTNode.ID = 0
-	parse("printf.c", "printf.dot", "printf.p")
+	parse("printf.c", "printf.dot", "printf.p", "printf.symboltable")
 
 
 

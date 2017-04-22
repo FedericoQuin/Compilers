@@ -8,17 +8,17 @@ class PTranslator:
         self.programText = ""
         self.symbolTable = None
 
-    def translate(self, ast, symbolTableFileName=""):
+    def translate(self, ast, symbolTableFileName="", printDescription=False):
         self.AST = ast
         # TODO add functionality here
-        self.fillSymbolTable(symbolTableFileName)
+        self.fillSymbolTable(symbolTableFileName, printDescription)
 
-    def fillSymbolTable(self, filename):
+    def fillSymbolTable(self, filename, printDescription):
         astwalker = ASTWalker(self.AST)
         nodes = astwalker.getNodesDepthFirst()
 
         # TODO symbol table currently doesn't save different 'stages', deletes tables when creating new local scopes on used levels -> change that
-        self.symbolTable = SymbolTableBuilder(filename).buildSymbolTable(nodes)
+        self.symbolTable = SymbolTableBuilder(filename, printDescription).buildSymbolTable(nodes)
         
 
     def saveProgram(self, filename):

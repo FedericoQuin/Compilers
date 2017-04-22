@@ -1,0 +1,10 @@
+
+Global - {}
+
+
+Global - {'main': (int func(), None), 'GLOBALVAR1': (int, 0)}
+Scope 1 - {'inMain': (int, 4)}
+
+Global - {'testFunction': (float func(int), None), 'main': (int func(), None), 'globalvar2': (float, 4), 'GLOBALVAR1': (int, 0)}
+Scope 1 - {'a': (int, 8)}
+

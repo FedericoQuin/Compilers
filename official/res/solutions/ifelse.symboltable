@@ -1,0 +1,45 @@
+
+Global - {}
+
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9)}
+Scope 2 - {'a': (int, 13)}
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9)}
+Scope 2 - {'b': (int, 13)}
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9)}
+Scope 2 - {'a': (int, 13), 'moarDecl': (int, 17)}
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9)}
+Scope 2 - {'b': (int, 13)}
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9)}
+Scope 2 - {'a': (int, 13)}
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9)}
+Scope 2 - {'b': (int, 13)}
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9)}
+Scope 2 - {'a': (int, 13)}
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9)}
+Scope 2 - {'b': (int, 13)}
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9), 'testDecl': (int, 13)}
+Scope 2 - {'a': (int, 17)}
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'argv': (char, 4), 'argc': (int, 0), 'x': (int, 5), 'y': (int, 9), 'testDecl': (int, 13)}
+Scope 2 - {}
+Scope 3 - {'omaigodsocool': (int, 17)}
+

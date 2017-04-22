@@ -2,23 +2,25 @@ from SymbolTable import SymbolTable, Scope
 from AST.ASTNode import ASTNodeType, ASTNode, pointerType
 
 class SymbolTableBuilder:
-	def __init__(self, filename = ""):
+	def __init__(self, filename, printDescription):
 		self.currentLevel = 0
 		self.levelList = []
 		self.filename = filename
 		self.symbolTable = SymbolTable()
 
 		if (self.filename != ""):
-			# Add a general description of the output to the filename
 			symbolTableFile = open(self.filename, 'w')
-			symbolTableFile.write("The output of the SymbolTable is as follows:\n")
-			symbolTableFile.write(""""Scope_of_SymbolTable {entry, entry, ...}" with\n""")
-			symbolTableFile.write("\t* Scope_of_SymbolTable = The scope that is shown at that line (either GLOBAL or some LOCAL scope).\n")
-			symbolTableFile.write("\t* entry = A mapping of a symbol to a tuple consisting of the type and the starting address of the symbol in question.\n")
-			symbolTableFile.write("\t\tFor example: 'someInt' -> ('int', 0)\n")
-			symbolTableFile.write("\tNote: Functions don't have a starting address in memory, so their address is None.\n\n")
-			symbolTableFile.write("The SymbolTable is saved at the initial construction (when still empty), at every point just before some local tables are deleted, and at the end of the AST walkthrough.\n")
-			symbolTableFile.write("\n\n")
+			symbolTableFile.write("\n")
+			# Add a general description of the output to the filename
+			if (printDescription == True):
+				symbolTableFile.write("The output of the SymbolTable is as follows:\n")
+				symbolTableFile.write(""""Scope_of_SymbolTable {entry, entry, ...}" with\n""")
+				symbolTableFile.write("\t* Scope_of_SymbolTable = The scope that is shown at that line (either GLOBAL or some LOCAL scope).\n")
+				symbolTableFile.write("\t* entry = A mapping of a symbol to a tuple consisting of the type and the starting address of the symbol in question.\n")
+				symbolTableFile.write("\t\tFor example: 'someInt' -> ('int', 0)\n")
+				symbolTableFile.write("\tNote: Functions don't have a starting address in memory, so their address is None.\n\n")
+				symbolTableFile.write("The SymbolTable is saved at the initial construction (when still empty), at every point just before some local tables are deleted, and at the end of the AST walkthrough.\n")
+				symbolTableFile.write("\n\n")
 			symbolTableFile.close()
 
 	def buildSymbolTable(self, nodes):

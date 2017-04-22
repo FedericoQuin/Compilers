@@ -1,0 +1,8 @@
+
+
+Global - {}
+
+
+Global - {'main': (int func(int,char), None)}
+Scope 1 - {'my_a': (int, 5), 'argc': (int, 0), 'argv': (char, 4)}
+
