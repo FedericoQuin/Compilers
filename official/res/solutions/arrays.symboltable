@@ -2,11 +2,6 @@
 Global - {}
 
 
-Global - {'main': (int func(), None)}
-Scope 1 - {'a': (int [10], 0)}
-Scope 2 - {'i': (int, 40)}
+Global - {}
 
-Global - {'main': (int func(), None)}
-Scope 1 - {'b': (char [100], 40), 'a': (int [10], 0), 'pointerArray': (float* [5], 140)}
-Scope 2 - {}
 

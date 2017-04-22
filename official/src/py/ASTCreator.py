@@ -6,7 +6,7 @@ sys.path.insert(0,parentdir)
 
 from cGrammarListener import cGrammarListener
 from cGrammarParser import *
-from AST.AST import AST
+from src.py.AST.AST import AST
 
 class ASTCreator(cGrammarListener):
 	def __init__(self):

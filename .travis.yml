@@ -5,7 +5,10 @@ python:
 # command to install dependencies
 install: "pip3 install -r .requirements.txt"
 # command to run tests
-script: sh run_tests.sh
+script: 
+  - cd official
+  - make build
+  - make test
 
 notifications:
   slack: compilers-hq:d4srnF0TrvqFnxcRf4k4w4K8

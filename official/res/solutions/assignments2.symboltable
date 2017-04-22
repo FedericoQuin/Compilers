@@ -2,6 +2,6 @@
 Global - {}
 
 
-Global - {'main': (int func(int,char,float), None)}
-Scope 1 - {'e': (float, 22), 'f': (int, 26), 'test': (float, 5), 'c': (float, 14), 'argv': (char, 4), 'b': (int, 10), 'a': (char, 9), 'argc': (int, 0), 'd': (float, 18)}
+Global - {}
+
 

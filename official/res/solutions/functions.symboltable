@@ -2,19 +2,6 @@
 Global - {}
 
 
-Global - {'main': (int func(int,float,char), None)}
-Scope 1 - {'testArg2': (float, 4), 'testArg3': (char, 8), 'testArg': (int, 0), 'x': (float, 9)}
+Global - {}
 
-Global - {'main': (int func(int,float,char), None), 'somethingUseful': ( func(float), None), 'getThePointOfLife': ( func(int), None)}
-Scope 1 - {'age': (int, 0)}
-Scope 2 - {}
-
-Global - {'main': (int func(int,float,char), None), 'somethingUseful': ( func(float), None), 'getThePointOfLife': ( func(int), None)}
-Scope 1 - {'age': (int, 0)}
-Scope 2 - {}
-Scope 3 - {}
-
-Global - {'main': (int func(int,float,char), None), 'somethingUseful': ( func(float), None), 'getThePointOfLife': ( func(int), None)}
-Scope 1 - {'age': (int, 0)}
-Scope 2 - {}
 

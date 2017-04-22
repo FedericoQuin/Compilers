@@ -2,6 +2,6 @@
 Global - {}
 
 
-Global - {'main': ( func(float), None)}
-Scope 1 - {'jmp': (int, 4), 'test': (float, 0)}
+Global - {}
+
 
