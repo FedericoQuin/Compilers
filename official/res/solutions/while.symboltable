@@ -2,6 +2,12 @@
 Global - {}
 
 
-Global - {}
+Global - {'main': (int func(), None)}
+Scope 1 - {'x': (int, 4), 'y': (int, 0)}
+Scope 2 - {}
 
+Global - {'main': (int func(), None)}
+Scope 1 - {'x': (int, 4), 'y': (int, 0)}
+Scope 2 - {}
+Scope 3 - {}
 

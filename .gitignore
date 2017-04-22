@@ -52,7 +52,7 @@ data
 .vscode
 
 official/c2p.py
-tests/symboltable.txt
+symbolTable.txt
 
 # Don't exclude test solutions
 !/solutions/*

@@ -1,5 +1,5 @@
-from SymbolTable import SymbolTable, Scope
-from AST.ASTNode import ASTNodeType, ASTNode, pointerType
+from src.SymbolTable import SymbolTable, Scope
+from src.py.AST.ASTNode import ASTNodeType, ASTNode, pointerType
 
 class SymbolTableBuilder:
 	def __init__(self, filename, printDescription):

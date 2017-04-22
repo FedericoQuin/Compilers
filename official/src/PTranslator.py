@@ -1,6 +1,6 @@
-from AST.ASTWalker import ASTWalker
-from AST.ASTNode import ASTNodeType, ASTNode
-from SymbolTableBuilder import SymbolTableBuilder
+from src.py.AST.ASTWalker import ASTWalker
+from src.py.AST.ASTNode import ASTNodeType, ASTNode
+from src.SymbolTableBuilder import SymbolTableBuilder
 
 class PTranslator:
     def __init__(self):

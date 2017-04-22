@@ -2,6 +2,23 @@
 Global - {}
 
 
-Global - {}
+Global - {'main': (int func(), None)}
+Scope 1 - {}
+Scope 2 - {}
 
+Global - {'main': (int func(), None)}
+Scope 1 - {'c': (int, 0)}
+Scope 2 - {'omaigod': (int, 8), 'i': (int, 4)}
+
+Global - {'main': (int func(), None)}
+Scope 1 - {'c': (int, 0)}
+Scope 2 - {'omaigod': (int, 4)}
+
+Global - {'main': (int func(), None)}
+Scope 1 - {'c': (int, 0)}
+Scope 2 - {'omaigod': (int, 8), 'i': (int, 4)}
+
+Global - {'main': (int func(), None)}
+Scope 1 - {'c': (int, 0)}
+Scope 2 - {'omaigod': (int, 8), 'y': (int, 4)}
 

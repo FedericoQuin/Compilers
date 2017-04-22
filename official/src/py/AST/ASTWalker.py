@@ -1,6 +1,6 @@
 
-from AST.AST import AST
-from AST.ASTNode import *
+from src.py.AST.AST import AST
+from src.py.AST.ASTNode import *
 
 class ASTWalker:
 	def __init__(self, ast):
