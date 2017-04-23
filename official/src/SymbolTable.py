@@ -83,6 +83,8 @@ class PointerType(VarType):
 	def __eq__(self, object):
 		if type(object) is ArrayType:
 			return object == self
+		elif type(object) is IntType:
+			return True
 		if self.ptrCount == 0 and object == self.type:
 			return True
 		elif type(self) == type(object):
