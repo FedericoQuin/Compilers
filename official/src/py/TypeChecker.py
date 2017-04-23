@@ -24,7 +24,7 @@ class TypeChecker:
 			self.rightType = self.getRType(node.children[1])
 
 			if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
-				raise Exception("Types for assignments don't match: " + str(type(self.leftType)) + " - " + str(type(self.rightType)))
+				raise Exception("Types for assignments don't match: " + str(self.leftType) + " - " + str(self.rightType))
 
 		# elif (node.type == )
 
