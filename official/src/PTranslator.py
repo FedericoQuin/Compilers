@@ -23,7 +23,7 @@ class PTranslator:
 
         for (node, nodeLevel) in nodes:
             self.symbolTableBuilder.processNode(node, nodeLevel)
-            # self.typeChecker.checkType(node, nodeLevel)
+            self.typeChecker.checkType(node, nodeLevel)
 
         self.symbolTableBuilder.saveSymbolTable("a")
 
