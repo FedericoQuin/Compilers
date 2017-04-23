@@ -188,7 +188,7 @@ class STSingleScope:
 		return str(self.table)
 
 	def contains(self, symbol):
-		return self.table[symbol] != None
+		return symbol in self.table
 
 	def lookupSymbol(self, symbol):
 		return self.table[symbol]
