@@ -26,7 +26,22 @@ class TypeChecker:
 			if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
 				raise Exception("Types for assignments don't match: " + str(self.leftType) + " - " + str(self.rightType))
 
-		# elif (node.type == )
+		elif (node.type == ASTNodeType.Or):
+			self.leftType, self.rightType = self.getTypesComparison(node.children)
+			if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
+				raise Exception("Types for comparison don't match: " + str(self.leftType) + " - " + str(self.rightType))
+
+
+	def getTypesComparison(self, nodes):
+		if (len(nodes) == 1):
+			node = nodes[0]
+			if (node.type == ASTNodeType.Not):
+				return self.getTypesComparison(node.children)
+			else:
+				return self.getRType(node)
+		elif (len(nodes) == 2):
+			return (self.getTypesComparison(nodes[0].children), self.getTypesComparison(nodes[1].children))
+		
 
 	def getLType(self, node):
 		if (node.type == ASTNodeType.LValue):
