@@ -43,8 +43,8 @@ class TypeChecker:
 			return CharType()
 		elif (node.type == ASTNodeType.FloatDecl):
 			return FloatType()
-		elif (type(node) is pointerType):
-			return PointerType(self.getLType(node.type), node.ptrCount)
+		elif (type(node.type) is pointerType):
+			return PointerType(self.getLType(node.type), node.type.ptrCount)
 
 		return None
 

@@ -4,7 +4,7 @@
 #include <supersecretproject/idk.myownformat>
 
 int main(int argc, char* argv) {
-	float tests = 0;
+	float tests = 0.0;
 }
 
 #include <idontdoanything>
