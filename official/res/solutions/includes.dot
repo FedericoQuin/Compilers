@@ -13,7 +13,7 @@ digraph AST {
 14 [label="FunctionBody"];
 15 [label="Assignment"];
 16 [label="FloatDecl \ntests"];
-17 [label="RValueInt \n0"];
+17 [label="RValueFloat \n0.0"];
 15 -> 16;
 15 -> 17;
 14 -> 15;

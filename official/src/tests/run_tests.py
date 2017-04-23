@@ -191,6 +191,27 @@ def test_errors():
 			parseNoCatch(errorFiles[i], "", "")
 		except Exception as inst:
 			string = str(inst)
-			print (string)
-			print(errorMessages[i])
+			assert(string == errorMessages[i])
+
+def test_types():
+	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
+	# Tests the typechecker
+	errorFiles = [
+		"type_check1.c",
+		"type_check2.c",
+		"type_check2.c",
+		"type_check4.c"
+		]
+	errorMessages = [
+		"Types for assignment don't match: char and int",
+		"Types for assignment don't match: float and int",
+		"Types for assignment don't match: float and int",
+		"Types for comparison don't match: int and float"
+	]
+	for i in range(len(errorFiles)):
+		try:
+			ASTNode.ID = 0
+			parseNoCatch(errorFiles[i], "", "")
+		except Exception as inst:
+			string = str(inst)
 			assert(string == errorMessages[i])
