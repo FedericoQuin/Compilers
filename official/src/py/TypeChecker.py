@@ -19,14 +19,14 @@ class TypeChecker:
 
 		if (node.type == ASTNodeType.Assignment):
 			self.nodeLevel = nodeLevel
-			# Left type is always present directly
+
 			self.leftType = self.getLType(node.children[0])
-			# Right type on the other hand, not entirely
 			self.rightType = self.getRType(node.children[1])
-			# print(str(self.leftType) + " - " + str(self.rightType))
 
 			if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
 				raise Exception("Types for assignments don't match: " + str(type(self.leftType)) + " - " + str(type(self.rightType)))
+
+		# elif (node.type == )
 
 	def getLType(self, node):
 		if (node.type == ASTNodeType.LValue):
