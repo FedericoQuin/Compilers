@@ -1,4 +1,4 @@
-from src.SymbolTable import SymbolTable, Scope
+from src.SymbolTable import *
 from src.py.AST.ASTNode import ASTNodeType, ASTNode, pointerType
 
 class SymbolTableBuilder:
@@ -62,37 +62,37 @@ class SymbolTableBuilder:
 	def addFunctionSignature(self, node):
 		children = node.children
 		# TODO Func is a placeholder until subclassed
-		functionSignature = mapToPrimitiveName(children[0].value.type) + ''.join([str(i) for i in range(children[0].value.ptrCount)]) + " func("
+		returnType = PointerType(mapToPrimitiveType(children[0].value.type), children[0].value.ptrCount)
 		
 		# Iterate over the function arguments and add their types to the signature
 		# NOTE: The type attribute of the function arguments nodes are objects of the class PointerType.
 		#		The actual type has to be accessed by getting the type attribute from that class.
-		functionSignature += ",".join([ mapToPrimitiveName(child.type.type) for child in children[1].children ]) + ")"
-		self.symbolTable.insertEntry(str(node.value), str(functionSignature) , Scope.GLOBAL)
+		functionSignature = [PointerType(mapToPrimitiveType(i.type.type), i.type.ptrCount) for i in children[1].children]
+		# functionSignature += ",".join([ mapToPrimitiveName(child.type.type) for child in children[1].children ]) + ")"
+		self.symbolTable.insertEntry(str(node.value), FunctionType(returnType, functionSignature) , Scope.GLOBAL)
 
 
 	def checkForDeclarations(self, node, nodeLevel):
 		if (node.type == ASTNodeType.FloatDecl):
-			self.symbolTable.insertEntry(str(node.value), "float", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+			self.symbolTable.insertEntry(str(node.value), FloatType(), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 		elif (node.type == ASTNodeType.IntDecl):
-			self.symbolTable.insertEntry(str(node.value), "int", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+			self.symbolTable.insertEntry(str(node.value), IntType(), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 		elif (node.type == ASTNodeType.CharDecl):
-			self.symbolTable.insertEntry(str(node.value), "char", Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+			self.symbolTable.insertEntry(str(node.value), CharType(), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 		elif (node.type == ASTNodeType.FunctionDecl):
 			self.addFunctionSignature(node)
 		elif (node.type == ASTNodeType.ArrayDecl):
 			# The type part of the symbol (for example: int****)
-			typePart = mapToPrimitiveName(node.children[0].value.type) + ''.join(['*' for i in range(node.children[0].value.ptrCount)])
-			# The whole type of the symbol (for example: int**** [10])
-			symbolType = typePart + " [" + str(node.children[1].value) + "]" 
-			self.symbolTable.insertEntry(str(node.value), symbolType, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+			arrayType = PointerType(mapToPrimitiveType(node.children[0].value.type), node.children[0].value.ptrCount)
+			size = node.children[1].value
+			self.symbolTable.insertEntry(str(node.value), ArrayType(arrayType, size), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 		elif (type(node.type) is pointerType):
 			# Exception for functionDecls -> do not add the 'declared' symbols to the table
 			if self.isSignatureType(node.type.type):
 				return
 			
 			# Type consists of the primitive type + optionally pointer operators
-			symbolType = mapToPrimitiveName(node.type.type) + ''.join(['*' for i in range(node.type.ptrCount)])
+			symbolType = PointerType(mapToPrimitiveType(node.type.type), node.type.ptrCount)
 			self.symbolTable.insertEntry(str(node.value), symbolType, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 
 
@@ -167,18 +167,18 @@ class SymbolTableBuilder:
 		symbolTableFile.close()
 
 
-def mapToPrimitiveName(nodeType):
+def mapToPrimitiveType(nodeType):
 	if (nodeType == ASTNodeType.IntDecl):
-		return "int"
+		return IntType()
 	elif (nodeType == ASTNodeType.FloatDecl):
-		return "float"
+		return FloatType()
 	elif (nodeType == ASTNodeType.CharDecl):
-		return "char"
+		return CharType()
 	if (nodeType == ASTNodeType.IntSignature):
-		return "int"
+		return IntType()
 	elif (nodeType == ASTNodeType.FloatSignature):
-		return "float"
+		return FloatType()
 	elif (nodeType == ASTNodeType.CharSignature):
-		return "char"
+		return CharType()
 		
-	return ""
+	return None

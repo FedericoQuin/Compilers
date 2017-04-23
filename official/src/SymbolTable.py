@@ -3,6 +3,74 @@ class Scope(Enum):
 	GLOBAL = 1
 	LOCAL = 2
 
+
+class VarType:
+	def __init__(self):
+		self.memorySize = 0
+
+	def __repr__(self):
+		return str(self)
+
+	def __eq__(self, object):
+		if type(object) == type(self):
+			return True
+		return False
+	
+	def getMemorySize(self):
+		return self.memorySize
+
+class IntType(VarType):
+	def __init__(self):
+		self.memorySize = 4
+
+	def __str__(self):
+		return "int"
+
+class FloatType(VarType):
+	def __init__(self):
+		self.memorySize = 4
+
+	def __str__(self):
+		return "float"
+
+class CharType(VarType):
+	def __init__(self):
+		self.memorySize = 1
+
+	def __str__(self):
+		return "char"
+
+class PointerType(VarType):
+	def __init__(self, _type, ptrCount):
+		self.type = _type
+		self.ptrCount = ptrCount
+		self.memorySize = 4
+
+	def __str__(self):
+		return str(self.type) + ''.join(["*" for i in range(self.ptrCount)])
+
+class ArrayType(VarType):
+	def __init__(self, _type, size):
+		self.type = _type
+		self.size = size
+		self.memorySize = self.type.getMemorySize() * self.size
+
+	def __str__(self):
+		return str(self.type) + " [" + str(self.size) + "]"
+
+class FunctionType(VarType):
+	def __init__(self, returnType, arguments):
+		self.returnType = returnType
+		self.arguments = arguments
+		self.memorySize = 0
+
+	def __str__(self):
+		return str(self.returnType) + " func(" + ",".join([str(i) for i in self.arguments]) + ")"
+
+
+
+
+
 class SymbolTable:
 	""" 
 		Class used to store the symbol table when constructing the program text.
@@ -104,31 +172,8 @@ class SymbolTable:
 		return address
 
 	def getMemorySize(self, _type):
-		if _type == "int":
-			return 4
-		elif _type == "float":
-			return 4
-		elif _type == "char":
-			return 1
-		elif self.isPointerType(_type):
-			return 1
-		elif self.isArrayType(_type):
-			amtElements = int(_type[_type.index('[') + 1 : len(_type) - 1])
-			typeSize = self.getMemorySize(_type.split(" ")[0])
-			return amtElements * typeSize
+		return _type.getMemorySize()
 
-		return 0
-
-	def isPointerType(self, _type):
-		if _type[-1] == '*':
-			return True
-		return False
-
-
-	def isArrayType(self, _type):
-		if _type[-1] == ']':
-			return True
-		return False
 
 
 class STSingleScope:
