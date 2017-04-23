@@ -41,13 +41,13 @@ class AST:
 			ptrCount += 1
 			nextPtr = nextPtr.ptr()
 
-		self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
+		self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
 	
 	def addArrayDeclaration(self, ctx):
 		# Same as a normal declaration (the type part), with the addition of the 'array' itself
 
 		# Add the first node (arraydecl with value ID)
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ArrayDecl, ctx.ID())
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ArrayDecl, str(ctx.ID()))
 
 		# Add subsequent nodes for array decl (array type and array size)
 		_type = None
@@ -84,11 +84,11 @@ class AST:
 			_type = ASTNodeType.RValueArrayElement
 
 		if (ctx.arrayelement().digits() != None):
-			self.currentPointer = self.currentPointer.addChild(_type, ctx.arrayelement().ID(0))
+			self.currentPointer = self.currentPointer.addChild(_type, str(ctx.arrayelement().ID(0)))
 			self.currentPointer.addChild(ASTNodeType.ArrayElementIndex, int(getStringOfArray(ctx.arrayelement().digits().DIGIT())))
 			self.climbTree()
 		elif (len(ctx.arrayelement().ID()) == 2):
-			self.currentPointer = self.currentPointer.addChild(_type, ctx.arrayelement().ID(0))
+			self.currentPointer = self.currentPointer.addChild(_type, str(ctx.arrayelement().ID(0)))
 			self.currentPointer.addChild(ASTNodeType.ArrayElementIndex, str(ctx.arrayelement().ID(1)))
 			self.climbTree()
 
@@ -121,7 +121,7 @@ class AST:
 		self.currentPointer.value = float(floatString)
 
 	def addFunctionCall(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, ctx.ID())
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, str(ctx.ID()))
 
 	#====================================================================
 
@@ -130,7 +130,7 @@ class AST:
 	def addAssignment(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment)
 		if (ctx.lvalue().ID() != None):
-			self.currentPointer.addChild(ASTNodeType.LValue, ctx.lvalue().ID())
+			self.currentPointer.addChild(ASTNodeType.LValue, str(ctx.lvalue().ID()))
 		else:
 			# TODO throw exception maybe?
 			pass
@@ -139,13 +139,13 @@ class AST:
 		if ctx.OPERATOR_AS() != None:
 			self.addAssignment(ctx)
 		elif ctx.POST_OPERATOR_INCR() != None:
-			self.currentPointer.addChild(ASTNodeType.PostfixIncr, ctx.ID())
+			self.currentPointer.addChild(ASTNodeType.PostfixIncr, str(ctx.ID()))
 		elif ctx.PRE_OPERATOR_INCR() != None:
-			self.currentPointer.addChild(ASTNodeType.PrefixIncr, ctx.ID())
+			self.currentPointer.addChild(ASTNodeType.PrefixIncr, str(ctx.ID()))
 		elif ctx.POST_OPERATOR_DECR() != None:
-			self.currentPointer.addChild(ASTNodeType.PostfixDecr, ctx.ID())
+			self.currentPointer.addChild(ASTNodeType.PostfixDecr, str(ctx.ID()))
 		elif ctx.PRE_OPERATOR_DECR() != None:
-			self.currentPointer.addChild(ASTNodeType.PrefixDecr, ctx.ID())
+			self.currentPointer.addChild(ASTNodeType.PrefixDecr, str(ctx.ID()))
 
 	def enterAddSub(self, ctx):
 		if ctx.OPERATOR_PLUS() != None:
@@ -162,9 +162,9 @@ class AST:
 
 	def enterID(self, ctx, val):
 		if (val == "lvalue"):
-			self.currentPointer.addChild(ASTNodeType.LValue, ctx.ID())
+			self.currentPointer.addChild(ASTNodeType.LValue, str(ctx.ID()))
 		elif (val == "rvalue"):
-			self.currentPointer.addChild(ASTNodeType.RValueID, ctx.ID())
+			self.currentPointer.addChild(ASTNodeType.RValueID, str(ctx.ID()))
 
 
 	#################################################
@@ -376,9 +376,9 @@ class AST:
 				ptrCount += 1
 				nextPtr = nextPtr.ptr()
 
-			self.currentPointer = self.currentPointer.addChild(typeNode, ctx.ID())
+			self.currentPointer = self.currentPointer.addChild(typeNode, str(ctx.ID()))
 		elif ctx.returntype().VOID() != None:
-			self.currentPointer = self.currentPointer.addChild(typeNode, ctx.ID())
+			self.currentPointer = self.currentPointer.addChild(typeNode, str(ctx.ID()))
 			_type = ASTNodeType.Void
 		self.currentPointer.addChild(ASTNodeType.ReturnType, pointerType(_type, ptrCount))
 
@@ -409,7 +409,7 @@ class AST:
 			ptrCount += 1
 			nextPtr = nextPtr.ptr()
 
-		self.currentPointer.addChild(pointerType(_type, ptrCount), ctx.ID())
+		self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
 
 	def addFunctionBody(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionBody)

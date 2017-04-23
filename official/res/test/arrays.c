@@ -4,11 +4,11 @@ int main() {
 		a[i] = i;
 	}
 
-	char b[100];
+	char* b[100];
 	doSomething(b[20]);
 
-	float* pointerArray[5];
+	float pointerArray[5];
 	if (pointerArray[0] > 0) {
-		pointerArray[2] = 50;
+		pointerArray[2] = 50.0;
 	}
 }
