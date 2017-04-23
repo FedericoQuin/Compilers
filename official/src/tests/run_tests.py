@@ -203,10 +203,10 @@ def test_types():
 		"type_check4.c"
 		]
 	errorMessages = [
-		"Types do not match: char and int",
-		"Types do not match: float and int",
-		"Types do not match: int and float",
-		"Types do not match: int and float"
+		"Types for assignment don't match: char and int",
+		"Types for assignment don't match: float and int",
+		"Types for assignment don't match: float and int",
+		"Types for comparison don't match: int and float"
 	]
 	for i in range(len(errorFiles)):
 		try:

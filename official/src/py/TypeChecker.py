@@ -24,23 +24,23 @@ class TypeChecker:
 			self.rightType = self.getRType(node.children[1])
 
 			if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
-				raise Exception("Types for assignments don't match: " + str(self.leftType) + " - " + str(self.rightType))
+				raise Exception("Types for assignment don't match: " + str(self.leftType) + " and " + str(self.rightType))
 
-		elif (node.type == ASTNodeType.Or):
+		elif node.type == ASTNodeType.Greater or node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Or or node.type == ASTNodeType.And or node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
 			self.leftType, self.rightType = self.getTypesComparison(node.children)
 			if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
-				raise Exception("Types for comparison don't match: " + str(self.leftType) + " - " + str(self.rightType))
+				raise Exception("Types for comparison don't match: " + str(self.leftType) + " and " + str(self.rightType))
 
 
 	def getTypesComparison(self, nodes):
-		if (len(nodes) == 1):
-			node = nodes[0]
-			if (node.type == ASTNodeType.Not):
+		if (type(nodes) is ASTNode or type(nodes) is pointerType):
+			node = nodes
+			if node.type == ASTNodeType.Not or node.type == ASTNodeType.Greater or node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Or or node.type == ASTNodeType.And or node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
 				return self.getTypesComparison(node.children)
 			else:
 				return self.getRType(node)
 		elif (len(nodes) == 2):
-			return (self.getTypesComparison(nodes[0].children), self.getTypesComparison(nodes[1].children))
+			return (self.getTypesComparison(nodes[0]), self.getTypesComparison(nodes[1]))
 		
 
 	def getLType(self, node):
