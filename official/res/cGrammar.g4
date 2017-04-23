@@ -254,7 +254,7 @@ assignment : lvalue '=' rvalue; // lack of better words
 
 
 global_declaration : 
-	declaration '=' rvalue
+	assignment
 	| declaration;
 
 
