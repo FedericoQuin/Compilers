@@ -1,0 +1,29 @@
+digraph AST {
+5 [label="Program"];
+6 [label="Include \niostream"];
+7 [label="Include \ntest.hpp"];
+8 [label="Include \nsupersecretproject/idk.myownformat"];
+9 [label="Function \nmain"];
+10 [label="ReturnType \nIntDecl"];
+11 [label="FunctionArgs"];
+12 [label="IntDecl \nargc"];
+13 [label="CharDecl * \nargv"];
+11 -> 12;
+11 -> 13;
+14 [label="FunctionBody"];
+15 [label="Assignment"];
+16 [label="FloatDecl \ntests"];
+17 [label="RValueInt \n0"];
+15 -> 16;
+15 -> 17;
+14 -> 15;
+9 -> 10;
+9 -> 11;
+9 -> 14;
+18 [label="Include \nidontdoanything"];
+5 -> 6;
+5 -> 7;
+5 -> 8;
+5 -> 9;
+5 -> 18;
+}

@@ -1,0 +1,7 @@
+
+Global - {}
+
+
+Global - {'main': (int func(), None)}
+Scope 1 - {'b': (int, 4), 'stringthing': (char [20], 9), 'charval': (char, 8), 'a': (int, 0)}
+

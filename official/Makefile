@@ -11,6 +11,8 @@ build:
 
 install: build
 
+all: build
+
 test:
 	@pytest ./src/tests/run_tests.py
 

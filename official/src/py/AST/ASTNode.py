@@ -12,12 +12,23 @@ class ASTNodeType(AutoNumber):
 	FloatDecl = ()
 	IntDecl = ()
 	CharDecl = ()
+	ArrayDecl = ()
+	ArrayType = ()
+	FloatSignature = ()
+	IntSignature = ()
+	CharSignature = ()
+	ArraySignature = ()
+	FunctionDecl = ()
+	ArraySize = ()
 	LValue = ()
+	LValueArrayElement = ()
+	RValueArrayElement = ()
+	ArrayElementIndex = ()
 	RValueInt = ()
 	RValueFloat = ()
 	RValueChar = ()
-	RValueExpression = () #not used yet
 	RValueID = ()
+	FunctionCall = ()
 	Program = ()
 	Block = ()
 	Addition = ()
@@ -58,7 +69,12 @@ class ASTNodeType(AutoNumber):
 	FunctionBody = ()
 	FunctionName = ()
 	Return = ()
+	ReturnType = ()
 	Void = ()
+	Include = ()
+	Scanf = ()
+	Printf = ()
+	FormatString = ()
 
 
 class ASTNode:
@@ -101,3 +117,9 @@ class pointerType:
 			self.name = str(self.type.name) + " " + "".join(["*" for i in range(ptrCount)])
 		else:
 			self.name = str(self.type.name)
+	
+	def __str__(self):
+		return self.name
+
+	def __repr__(self):
+		return str(self)

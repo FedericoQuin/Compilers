@@ -32,13 +32,57 @@ class ASTCreator(cGrammarListener):
 		pass
 
 
-	def enterDeclaration(self, ctx:cGrammarParser.DeclarationContext):
-		self.AST.addDeclaration(ctx)
+	#################################################
+	# Includes										#
+	#################################################
 
-	def exitDeclaration(self, ctx:cGrammarParser.DeclarationContext):
+	def enterInclude_file(self, ctx:cGrammarParser.Include_fileContext):
+		self.AST.addInclude(ctx)
+
+	def exitInclude_file(self, ctx:cGrammarParser.Include_fileContext):
 		pass
 
+
+
+	#################################################
+	# Declarations									#
+	#################################################
+
+	def enterNormal_declaration(self, ctx:cGrammarParser.Normal_declarationContext):
+		self.AST.addNormalDeclaration(ctx)
+
+	def exitNormal_declaration(self, ctx:cGrammarParser.Normal_declarationContext):
+		pass
+
+
+	def enterArray_declaration(self, ctx:cGrammarParser.Array_declarationContext):
+		self.AST.addArrayDeclaration(ctx)
+
+	def exitArray_declaration(self, ctx:cGrammarParser.Array_declarationContext):
+		pass
+
+
+
+
+	#################################################
+	# Array element access							#
+	#################################################
+
+	def enterArrayelement_lvalue(self, ctx:cGrammarParser.Arrayelement_lvalueContext):
+		self.AST.addArrayElement(ctx, "lvalue")
+
+	def exitArrayelement_lvalue(self, ctx:cGrammarParser.Arrayelement_lvalueContext):
+		pass
 	
+	def enterArrayelement_rvalue(self, ctx:cGrammarParser.Arrayelement_rvalueContext):
+		self.AST.addArrayElement(ctx, "rvalue")
+
+	def exitArrayelement_rvalue(self, ctx:cGrammarParser.Arrayelement_rvalueContext):
+		pass
+
+
+	
+
 	def enterReturntype(self, ctx:cGrammarParser.ReturntypeContext):
 		pass
 
@@ -60,18 +104,7 @@ class ASTCreator(cGrammarListener):
 		pass
 
 
-	def enterRvalue(self, ctx:cGrammarParser.RvalueContext):
-		self.AST.addRvalue(ctx)
 
-	def exitRvalue(self, ctx:cGrammarParser.RvalueContext):
-		self.AST.climbTree()
-
-
-	def enterNumericalvalue(self, ctx:cGrammarParser.NumericalvalueContext):
-		pass
-
-	def exitNumericalvalue(self, ctx:cGrammarParser.NumericalvalueContext):
-		pass
 
 
 	def enterIntvalue(self, ctx:cGrammarParser.IntvalueContext):
@@ -94,6 +127,33 @@ class ASTCreator(cGrammarListener):
 	def exitDigits(self, ctx:cGrammarParser.DigitsContext):
 		pass
 
+	#################################################
+	# RValue handling								#
+	#################################################
+
+	# Numerical values (int, float or pointer types)
+	def enterNumericalvalue(self, ctx:cGrammarParser.NumericalvalueContext):
+		self.AST.addNumericalValue(ctx)
+
+	def exitNumericalvalue(self, ctx:cGrammarParser.NumericalvalueContext):
+		self.AST.climbTree()
+
+
+	# Char values
+	def enterCharvalue(self, ctx:cGrammarParser.CharvalueContext):
+		self.AST.addCharValue(ctx)
+
+	def exitCharvalue(self, ctx:cGrammarParser.CharvalueContext):
+		# no need to climb here, the new node doesn't need to be adjusted further
+		pass
+
+
+	# Function calls
+	def enterFunctioncall(self, ctx:cGrammarParser.FunctioncallContext):
+		self.AST.addFunctionCall(ctx)
+
+	def exitFunctioncall(self, ctx:cGrammarParser.FunctioncallContext):
+		self.AST.climbTree()
 
 
 
@@ -135,7 +195,7 @@ class ASTCreator(cGrammarListener):
 
 	# Exit a parse tree produced by cGrammarParser#bracket_expression.
 	def exitBracket_expression(self, ctx:cGrammarParser.Bracket_expressionContext):
-		self.AST.climbTree();
+		self.AST.climbTree()
 
 
 
@@ -164,8 +224,7 @@ class ASTCreator(cGrammarListener):
 	def exitIfelse(self, ctx:cGrammarParser.IfelseContext):
 		# twice because you have to return from the self-made node but also from the IfTrue-IfFalse nodes
 		# because one of them has to jump back as well, but they can't know whether the other one already jumped back or not
-		self.AST.climbTree()
-		self.AST.climbTree()
+		self.AST.climbTree(2)
 
 	# Enter a parse tree produced by cGrammarParser#firstcondition.
 	def enterFirstcondition(self, ctx:cGrammarParser.FirstconditionContext):
@@ -391,24 +450,20 @@ class ASTCreator(cGrammarListener):
 	#################################################
 	# Function stuff								#
 	#################################################
-	# Enter a parse tree produced by cGrammarParser#functiondecl.
-	def enterFunctiondecl(self, ctx:cGrammarParser.FunctiondeclContext):
-		self.AST.enterFunctiondecl(ctx)
 
-	# Exit a parse tree produced by cGrammarParser#functiondecl.
+	def enterFunctiondecl(self, ctx:cGrammarParser.FunctiondeclContext):
+		self.AST.enterFunctiondecl(ctx, "FunctionDecl")
+
 	def exitFunctiondecl(self, ctx:cGrammarParser.FunctiondeclContext):
 		self.AST.climbTree()
-		
-	# Enter a parse tree produced by cGrammarParser#initialargument.
-	def enterInitialargument(self, ctx:cGrammarParser.InitialargumentContext):
-		self.AST.addArgumentList(ctx)
 
-	# Exit a parse tree produced by cGrammarParser#initialargument.
-	def exitInitialargument(self, ctx:cGrammarParser.InitialargumentContext):
+	def enterInitialfunctionargument(self, ctx:cGrammarParser.InitialfunctionargumentContext):
+		self.AST.addFunctionArgumentList(ctx)
+
+	def exitInitialfunctionargument(self, ctx:cGrammarParser.InitialfunctionargumentContext):
 		self.AST.climbTree()
 
-	# Enter a parse tree produced by cGrammarParser#argument.
-	def enterArgument(self, ctx:cGrammarParser.ArgumentContext):
+	def enterType_argument(self, ctx:cGrammarParser.Type_argumentContext):
 		self.AST.addArgument(ctx)
 
 	def enterFunction_body(self, ctx:cGrammarParser.Function_bodyContext):
@@ -418,10 +473,37 @@ class ASTCreator(cGrammarListener):
 		self.AST.climbTree()
 
 	def enterFunction(self, ctx:cGrammarParser.FunctionContext):
-		self.AST.enterFunctiondecl(ctx)
+		self.AST.enterFunctiondecl(ctx, "Function")
 
 	def exitFunction(self, ctx:cGrammarParser.FunctionContext):
 		self.AST.climbTree()
+
+
+
+	#################################################
+	# Scanf and Printf								#
+	#################################################
+
+	def enterScanf(self, ctx:cGrammarParser.ScanfContext):
+		self.AST.addScanf()
+
+	def exitScanf(self, ctx:cGrammarParser.ScanfContext):
+		self.AST.climbTree()
+
+
+	def enterPrintf(self, ctx:cGrammarParser.PrintfContext):
+		self.AST.addPrintf()
+
+	def exitPrintf(self, ctx:cGrammarParser.PrintfContext):
+		self.AST.climbTree()
+
+
+	def enterFormat_string(self, ctx:cGrammarParser.Format_stringContext):
+		self.AST.addFormatString(ctx)
+
+	def exitFormat_string(self, ctx:cGrammarParser.Format_stringContext):
+		pass
+
 
 
 

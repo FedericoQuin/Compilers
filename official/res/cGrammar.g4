@@ -5,20 +5,27 @@ grammar cGrammar;
 program :
 	program functiondecl
 	| program function
+	| program global_declaration ';'
+	| program include_file  
 	|
 	;
 
-function : returntype ID '(' initialargument ')' '{' function_body '}';
 
-functiondecl : returntype ID '(' initialargument ')' ';';
+include_file : 
+	INCLUDE_FILE;
 
-initialargument : 
-	argument arguments
+
+function : returntype ID '(' initialfunctionargument ')' '{' function_body '}';
+
+functiondecl : returntype ID '(' initialfunctionargument ')' ';';
+
+initialfunctionargument : 
+	type_argument type_arguments
 	|;
-arguments :	
-	',' argument arguments
+type_arguments :	
+	',' type_argument type_arguments
 	|;
-argument : dec_type ID;
+type_argument : dec_type ID;
 
 
 
@@ -37,6 +44,8 @@ statement
 	| break_stmt ';'
 	| continue_stmt ';'
 	| return_stmt ';'
+	| scanf ';'
+	| printf ';'
 	;
 
 break_stmt : 'break';
@@ -50,7 +59,8 @@ expression :	// TODO add brackets
 	| PRE_OPERATOR_INCR lvalue_identifier		// NOTE: the prefix operators don't work for some mysterious reason
 	| ID POST_OPERATOR_DECR
 	| PRE_OPERATOR_DECR ID
-	| condition;
+	| condition
+	| rvalue;
 
 add_sub :
 	add_sub OPERATOR_PLUS add_sub
@@ -142,9 +152,9 @@ bracket_condition :
 
 comparison : 
 	rvalue comparator rvalue
-	| rvalue comparator ID
-	| ID comparator rvalue
-	| ID comparator ID;
+	| rvalue comparator rvalue_identifier
+	| rvalue_identifier comparator rvalue
+	| rvalue_identifier comparator rvalue_identifier;
 
 comparator :
 	OPERATOR_EQ
@@ -194,53 +204,132 @@ third_stmt_for :
 	| declaration
 	| ;
 
+//////////////////////////////////////////////////////////
+// Scanf and Printf										//
+//////////////////////////////////////////////////////////
+
+scanf : 'scanf' '(' format_string call_arguments ')';
+printf : 'printf' '(' format_string call_arguments ')';
+
+// Not sure how to go about this in a decent manner
+format_string : STRING;
+
+
+//////////////////////////////////////////////////////////
+// Function calls 										//
+//////////////////////////////////////////////////////////
+functioncall :
+	ID '(' call_argument_initial ')';
+
+call_argument_initial :
+	rvalue call_arguments
+	| rvalue_identifier call_arguments
+	|;
+
+call_arguments :
+	',' call_argument call_arguments
+	|;
+
+// TODO verify this
+call_argument :
+	rvalue
+	| rvalue_identifier;
 
 
 
+//////////////////////////////////////////////////////////
+// Declarations and assignments							//
+//////////////////////////////////////////////////////////
 
-LBRACKET : '(';
-RBRACKET : ')';
+declaration : 
+	normal_declaration
+	| array_declaration;
 
-declaration : dec_type ID;
+normal_declaration :
+	dec_type ID;
+array_declaration : 
+	dec_type ID LSQUAREBRACKET digits RSQUAREBRACKET;
+
 assignment : lvalue '=' rvalue; // lack of better words
+
+
+global_declaration : 
+	declaration '=' rvalue
+	| declaration;
+
+
+//////////////////////////////////////////////////////////
+// LValues and RValues									//
+//////////////////////////////////////////////////////////
 
 lvalue 
 	: declaration 
-	| ID;
+	| ID
+	| arrayelement_lvalue;
+
 rvalue 
-	: CHARVALUE
-	| numericalvalue; 		// NOTE: no differentiation between int value and pointer value, would match the same anyways
+	: charvalue
+	| numericalvalue 		// NOTE: no differentiation between int value and pointer value, would match the same anyways
+	| functioncall
+	| arrayelement_rvalue;
+
+arrayelement_rvalue : arrayelement;
+arrayelement_lvalue : arrayelement;
+
+arrayelement :
+	ID LSQUAREBRACKET digits RSQUAREBRACKET
+	| ID LSQUAREBRACKET ID RSQUAREBRACKET;
 
 
-CHARVALUE : '\'' . '\'';
+
+charvalue : CHARVALUE;
 numericalvalue : floatvalue | intvalue;
 
 intvalue : DIGIT DIGIT*;
 floatvalue : digits? '.' digits;
-DIGIT : [0-9];
-NOTZERODIGIT : [1-9];
-digits : DIGIT+;
 
+
+
+
+
+digits : DIGIT+;
 returntype : dec_type | VOID;
 
-VOID : 'void';
 dec_type : 
 	CHAR ptr
 	| FLOAT ptr
 	| INT ptr;
 
-CHAR : 'char';
-FLOAT : 'float';
-INT : 'int';
 
 ptr : 
 	'*' ptr
 	|;
 
+
+
+
+INCLUDE_MACRO : '#include';
+INCLUDE_FILE : 
+	INCLUDE_MACRO OPERATOR_LT .*? OPERATOR_GT
+	| INCLUDE_MACRO ' '* OPERATOR_LT .*? OPERATOR_GT;
+
+
+LSQUAREBRACKET : '[';
+RSQUAREBRACKET : ']';
+LBRACKET : '(';
+RBRACKET : ')';
+CHARVALUE : '\'' . '\'';
+
+VOID : 'void';
+CHAR : 'char';
+FLOAT : 'float';
+INT : 'int';
+
+DIGIT : [0-9];
+NOTZERODIGIT : [1-9];
 ID : ([a-zA-Z] | '_') ([a-zA-Z] | [0-9] | '_')*;
-
-
-
+POINT : '.';
+STRING : '"' .*? '"';
 
 WS : [ \r\t\n]+ -> skip ;
 

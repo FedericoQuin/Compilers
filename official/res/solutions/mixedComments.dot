@@ -1,7 +1,7 @@
 digraph AST {
 1 [label="Program"];
 2 [label="Function \nmain"];
-3 [label="Void"];
+3 [label="ReturnType \nVoid"];
 4 [label="FunctionArgs"];
 5 [label="FloatDecl \ntest"];
 4 -> 5;
