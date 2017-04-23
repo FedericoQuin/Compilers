@@ -41,7 +41,7 @@ digraph AST {
 9 -> 18;
 9 -> 20;
 25 [label="ArrayDecl \nb"];
-26 [label="ArrayType \nCharDecl"];
+26 [label="ArrayType \nCharDecl *"];
 27 [label="ArraySize \n100"];
 25 -> 26;
 25 -> 27;
@@ -51,7 +51,7 @@ digraph AST {
 29 -> 30;
 28 -> 29;
 31 [label="ArrayDecl \npointerArray"];
-32 [label="ArrayType \nFloatDecl *"];
+32 [label="ArrayType \nFloatDecl"];
 33 [label="ArraySize \n5"];
 31 -> 32;
 31 -> 33;
@@ -70,7 +70,7 @@ digraph AST {
 42 [label="LValueArrayElement \npointerArray"];
 43 [label="ArrayElementIndex \n2"];
 42 -> 43;
-44 [label="RValueInt \n50"];
+44 [label="RValueFloat \n50.0"];
 41 -> 42;
 41 -> 44;
 40 -> 41;
