@@ -26,5 +26,4 @@ Test structure:
 Extra features:
 	Currently, we have added the following extra features:
 		- for loops
-		- const modifier
 		- break and continue statement
