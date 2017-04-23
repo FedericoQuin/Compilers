@@ -2,11 +2,11 @@ from src.SymbolTable import SymbolTable, Scope
 from src.py.AST.ASTNode import ASTNodeType, ASTNode, pointerType
 
 class SymbolTableBuilder:
-	def __init__(self, filename, printDescription):
+	def __init__(self, symbolTable, filename, printDescription):
 		self.currentLevel = 0
 		self.levelList = []
 		self.filename = filename
-		self.symbolTable = SymbolTable()
+		self.symbolTable = symbolTable
 
 		if (self.filename != ""):
 			symbolTableFile = open(self.filename, 'w')
@@ -21,33 +21,38 @@ class SymbolTableBuilder:
 				symbolTableFile.write("\tNote: Functions don't have a starting address in memory, so their address is None.\n\n")
 				symbolTableFile.write("The SymbolTable is saved at the initial construction (when still empty), at every point just before some local tables are deleted, and at the end of the AST walkthrough.\n")
 				symbolTableFile.write("\n\n")
+			symbolTableFile.write(str(self.symbolTable) + "\n\n")
 			symbolTableFile.close()
+
+	def processNode(self, node, nodeLevel):
+		# If the node we are visiting now is on the same/higher level than the current working scope -> leave the scope/multiple scopes
+		# (with the exception of the global scope)
+		if (len(self.levelList) != 0) and (nodeLevel <= self.levelList[-1]):
+			self.leaveScopes(nodeLevel)
+
+		if (node.type == ASTNodeType.Block):
+			self.enterScope(nodeLevel)
+		elif (node.type == ASTNodeType.IfTrue):
+			self.enterScope(nodeLevel)
+		elif (node.type == ASTNodeType.IfFalse):
+			self.enterScope(nodeLevel)
+		elif (node.type == ASTNodeType.WhileBody):
+			self.enterScope(nodeLevel)
+		elif (node.type == ASTNodeType.For):
+			self.enterScope(nodeLevel)
+		elif (node.type == ASTNodeType.Function):
+			self.enterScope(nodeLevel)
+			if (self.symbolTable.symbolExists(str(node.value), Scope.GLOBAL) == False):
+				self.addFunctionSignature(node)
+
+		self.checkForDeclarations(node, nodeLevel)
+
 
 	def buildSymbolTable(self, nodes):
 		self.saveSymbolTable('a')
 
 		for (node, nodeLevel) in nodes:
-			# If the node we are visiting now is on the same/higher level than the current working scope -> leave the scope/multiple scopes
-			# (with the exception of the global scope)
-			if (len(self.levelList) != 0) and (nodeLevel <= self.levelList[-1]):
-				self.leaveScopes(nodeLevel)
-
-			if (node.type == ASTNodeType.Block):
-				self.enterScope(nodeLevel)
-			elif (node.type == ASTNodeType.IfTrue):
-				self.enterScope(nodeLevel)
-			elif (node.type == ASTNodeType.IfFalse):
-				self.enterScope(nodeLevel)
-			elif (node.type == ASTNodeType.WhileBody):
-				self.enterScope(nodeLevel)
-			elif (node.type == ASTNodeType.For):
-				self.enterScope(nodeLevel)
-			elif (node.type == ASTNodeType.Function):
-				self.enterScope(nodeLevel)
-				if (self.symbolTable.symbolExists(str(node.value), Scope.GLOBAL) == False):
-					self.addFunctionSignature(node)
-
-			self.checkForDeclarations(node, nodeLevel)
+			self.processNode(node, nodeLevel)
 			
 
 		self.saveSymbolTable('a')
