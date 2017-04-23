@@ -22,13 +22,16 @@ class TypeChecker:
 			self.leftType = self.getLType(node.children[0])
 			# Right type on the other hand, not entirely
 			self.rightType = self.getRType(node.children[1])
-
+			print(str(self.leftType) + " - " + str(self.rightType))
 			if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
 				print("Should maybe happen, not sure, with value: " + str(self.leftType) + " - " + str(self.rightType))
 
 	def getLType(self, node):
 		if (node.type == ASTNodeType.LValue):
 			return self.symbolTable.lookupSymbol(node.value)
+		elif (node.type == ASTNodeType.LValueArrayElement):
+			return self.symbolTable.lookupSymbol(node.value)
+
 		return None
 
 	def getRType(self, node, _type=None):
