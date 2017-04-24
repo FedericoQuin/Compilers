@@ -8,7 +8,7 @@ class ASTWalker:
 		self.AST = ast
 
 	def traverseDepthFirst(self):
-		# The queue stores tuples of the node, and on which level in the AST it belongs
+		# The queue stores tuples of: the node, and the level on which the node belongs in the AST
 		queue = []
 		queue.append((self.AST.root, 0))
 

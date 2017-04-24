@@ -1,6 +1,7 @@
 from src.py.AST.ASTNode import ASTNode, ASTNodeType, pointerType
-from src.SymbolTable import *
-from src.SymbolTableBuilder import *
+from src.py.ST.SymbolTable import *
+from src.py.ST.SymbolTableBuilder import SymbolTableBuilder
+from src.py.VarTypes import *
 
 
 class TypeChecker:

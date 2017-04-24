@@ -1,7 +1,7 @@
 from src.py.AST.ASTWalker import ASTWalker
 from src.py.AST.ASTNode import ASTNodeType, ASTNode
-from src.SymbolTableBuilder import SymbolTableBuilder
-from src.SymbolTable import SymbolTable
+from src.py.ST.SymbolTableBuilder import SymbolTableBuilder
+from src.py.ST.SymbolTable import SymbolTable
 from src.py.TypeChecker import TypeChecker
 
 class PTranslator:
@@ -28,16 +28,6 @@ class PTranslator:
         self.symbolTableBuilder.saveSymbolTable("a")
 
 
-        # TODO add functionality here
-        # self.fillSymbolTable(symbolTableFileName, printDescription)
-
-    def fillSymbolTable(self, filename, printDescription):
-        astwalker = ASTWalker(self.AST)
-        nodes = astwalker.getNodesDepthFirst()
-
-        # TODO symbol table currently doesn't save different 'stages', deletes tables when creating new local scopes on used levels -> change that
-        self.symbolTable = SymbolTableBuilder(filename, printDescription).buildSymbolTable(nodes)
-        
 
     def saveProgram(self, filename):
         programFile = open(filename, 'w')

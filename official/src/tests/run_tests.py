@@ -1,22 +1,18 @@
-# To import from the parent directory
 import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir)
 
-pydir = parentdir + "/py/"
-sys.path.insert(0, pydir)
 
 from antlr4 import *
 from pytest import *
-from cGrammarLexer import cGrammarLexer
-from cGrammarParser import cGrammarParser
-from src.py.ASTCreator import ASTCreator
-from src.PTranslator import PTranslator
-from src.SymbolTable import SymbolTable
 from filecmp import *
-from src.py.AST.ASTNode import *
+
+from src.cGrammarLexer import cGrammarLexer
+from src.cGrammarParser import cGrammarParser
+
 from src.py.MyErrorListener import MyErrorListener
+from src.py.PTranslator import PTranslator
+from src.py.AST.ASTNode import *
+from src.py.AST.ASTCreator import ASTCreator
+from src.py.ST.SymbolTable import SymbolTable
 
 testdir = os.path.dirname(os.path.abspath(__file__))
 resdir = os.getcwd() + "/res"
@@ -58,8 +54,7 @@ def parse(inputFile, dotSolution, pSolution, symbolTableSolution = ""):
 		ASTbuilder.toDot(dotResultPath)
 
 	except Exception as inst:
-		fail("Failure for " + str(inputFile))
-		# fail("EXCEPTION: " + str(inst))
+		fail("Failure for " + str(inputFile) + "\n" + str(inst))
 	
 	assert(cmp(dotResultPath, dotSolutionsPath))
 	assert(cmp(pResultPath, pSolutionsPath))
@@ -165,7 +160,6 @@ def test_printf():
 
 
 def test_errors():
-	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	errorFiles = [
 		"error_braces1.c",
 		"error_braces2.c",
@@ -195,7 +189,6 @@ def test_errors():
 			assert(string == errorMessages[i])
 
 def test_types():
-	# Example test, see https://docs.pytest.org/en/latest/getting-started.html#getstarted for more
 	# Tests the typechecker
 	errorFiles = [
 		"type_check1.c",

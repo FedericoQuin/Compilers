@@ -123,16 +123,17 @@ class AST:
 	def addFunctionCall(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, str(ctx.ID()))
 
+
+
 	#====================================================================
-
-
+	#= 					Assignments and Expressions						=
+	#====================================================================
 
 	def addAssignment(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment)
 		if (ctx.lvalue().ID() != None):
 			self.currentPointer.addChild(ASTNodeType.LValue, str(ctx.lvalue().ID()))
 		else:
-			# TODO throw exception maybe?
 			pass
 
 	def enterExpression(self, ctx):
@@ -167,9 +168,10 @@ class AST:
 			self.currentPointer.addChild(ASTNodeType.RValueID, str(ctx.ID()))
 
 
-	#################################################
-	# Ifelse stuff									#
-	#################################################
+	#====================================================================
+	#= 							Ifelse									=
+	#====================================================================
+
 	def addIfElse(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfElse)
 
@@ -264,9 +266,10 @@ class AST:
 		else:
 			self.currentPointer = self.currentPointer.addChild(ASTNodeType.NegateBrackets)
 
-	#################################################
-	# While stuff									#
-	#################################################
+
+	#====================================================================
+	#= 								While								=
+	#====================================================================
 
 	def enterWhile_loop(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.While)
@@ -281,9 +284,10 @@ class AST:
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Condition)
 
 	
-	#################################################
-	# Break-continue stuff							#
-	#################################################
+	#====================================================================
+	#= 							Break continue							=
+	#====================================================================
+
 	def enterBreak_stmt(self, ctx):
 		self.currentPointer.addChild(ASTNodeType.Break)
 	
@@ -296,9 +300,10 @@ class AST:
 
 
 
-	#################################################
-	# For stuff										#
-	#################################################
+	#====================================================================
+	#= 								For									=
+	#====================================================================
+
 	def enterFor_loop(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.For)
 
@@ -324,9 +329,9 @@ class AST:
 
 
 
-	#################################################
-	# Function stuff								#
-	#################################################
+	#====================================================================
+	#= 							Functions								=
+	#====================================================================
 
 	def enterFunctiondecl(self, ctx, val):
 		_type = None

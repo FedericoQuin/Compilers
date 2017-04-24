@@ -85,7 +85,6 @@ class ASTNode:
 		self.parent = parent
 		self.value = value
 
-		# maybe temporary
 		self.uniqueID = ASTNode.ID
 		ASTNode.ID += 1
 
