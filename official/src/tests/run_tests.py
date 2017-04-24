@@ -199,14 +199,20 @@ def test_types():
 	errorFiles = [
 		"type_check1.c",
 		"type_check2.c",
-		"type_check2.c",
-		"type_check4.c"
+		"type_check3.c",
+		"type_check4.c",
+		"type_check5.c",
+		"type_check6.c",
+		"type_check7.c"
 		]
 	errorMessages = [
 		"Types for assignment don't match: char and int",
 		"Types for assignment don't match: float and int",
-		"Types for assignment don't match: float and int",
-		"Types for comparison don't match: int and float"
+		"Types do not match: int and float",
+		"Types for comparison don't match: int and float",
+		"Function arguments invalid: 'getCookies' takes 0 arguments (1 argument given).",
+		"Function arguments invalid: 'somethingElse' takes 3 arguments (4 arguments given).",
+		"Argument for function call 'wrongTypes' did not match the signature: int and char (argument #2)."
 	]
 	for i in range(len(errorFiles)):
 		try:

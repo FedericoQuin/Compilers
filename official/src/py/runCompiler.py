@@ -41,30 +41,27 @@ def main(argv):
         print(inst)
 
 def runCompiler(cFilename, pFilename):
-    try:
-        input = FileStream(cFilename)
-        lexer = cGrammarLexer(input)
-        stream = CommonTokenStream(lexer)
-        parser = cGrammarParser(stream)
-        parser._listeners = [MyErrorListener(cFilename)]
-        tree = parser.program()
+    input = FileStream(cFilename)
+    lexer = cGrammarLexer(input)
+    stream = CommonTokenStream(lexer)
+    parser = cGrammarParser(stream)
+    parser._listeners = [MyErrorListener(cFilename)]
+    tree = parser.program()
 
-        ASTbuilder = ASTCreator()
+    ASTbuilder = ASTCreator()
 
-        walker = ParseTreeWalker()
-        walker.walk(ASTbuilder, tree)
+    walker = ParseTreeWalker()
+    walker.walk(ASTbuilder, tree)
 
-        ast = ASTbuilder.getAST()
+    ast = ASTbuilder.getAST()
 
-        translator = PTranslator()
-        translator.translate(ast, "data/symbolTable.txt", True)
+    translator = PTranslator()
+    translator.translate(ast, "data/symbolTable.txt", True)
 
-        translator.saveProgram(pFilename)
-        ASTbuilder.toDot("data/output.dot")
+    translator.saveProgram(pFilename)
+    ASTbuilder.toDot("data/output.dot")
 
 
-    except Exception as inst:
-        print(inst)
 
 
 if __name__ == '__main__':

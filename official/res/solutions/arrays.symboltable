@@ -12,11 +12,11 @@ The SymbolTable is saved at the initial construction (when still empty), at ever
 Global - {}
 
 
-Global - {'main': (int func(), None)}
+Global - {'main': (int func(), None), 'doSomething': (None func(char*), None)}
 Scope 1 - {'a': (int [10], 0)}
 Scope 2 - {'i': (int, 40)}
 
-Global - {'main': (int func(), None)}
-Scope 1 - {'b': (char [100], 40), 'pointerArray': (float* [5], 140), 'a': (int [10], 0)}
+Global - {'main': (int func(), None), 'doSomething': (None func(char*), None)}
+Scope 1 - {'b': (char* [100], 40), 'a': (int [10], 0), 'pointerArray': (float [5], 440)}
 Scope 2 - {}
 
