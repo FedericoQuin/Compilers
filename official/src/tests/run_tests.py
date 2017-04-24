@@ -58,7 +58,8 @@ def parse(inputFile, dotSolution, pSolution, symbolTableSolution = ""):
 		ASTbuilder.toDot(dotResultPath)
 
 	except Exception as inst:
-		fail("EXCEPTION: " + str(inst))
+		fail("Failure for " + str(inputFile))
+		# fail("EXCEPTION: " + str(inst))
 	
 	assert(cmp(dotResultPath, dotSolutionsPath))
 	assert(cmp(pResultPath, pSolutionsPath))
@@ -203,16 +204,22 @@ def test_types():
 		"type_check4.c",
 		"type_check5.c",
 		"type_check6.c",
-		"type_check7.c"
+		"type_check7.c",
+		"type_check8.c",
+		"type_check9.c",
+		"type_check10.c"
 		]
 	errorMessages = [
-		"Types for assignment don't match: char and int",
-		"Types for assignment don't match: float and int",
-		"Types do not match: int and float",
-		"Types for comparison don't match: int and float",
+		"Types for assignment don't match: char and int.",
+		"Types for assignment don't match: float and int.",
+		"Types do not match: int and float.",
+		"Types for comparison don't match: int and float.",
 		"Function arguments invalid: 'getCookies' takes 0 arguments (1 argument given).",
 		"Function arguments invalid: 'somethingElse' takes 3 arguments (4 arguments given).",
-		"Argument for function call 'wrongTypes' did not match the signature: int and char (argument #2)."
+		"Argument for function call 'wrongTypes' did not match the signature: int and char (argument #2).",
+		"Argument for function call 'someFunction' did not match the signature: char and int (argument #1).",
+		"Argument for function call 'thatOtherFunction' did not match the signature: float and int (argument #2).",
+		"Types for assignment don't match: int and void."
 	]
 	for i in range(len(errorFiles)):
 		try:

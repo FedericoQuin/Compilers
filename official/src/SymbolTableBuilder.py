@@ -180,5 +180,7 @@ def mapToPrimitiveType(nodeType):
 		return FloatType()
 	elif (nodeType == ASTNodeType.CharSignature):
 		return CharType()
+	elif (nodeType == ASTNodeType.Void):
+		return VoidType()
 		
 	return None

@@ -15,7 +15,7 @@ class TypeChecker:
 			rightType = self.getRType(node.children[1])
 
 			if rightType != None and leftType != None and leftType != rightType:
-				raise Exception("Types for assignment don't match: " + str(leftType) + " and " + str(rightType))
+				raise Exception("Types for assignment don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
 		
 		# Type checking left side and right side of condition (if present)
 		elif node.type == ASTNodeType.Condition:
@@ -27,7 +27,7 @@ class TypeChecker:
 				leftType = self.getTypeComparison(currentNode.children[0])
 				rightType = self.getTypeComparison(currentNode.children[1])
 				if rightType != None and leftType != None and leftType != rightType:
-					raise Exception("Types for comparison don't match: " + str(leftType) + " and " + str(rightType))
+					raise Exception("Types for comparison don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
 		
 		# Type checking for arguments given with a function call
 		elif node.type == ASTNodeType.FunctionCall:
@@ -50,14 +50,15 @@ class TypeChecker:
 			# Check the types for every argument given
 			if argumentRequired != self.getRType(argumentGiven):
 				raise Exception("Argument for function call '" + str(node.value) + "' did not match the signature: " \
-					+ str(argumentRequired) + " and " + str(self.getRType(argumentGiven)) + " (argument #" + str(arguments.index(argumentGiven)+1) + ")." )
+					+ argumentRequired.getStrType() + " and " + self.getRType(argumentGiven).getStrType() + " (argument #" + str(arguments.index(argumentGiven)+1) + ")." )
+
 
 	def getTypeComparison(self, node):
 		if node.type == ASTNodeType.Greater or node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Or or node.type == ASTNodeType.And or node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
 			type1 = self.getTypeComparison(node.children[0])
 			type2 = self.getTypeComparison(node.children[1])
 			if (type1 != type2):
-				raise Exception("Types do not match: " + str(type1) + " and " + str(type2))
+				raise Exception("Types do not match: " + type1.getStrType() + " and " + type2.getStrType())
 			return type1
 		elif node.type == ASTNodeType.Not:
 			return self.getTypeComparison(node.children[0])
@@ -114,7 +115,7 @@ class TypeChecker:
 		type1 = self.getRType(children[0])
 		type2 = self.getRType(children[1])
 		if (type1 != type2):
-			raise Exception("Types do not match: " + str(type1) + " and " + str(type2))
+			raise Exception("Types do not match: " + type1.getStrType() + " and " + type2.getStrType() + ".")
 		return type1
 		
 		return None

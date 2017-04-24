@@ -22,6 +22,19 @@ class VarType:
 	def getMemorySize(self):
 		return self.memorySize
 
+	def getStrType(self):
+		return str(self)
+
+class VoidType(VarType):
+	def __str__(self):
+		return "void"
+	
+	def __eq__(self, object):
+		if type(object) is VoidType:
+			return True
+		return False
+	
+
 class IntType(VarType):
 	def __init__(self):
 		self.memorySize = 4
@@ -109,6 +122,9 @@ class ArrayType(VarType):
 
 		return self.type == object
 
+	def getStrType(self):
+		return str(self.type)
+
 class FunctionType(VarType):
 	def __init__(self, returnType, arguments):
 		self.returnType = returnType
@@ -124,6 +140,8 @@ class FunctionType(VarType):
 		
 		return self.returnType == object
 
+	def getStrType(self):
+		return str(self.returnType)
 
 
 
