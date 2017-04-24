@@ -25,7 +25,7 @@ def parse(inputFile, dotSolution, pSolution, symbolTableSolution = ""):
 	ASTNode.ID = 0
 	SymbolTable.AllocationAddress = 0
 
-	inputFilePath = str(resdir) + "/test/" + inputFile
+	inputFilePath = str(resdir) + "/happyDayTests/" + inputFile
 	input = FileStream(inputFilePath)
 
 	lexer = cGrammarLexer(input)
@@ -68,11 +68,11 @@ def parseNoCatch(inputFile, dotSolution, pSolution):
 	# For exception throwing purposes
 
 	try:
-		input = FileStream(str(resdir) + "/test/" + inputFile)
+		input = FileStream(str(resdir) + "/deathTests/" + inputFile)
 		lexer = cGrammarLexer(input)
 		stream = CommonTokenStream(lexer)
 		parser = cGrammarParser(stream)
-		parser._listeners = [MyErrorListener(str(resdir) + "/test/" + inputFile)]
+		parser._listeners = [MyErrorListener(str(resdir) + "/deathTests/" + inputFile)]
 		tree = parser.program()
 
 		ASTbuilder = ASTCreator()
