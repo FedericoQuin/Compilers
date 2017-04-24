@@ -19,7 +19,7 @@ digraph AST {
 11 -> 12;
 11 -> 13;
 14 [label="IfElse"];
-15 [label="IfCondition"];
+15 [label="Condition"];
 16 [label="And"];
 17 [label="Not"];
 18 [label="Less"];
@@ -46,7 +46,7 @@ digraph AST {
 14 -> 24;
 14 -> 26;
 28 [label="IfElse"];
-29 [label="IfCondition"];
+29 [label="Condition"];
 30 [label="Or"];
 31 [label="LessOrEqual"];
 32 [label="RValueID \nx"];
@@ -73,7 +73,7 @@ digraph AST {
 28 -> 37;
 28 -> 40;
 42 [label="IfElse"];
-43 [label="IfCondition"];
+43 [label="Condition"];
 44 [label="And"];
 45 [label="Greater"];
 46 [label="RValueID \nx"];
@@ -98,7 +98,7 @@ digraph AST {
 42 -> 51;
 42 -> 53;
 55 [label="IfElse"];
-56 [label="IfCondition"];
+56 [label="Condition"];
 57 [label="Or"];
 58 [label="GreaterOrEqual"];
 59 [label="RValueID \nx"];
@@ -130,7 +130,7 @@ digraph AST {
 69 -> 70;
 69 -> 71;
 72 [label="IfElse"];
-73 [label="IfCondition"];
+73 [label="Condition"];
 74 [label="Or"];
 75 [label="Equals"];
 76 [label="RValueID \nx"];
@@ -152,7 +152,7 @@ digraph AST {
 82 -> 83;
 84 [label="IfFalse"];
 85 [label="IfElse"];
-86 [label="IfCondition"];
+86 [label="Condition"];
 87 [label="GreaterOrEqual"];
 88 [label="RValueID \nx"];
 89 [label="RValueInt \n8"];

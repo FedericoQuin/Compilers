@@ -6,41 +6,45 @@ from src.SymbolTableBuilder import *
 class TypeChecker:
 	def __init__(self, symbolTable):
 		self.symbolTable = symbolTable
-		self.leftType = None
-		self.rightType = None
-		self.nodeLevel = 0
 
-	def checkType(self, node, nodeLevel):
-		# nodeLevel might be temporary, not sure yet
-		if (self.nodeLevel >= nodeLevel):
-			self.leftType = None
-			self.rightType = None
-		
+	def checkType(self, node):
 
 		if (node.type == ASTNodeType.Assignment):
-			self.nodeLevel = nodeLevel
+			leftType = self.getLType(node.children[0])
+			rightType = self.getRType(node.children[1])
 
-			self.leftType = self.getLType(node.children[0])
-			self.rightType = self.getRType(node.children[1])
+			if rightType != None and leftType != None and leftType != rightType:
+				raise Exception("Types for assignment don't match: " + str(leftType) + " and " + str(rightType))
+		
+		elif node.type == ASTNodeType.Condition:
+			currentNode = node.children[0]
+			if len(currentNode.children) == 1 and currentNode.children[0].type == ASTNodeType.Not:
+				# No checking need to be done if it is not compared to anything
+				pass
+			elif len(currentNode.children) == 2:
+				leftType = self.getTypeComparison(currentNode.children[0])
+				rightType = self.getTypeComparison(currentNode.children[1])
+				if rightType != None and leftType != None and leftType != rightType:
+					raise Exception("Types for comparison don't match: " + str(leftType) + " and " + str(rightType))
 
-			if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
-				raise Exception("Types for assignment don't match: " + str(self.leftType) + " and " + str(self.rightType))
 
-		elif node.type == ASTNodeType.Greater or node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Or or node.type == ASTNodeType.And or node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
-			self.leftType, self.rightType = self.getTypesComparison(node.children)
-			if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
-				raise Exception("Types for comparison don't match: " + str(self.leftType) + " and " + str(self.rightType))
+		# elif node.type == ASTNodeType.Greater or node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Or or node.type == ASTNodeType.And or node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
+		# 	self.leftType, self.rightType = self.getTypesComparison(node.children)
+		# 	if self.rightType != None and self.leftType != None and self.leftType != self.rightType:
+		# 		raise Exception("Types for comparison don't match: " + str(self.leftType) + " and " + str(self.rightType))
 
 
-	def getTypesComparison(self, nodes):
-		if (type(nodes) is ASTNode or type(nodes) is pointerType):
-			node = nodes
-			if node.type == ASTNodeType.Not or node.type == ASTNodeType.Greater or node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Or or node.type == ASTNodeType.And or node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
-				return self.getTypesComparison(node.children)
-			else:
-				return self.getRType(node)
-		elif (len(nodes) == 2):
-			return (self.getTypesComparison(nodes[0]), self.getTypesComparison(nodes[1]))
+	def getTypeComparison(self, node):
+		if node.type == ASTNodeType.Greater or node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Or or node.type == ASTNodeType.And or node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
+			type1 = self.getTypeComparison(node.children[0])
+			type2 = self.getTypeComparison(node.children[1])
+			if (type1 != type2):
+				raise Exception("Types do not match: " + str(type1) + " and " + str(type2))
+			return type1
+		elif node.type == ASTNodeType.Not:
+			return self.getTypeComparison(node.children[0])
+		else:
+			return self.getRType(node)
 		
 
 	def getLType(self, node):

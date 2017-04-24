@@ -42,7 +42,6 @@ class ASTNodeType(AutoNumber):
 	IfElse = ()
 	IfTrue = ()
 	IfFalse = ()
-	IfCondition = ()
 	Or = ()
 	And = ()
 	Not = ()
@@ -53,7 +52,6 @@ class ASTNodeType(AutoNumber):
 	Less = ()
 	LessOrEqual = ()
 	While = ()
-	WhileCondition = ()
 	WhileBody = ()
 	For = ()
 	ForStmt1 = ()
@@ -75,6 +73,7 @@ class ASTNodeType(AutoNumber):
 	Scanf = ()
 	Printf = ()
 	FormatString = ()
+	Condition = ()
 
 
 class ASTNode:

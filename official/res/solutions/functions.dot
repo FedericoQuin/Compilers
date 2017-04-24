@@ -44,7 +44,7 @@ digraph AST {
 27 -> 28;
 29 [label="FunctionBody"];
 30 [label="IfElse"];
-31 [label="IfCondition"];
+31 [label="Condition"];
 32 [label="Greater"];
 33 [label="RValueID \nage"];
 34 [label="RValueInt \n100"];
@@ -56,7 +56,7 @@ digraph AST {
 35 -> 36;
 37 [label="IfFalse"];
 38 [label="While"];
-39 [label="WhileCondition"];
+39 [label="Condition"];
 40 [label="Less"];
 41 [label="RValueID \nage"];
 42 [label="RValueInt \n100"];

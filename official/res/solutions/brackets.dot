@@ -45,7 +45,7 @@ digraph AST {
 25 -> 26;
 25 -> 27;
 28 [label="While"];
-29 [label="WhileCondition"];
+29 [label="Condition"];
 30 [label="And"];
 31 [label="Greater"];
 32 [label="RValueID \na"];
@@ -81,7 +81,7 @@ digraph AST {
 44 -> 45;
 44 -> 46;
 47 [label="While"];
-48 [label="WhileCondition"];
+48 [label="Condition"];
 49 [label="And"];
 50 [label="Brackets"];
 51 [label="Or"];

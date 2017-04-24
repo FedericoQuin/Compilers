@@ -21,7 +21,7 @@ digraph AST {
 12 -> 13;
 12 -> 14;
 15 [label="While"];
-16 [label="WhileCondition"];
+16 [label="Condition"];
 17 [label="Greater"];
 18 [label="RValueID \nx"];
 19 [label="RValueInt \n0"];
@@ -30,7 +30,7 @@ digraph AST {
 16 -> 17;
 20 [label="WhileBody"];
 21 [label="IfElse"];
-22 [label="IfCondition"];
+22 [label="Condition"];
 23 [label="Greater"];
 24 [label="RValueID \nx"];
 25 [label="RValueInt \n0"];
