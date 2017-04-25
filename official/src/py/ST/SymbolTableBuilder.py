@@ -3,7 +3,7 @@ from src.py.AST.ASTNode import ASTNodeType, ASTNode, pointerType
 from src.py.VarTypes import * 
 
 class SymbolTableBuilder:
-	def __init__(self, symbolTable, filename, printDescription):
+	def __init__(self, symbolTable, filename="", printDescription=False):
 		self.currentLevel = 0
 		self.levelList = []
 		self.filename = filename

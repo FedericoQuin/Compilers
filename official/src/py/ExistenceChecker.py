@@ -6,7 +6,6 @@ class ExistenceChecker:
 		self.symbolTable = symbolTable
 
 	def checkExistence(self, node):
-		print("everythings fine.")
 		if node.type == ASTNodeType.LValue \
 			or node.type == ASTNodeType.LValueArrayElement \
 			or node.type == ASTNodeType.RValueArrayElement \
