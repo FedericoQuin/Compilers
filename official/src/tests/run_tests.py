@@ -203,8 +203,8 @@ def test_types():
 		"type_check10.c"
 		]
 	errorMessages = [
-		"Types for assignment don't match: char and int.",
-		"Types for assignment don't match: float and int.",
+		"Types for initialization don't match: char and int.",
+		"Types for initialization don't match: float and int.",
 		"Types do not match: int and float.",
 		"Types for comparison don't match: int and float.",
 		"Function arguments invalid: 'getCookies' takes 0 arguments (1 argument given).",
@@ -212,7 +212,7 @@ def test_types():
 		"Argument for function call 'wrongTypes' did not match the signature: int and char (argument #2).",
 		"Argument for function call 'someFunction' did not match the signature: char and int (argument #1).",
 		"Argument for function call 'thatOtherFunction' did not match the signature: float and int (argument #2).",
-		"Types for assignment don't match: int and void."
+		"Types for initialization don't match: int and void."
 	]
 	for i in range(len(errorFiles)):
 		try:
