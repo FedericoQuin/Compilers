@@ -2,8 +2,8 @@ from src.py.AST.ASTWalker import ASTWalker
 from src.py.AST.ASTNode import ASTNodeType, ASTNode
 from src.py.ST.SymbolTableBuilder import SymbolTableBuilder
 from src.py.ST.SymbolTable import SymbolTable
-from src.py.TypeChecker import TypeChecker
-from src.py.ExistenceChecker import ExistenceChecker
+from src.py.SA.TypeChecker import TypeChecker
+from src.py.SA.ExistenceChecker import ExistenceChecker
 
 class PTranslator:
     def __init__(self):
