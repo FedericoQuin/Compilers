@@ -18,11 +18,11 @@ digraph AST {
 11 -> 13;
 14 [label="For"];
 15 [label="ForStmt1"];
-16 [label="Assignment"];
-17 [label="IntDecl \ni"];
+16 [label="IntDecl \ni"];
+17 [label="Initialization"];
 18 [label="RValueInt \n0"];
+17 -> 18;
 16 -> 17;
-16 -> 18;
 15 -> 16;
 19 [label="ForStmt2"];
 20 [label="Less"];

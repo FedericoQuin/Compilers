@@ -21,11 +21,11 @@ digraph AST {
 13 -> 15;
 13 -> 16;
 17 [label="FunctionBody"];
-18 [label="Assignment"];
-19 [label="FloatDecl \nx"];
+18 [label="FloatDecl \nx"];
+19 [label="Initialization"];
 20 [label="RValueFloat \n3.5"];
+19 -> 20;
 18 -> 19;
-18 -> 20;
 17 -> 18;
 11 -> 12;
 11 -> 13;

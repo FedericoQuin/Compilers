@@ -79,36 +79,11 @@ mul_div :
 bracket_expression :
 	LBRACKET expression RBRACKET;
 
-OPERATOR_AS : '=';
-OPERATOR_PLUS : '+';
-POST_OPERATOR_INCR : '++';
-POST_OPERATOR_DECR : '--';
-PRE_OPERATOR_INCR : '++';
-PRE_OPERATOR_DECR : '--';
-OPERATOR_MINUS : '-';
-OPERATOR_DIV : '/';
-OPERATOR_MUL : '*';
 
 //////////////////////////////////////////////////////////
 // If-else stuff and boolean conditions					//
 //////////////////////////////////////////////////////////
 
-OPERATOR_EQ : '==';
-OPERATOR_NE : '!=';
-OPERATOR_GT : '>';
-OPERATOR_GE : '>=' | '=>';
-OPERATOR_LT : '<';
-OPERATOR_LE : '<=' | '=<';
-
-OPERATOR_OR :
-	'||'
-	| 'or';
-OPERATOR_AND :
-	'&&'
-	| 'and';
-OPERATOR_NOT :
-	'!'
-	| 'not';
 
 lvalue_identifier : ID;
 rvalue_identifier : ID;
@@ -246,16 +221,20 @@ declaration :
 	| array_declaration;
 
 normal_declaration :
-	dec_type ID;
+	dec_type ID initialization
+	| dec_type ID;
 array_declaration : 
 	dec_type ID LSQUAREBRACKET digits RSQUAREBRACKET;
 
-assignment : lvalue '=' rvalue; // lack of better words
+assignment : lvalue OPERATOR_AS expression; // lack of better words
 
+initialization :
+	OPERATOR_AS expression;
 
 global_declaration : 
-	assignment
-	| declaration;
+	declaration;
+
+
 
 
 //////////////////////////////////////////////////////////
@@ -263,8 +242,7 @@ global_declaration :
 //////////////////////////////////////////////////////////
 
 lvalue 
-	: declaration 
-	| ID
+	: ID
 	| arrayelement_lvalue;
 
 rvalue 
@@ -319,6 +297,35 @@ RSQUAREBRACKET : ']';
 LBRACKET : '(';
 RBRACKET : ')';
 CHARVALUE : '\'' . '\'';
+
+
+OPERATOR_AS : '=';
+OPERATOR_PLUS : '+';
+POST_OPERATOR_INCR : '++';
+POST_OPERATOR_DECR : '--';
+PRE_OPERATOR_INCR : '++';
+PRE_OPERATOR_DECR : '--';
+OPERATOR_MINUS : '-';
+OPERATOR_DIV : '/';
+OPERATOR_MUL : '*';
+
+OPERATOR_EQ : '==';
+OPERATOR_NE : '!=';
+OPERATOR_GT : '>';
+OPERATOR_GE : '>=' | '=>';
+OPERATOR_LT : '<';
+OPERATOR_LE : '<=' | '=<';
+
+OPERATOR_OR :
+	'||'
+	| 'or';
+OPERATOR_AND :
+	'&&'
+	| 'and';
+OPERATOR_NOT :
+	'!'
+	| 'not';
+
 
 VOID : 'void';
 CHAR : 'char';

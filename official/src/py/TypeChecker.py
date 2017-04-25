@@ -12,11 +12,15 @@ class TypeChecker:
 
 		# Type checking for assignment between lvalue and rvalue
 		if (node.type == ASTNodeType.Assignment):
-			leftType = self.getLType(node.children[0])
+			leftType = self.symbolTable.lookupSymbol(node.children[0].value).type
 			rightType = self.getRType(node.children[1])
 
 			if rightType != None and leftType != None and leftType != rightType:
 				raise Exception("Types for assignment don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
+			elif rightType == None:
+				raise Exception("Something broke")
+			elif leftType == None:
+				raise Exception("Something broke")
 		
 		# Type checking left side and right side of condition (if present)
 		elif node.type == ASTNodeType.Condition:
@@ -33,6 +37,15 @@ class TypeChecker:
 		# Type checking for arguments given with a function call
 		elif node.type == ASTNodeType.FunctionCall:
 			self.checkCallArguments(node)
+
+		# Type checking for initializations
+		elif node.type == ASTNodeType.Initialization:
+			# Check between the parent node and the child node
+			leftType = self.symbolTable.lookupSymbol(node.parent.value).type
+			rightType = self.getRType(node.children[0])
+
+			if rightType != leftType:
+				raise Exception("Types for initialization don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
 
 
 
@@ -65,27 +78,8 @@ class TypeChecker:
 			return self.getTypeComparison(node.children[0])
 		else:
 			return self.getRType(node)
-		
 
-	def getLType(self, node):
-		if (node.type == ASTNodeType.LValue):
-			return self.symbolTable.lookupSymbol(node.value).type
-		elif (node.type == ASTNodeType.LValueArrayElement):
-			return self.symbolTable.lookupSymbol(node.value).type
-		elif (node.type == ASTNodeType.ArrayDecl):
-			arrayType = PointerType(mapToPrimitiveType(node.children[0].value.type), node.children[0].value.ptrCount)
-			size = node.children[1].value
-			return ArrayType(arrayType, size)
-		elif (node.type == ASTNodeType.IntDecl):
-			return IntType()
-		elif (node.type == ASTNodeType.CharDecl):
-			return CharType()
-		elif (node.type == ASTNodeType.FloatDecl):
-			return FloatType()
-		elif (type(node.type) is pointerType):
-			return PointerType(self.getLType(node.type), node.type.ptrCount)
 
-		return None
 
 	def getRType(self, node):
 		if (node.type == ASTNodeType.RValueChar):
