@@ -1,8 +1,14 @@
 
-int getCookies();
-int getCookies2(int idk);
-int getCookies3(char woeps, float no, int ja);
-int getOtherCookies(int test, char test2, float test3);
+int getCookies() {return 0;}
+int getCookies2(int idk) {return idk;}
+int getCookies3(char woeps, float no, int ja) {
+	if (no == 5.0) {
+		return ja;
+	} else {
+		return ja+1;
+	}
+}
+int getOtherCookies(int test, char test2, float test3) {return 9001;}
 
 
 int main() {

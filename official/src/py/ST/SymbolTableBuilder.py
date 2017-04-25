@@ -44,7 +44,9 @@ class SymbolTableBuilder:
 		elif (node.type == ASTNodeType.Function):
 			self.enterScope(nodeLevel)
 			if (self.symbolTable.symbolExists(str(node.value), Scope.GLOBAL) == False):
-				self.addFunctionSignature(node)
+				self.addFunctionSignature(node, True)
+			else:
+				self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type.instantiated = True
 
 		self.checkForDeclarations(node, nodeLevel)
 
@@ -60,7 +62,7 @@ class SymbolTableBuilder:
 		return self.symbolTable
 
 	
-	def addFunctionSignature(self, node):
+	def addFunctionSignature(self, node, instantiated = False):
 		children = node.children
 		# TODO Func is a placeholder until subclassed
 		returnType = PointerType(mapToPrimitiveType(children[0].value.type), children[0].value.ptrCount)
@@ -70,7 +72,7 @@ class SymbolTableBuilder:
 		#		The actual type has to be accessed by getting the type attribute from that class.
 		functionSignature = [PointerType(mapToPrimitiveType(i.type.type), i.type.ptrCount) for i in children[1].children]
 		# functionSignature += ",".join([ mapToPrimitiveName(child.type.type) for child in children[1].children ]) + ")"
-		self.symbolTable.insertEntry(str(node.value), FunctionType(returnType, functionSignature) , Scope.GLOBAL)
+		self.symbolTable.insertEntry(str(node.value), FunctionType(returnType, functionSignature, instantiated) , Scope.GLOBAL)
 
 
 	def checkForDeclarations(self, node, nodeLevel):

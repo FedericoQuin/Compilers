@@ -295,7 +295,7 @@ class AST:
 		self.currentPointer.addChild(ASTNodeType.Continue)
 
 	def returnStmt(self, ctx):
-		self.currentPointer.addChild(ASTNodeType.Return)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Return)
 
 
 

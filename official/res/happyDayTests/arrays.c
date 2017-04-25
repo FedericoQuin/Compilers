@@ -1,6 +1,8 @@
 
 
-void doSomething(char* test);
+void doSomething(char* test) {
+	return;
+}
 
 int main() {
 	int a[10];

@@ -258,6 +258,9 @@ class ASTCreator(cGrammarListener):
 	def enterReturn_stmt(self, ctx:cGrammarParser.Return_stmtContext):
 		self.AST.returnStmt(ctx)
 
+	def exitReturn_stmt(self, ctx:cGrammarParser.Return_stmtContext):
+		self.AST.climbTree()
+
 
 	#################################################
 	# For stuff										#

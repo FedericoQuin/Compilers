@@ -228,12 +228,14 @@ def test_existences():
 	errorFiles = [
 		"existence1.c",
 		"existence2.c",
-		"existence3.c"
+		"existence3.c",
+		"existence4.c"
 		]
 	errorMessages = [
-		"Error: variable referenced before declaration: a.",
-		"Error: function called before declaration: getCookies.",
-		"Error: variable referenced before declaration: tedt."
+		"Error: variable 'a' referenced before declaration.",
+		"Error: function 'getCookies' called before declaration.",
+		"Error: variable 'tedt' referenced before declaration.",
+		"Error: function 'test' called before initialisation."
 	]
 	for i in range(len(errorFiles)):
 		try:

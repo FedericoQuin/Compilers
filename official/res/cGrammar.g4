@@ -50,7 +50,7 @@ statement
 
 break_stmt : 'break';
 continue_stmt : 'continue';
-return_stmt : 'return';
+return_stmt : RETURN expression?;
 
 expression :	// TODO add brackets
 	lvalue OPERATOR_AS add_sub
@@ -319,6 +319,7 @@ RSQUAREBRACKET : ']';
 LBRACKET : '(';
 RBRACKET : ')';
 CHARVALUE : '\'' . '\'';
+RETURN : 'return';
 
 VOID : 'void';
 CHAR : 'char';

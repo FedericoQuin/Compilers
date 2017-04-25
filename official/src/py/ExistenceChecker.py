@@ -13,8 +13,12 @@ class ExistenceChecker:
 			
 			# Check wether the symbol is present in the symboltable, otherwise throw an error
 			if self.symbolTable.lookupSymbol(node.value) == None:
-				raise Exception("Error: variable referenced before declaration: " + str(node.value) + ".")
+				raise Exception("Error: variable '" + str(node.value) + "' referenced before declaration.")
 		
 		elif node.type == ASTNodeType.FunctionCall:
+			# Is the function declared?
 			if self.symbolTable.lookupSymbol(node.value) == None:
-				raise Exception("Error: function called before declaration: " + str(node.value) + ".")
+				raise Exception("Error: function '" + str(node.value) + "' called before declaration.")
+			# Is the function initialized yet?
+			elif self.symbolTable.lookupSymbol(node.value).type.initialized == False:
+				raise Exception("Error: function '" + str(node.value) + "' called before initialisation.")

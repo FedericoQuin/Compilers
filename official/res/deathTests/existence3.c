@@ -1,6 +1,8 @@
 
 
-float getCookies(int a);
+float getCookies(int a) {
+	return 5.0;
+}
 
 int main() {
 	int test = 5;

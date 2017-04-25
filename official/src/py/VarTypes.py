@@ -123,10 +123,11 @@ class ArrayType(VarType):
 		return str(self.type)
 
 class FunctionType(VarType):
-	def __init__(self, returnType, arguments):
+	def __init__(self, returnType, arguments, initialized = False):
 		self.returnType = returnType
 		self.arguments = arguments
 		self.memorySize = 0
+		self.initialized = initialized
 
 	def __str__(self):
 		return str(self.returnType) + " func(" + ",".join([str(i) for i in self.arguments]) + ")"

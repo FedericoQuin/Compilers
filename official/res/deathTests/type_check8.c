@@ -1,6 +1,12 @@
 // check for array elements
 
-int someFunction(char a, float b);
+int someFunction(char a, float b) {
+	if (a == 'a') {
+		return 1;
+	} else if (b == 4.9) {
+		return 10;
+	}
+}
 
 int main() {
 	char charArray[100];
