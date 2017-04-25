@@ -160,6 +160,12 @@ def test_printf():
 def test_redefining_symbols():
 	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p", "redefining_symbols.symboltable")
 
+def test_return_types1():
+	parse("return_types1.c", "return_types1.dot", "return_types1.p", "return_types1.symboltable")
+
+def test_return_types2():
+	parse("return_types2.c", "return_types2.dot", "return_types2.p", "return_types2.symboltable")
+
 
 
 def test_errors():
@@ -264,3 +270,23 @@ def test_duplicate_declarations():
 		except Exception as inst:
 			string = str(inst)
 			assert(string == errorMessages[i])
+
+
+def test_wrong_returns():
+	errorFiles = [
+		"wrong_return1.c",
+		"wrong_return2.c"
+		]
+	errorMessages = [
+		"Return type doesn't match 'testing' signature: int and char.",
+		"Return type doesn't match 'testing' signature: void and int."
+	]
+	for i in range(len(errorFiles)):
+		try:
+			ASTNode.ID = 0
+			parseNoCatch(errorFiles[i], "", "")
+		except Exception as inst:
+			string = str(inst)
+			assert(string == errorMessages[i])
+
+

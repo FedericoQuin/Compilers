@@ -29,6 +29,8 @@ class VoidType(VarType):
 	def __eq__(self, object):
 		if type(object) is VoidType:
 			return True
+		elif type(object) is PointerType:
+			return object == self
 		return False
 	
 

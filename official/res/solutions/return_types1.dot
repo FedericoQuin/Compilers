@@ -1,0 +1,25 @@
+digraph AST {
+2 [label="Program"];
+3 [label="Function \ntesting"];
+4 [label="ReturnType \nIntDecl"];
+5 [label="FunctionArgs"];
+6 [label="FunctionBody"];
+3 -> 4;
+3 -> 5;
+3 -> 6;
+7 [label="Function \nmain"];
+8 [label="ReturnType \nIntDecl"];
+9 [label="FunctionArgs"];
+10 [label="FunctionBody"];
+11 [label="Assignment"];
+12 [label="IntDecl \na"];
+13 [label="FunctionCall \ntesting"];
+11 -> 12;
+11 -> 13;
+10 -> 11;
+7 -> 8;
+7 -> 9;
+7 -> 10;
+2 -> 3;
+2 -> 7;
+}

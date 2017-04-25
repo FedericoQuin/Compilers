@@ -33,6 +33,15 @@ class TypeChecker:
 		# Type checking for arguments given with a function call
 		elif node.type == ASTNodeType.FunctionCall:
 			self.checkCallArguments(node)
+		
+		# Type checking for return type
+		elif node.type == ASTNodeType.Return:
+			functionSymbol = self.getFirstFunctionSymbol(node)
+			functionReturnType = self.symbolTable.lookupSymbol(functionSymbol).type.returnType
+			returnType = self.getRType(node.children[0]) if len(node.children) == 1 else VoidType()
+
+			if returnType != None and functionReturnType != None and functionReturnType != returnType:
+				raise Exception("Return type doesn't match '" + functionSymbol + "' signature: " + functionReturnType.getStrType() + " and " + returnType.getStrType() + ".")
 
 
 
@@ -66,6 +75,13 @@ class TypeChecker:
 		else:
 			return self.getRType(node)
 		
+	
+	def getFirstFunctionSymbol(self, node):
+		if node.type == ASTNodeType.Function:
+			return str(node.value)
+		else:
+			return self.getFirstFunctionSymbol(node.parent)
+
 
 	def getLType(self, node):
 		if (node.type == ASTNodeType.LValue):
@@ -82,8 +98,12 @@ class TypeChecker:
 			return CharType()
 		elif (node.type == ASTNodeType.FloatDecl):
 			return FloatType()
+		elif (node.type == ASTNodeType.Void):
+			return VoidType()
 		elif (type(node.type) is pointerType):
 			return PointerType(self.getLType(node.type), node.type.ptrCount)
+		elif (node.type == ASTNodeType.ReturnType):
+			return self.getLType(node.value)
 
 		return None
 
