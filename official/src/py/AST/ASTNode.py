@@ -19,6 +19,7 @@ class ASTNodeType(AutoNumber):
 	CharSignature = ()
 	ArraySignature = ()
 	FunctionDecl = ()
+	Initialization = ()
 	ArraySize = ()
 	LValue = ()
 	LValueArrayElement = ()

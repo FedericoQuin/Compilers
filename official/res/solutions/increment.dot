@@ -4,11 +4,11 @@ digraph AST {
 3 [label="ReturnType \nIntDecl"];
 4 [label="FunctionArgs"];
 5 [label="FunctionBody"];
-6 [label="Assignment"];
-7 [label="IntDecl \nc"];
+6 [label="IntDecl \nc"];
+7 [label="Initialization"];
 8 [label="RValueInt \n5"];
+7 -> 8;
 6 -> 7;
-6 -> 8;
 9 [label="PostfixIncr \nc"];
 10 [label="PostfixDecr \nc"];
 5 -> 6;
