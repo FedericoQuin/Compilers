@@ -157,6 +157,9 @@ def test_scanf():
 def test_printf():
 	parse("printf.c", "printf.dot", "printf.p", "printf.symboltable")
 
+def test_redefining_symbols():
+	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p", "redefining_symbols.symboltable")
+
 
 
 def test_errors():
