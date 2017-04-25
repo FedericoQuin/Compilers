@@ -2,7 +2,7 @@ import sys
 from antlr4 import *
 from src.cGrammarLexer import cGrammarLexer
 from src.cGrammarParser import cGrammarParser
-from src.py..AST.ASTCreator import ASTCreator
+from src.py.AST.ASTCreator import ASTCreator
 from src.py.PTranslator import PTranslator
 from src.py.MyErrorListener import MyErrorListener
 

@@ -221,3 +221,24 @@ def test_types():
 		except Exception as inst:
 			string = str(inst)
 			assert(string == errorMessages[i])
+
+
+def test_existences():
+		# Tests the existenceChecker
+	errorFiles = [
+		"existence1.c",
+		"existence2.c",
+		"existence3.c"
+		]
+	errorMessages = [
+		"Error: variable referenced before declaration: a.",
+		"Error: function called before declaration: getCookies.",
+		"Error: variable referenced before declaration: tedt."
+	]
+	for i in range(len(errorFiles)):
+		try:
+			ASTNode.ID = 0
+			parseNoCatch(errorFiles[i], "", "")
+		except Exception as inst:
+			string = str(inst)
+			assert(string == errorMessages[i])
