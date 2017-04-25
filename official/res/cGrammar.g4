@@ -38,7 +38,6 @@ statements :
 statement
 	: expression ';'
 	| declaration ';'
-	| initialization ';'
 	| ifelse
 	| while_loop
 	| for_loop
