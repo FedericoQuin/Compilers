@@ -45,8 +45,13 @@ class SymbolTableBuilder:
 			self.enterScope(nodeLevel)
 			if (self.symbolTable.symbolExists(str(node.value), Scope.GLOBAL) == False):
 				self.addFunctionSignature(node, True)
+			elif type(self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type) is FunctionType:
+				if self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type.initialized == False:
+					self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type.initialized = True
+				else:
+					raise Exception("Function '" + str(node.value) + "' has already been initialized.")
 			else:
-				self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type.instantiated = True
+				raise Exception("Symbol '" + str(node.value) + "' has already been defined in this scope.")
 
 		self.checkForDeclarations(node, nodeLevel)
 
@@ -62,7 +67,7 @@ class SymbolTableBuilder:
 		return self.symbolTable
 
 	
-	def addFunctionSignature(self, node, instantiated = False):
+	def addFunctionSignature(self, node, initialized = False):
 		children = node.children
 		# TODO Func is a placeholder until subclassed
 		returnType = PointerType(mapToPrimitiveType(children[0].value.type), children[0].value.ptrCount)
@@ -72,20 +77,30 @@ class SymbolTableBuilder:
 		#		The actual type has to be accessed by getting the type attribute from that class.
 		functionSignature = [PointerType(mapToPrimitiveType(i.type.type), i.type.ptrCount) for i in children[1].children]
 		# functionSignature += ",".join([ mapToPrimitiveName(child.type.type) for child in children[1].children ]) + ")"
-		self.symbolTable.insertEntry(str(node.value), FunctionType(returnType, functionSignature, instantiated) , Scope.GLOBAL)
+		self.symbolTable.insertEntry(str(node.value), FunctionType(returnType, functionSignature, initialized) , Scope.GLOBAL)
 
+
+	def addPrimitiveType(self, symbol, type):
+		seld.checkDuplicateDeclaration(symbol)
+		self.symbolTable.insertEntry(symbol, type, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+
+	def checkDuplicateDeclaration(self, symbol):
+		if self.symbolTable.lookupSymbol(symbol, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL, len(self.levelList)-1) != None:
+			raise Exception("Symbol '" + symbol + "' has already been defined in this scope.")
+		
 
 	def checkForDeclarations(self, node, nodeLevel):
 		if (node.type == ASTNodeType.FloatDecl):
-			self.symbolTable.insertEntry(str(node.value), FloatType(), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+			self.addPrimitiveType(str(node.value), FloatType())
 		elif (node.type == ASTNodeType.IntDecl):
-			self.symbolTable.insertEntry(str(node.value), IntType(), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+			self.addPrimitiveType(str(node.value), IntType())
 		elif (node.type == ASTNodeType.CharDecl):
-			self.symbolTable.insertEntry(str(node.value), CharType(), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+			self.addPrimitiveType(str(node.value), CharType())
 		elif (node.type == ASTNodeType.FunctionDecl):
+			self.checkDuplicateDeclaration(str(node.value))
 			self.addFunctionSignature(node)
 		elif (node.type == ASTNodeType.ArrayDecl):
-			# The type part of the symbol (for example: int****)
+			self.checkDuplicateDeclaration(str(node.value))
 			arrayType = PointerType(mapToPrimitiveType(node.children[0].value.type), node.children[0].value.ptrCount)
 			size = node.children[1].value
 			self.symbolTable.insertEntry(str(node.value), ArrayType(arrayType, size), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
@@ -94,6 +109,7 @@ class SymbolTableBuilder:
 			if self.isSignatureType(node.type.type):
 				return
 			
+			self.checkDuplicateDeclaration(str(node.value))			
 			# Type consists of the primitive type + optionally pointer operators
 			symbolType = PointerType(mapToPrimitiveType(node.type.type), node.type.ptrCount)
 			self.symbolTable.insertEntry(str(node.value), symbolType, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)

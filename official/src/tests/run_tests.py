@@ -224,7 +224,7 @@ def test_types():
 
 
 def test_existences():
-		# Tests the existenceChecker
+	# Tests the existenceChecker
 	errorFiles = [
 		"existence1.c",
 		"existence2.c",
@@ -236,6 +236,23 @@ def test_existences():
 		"Error: function 'getCookies' called before declaration.",
 		"Error: variable 'tedt' referenced before declaration.",
 		"Error: function 'test' called before initialisation."
+	]
+	for i in range(len(errorFiles)):
+		try:
+			ASTNode.ID = 0
+			parseNoCatch(errorFiles[i], "", "")
+		except Exception as inst:
+			string = str(inst)
+			assert(string == errorMessages[i])
+
+def test_duplicate_declarations():
+	errorFiles = [
+		"dup_decl1.c",
+		"dup_decl2.c"
+		]
+	errorMessages = [
+		"Symbol 'a' has already been defined in this scope.",
+		"Symbol 'testing' has already been defined in this scope."
 	]
 	for i in range(len(errorFiles)):
 		try:

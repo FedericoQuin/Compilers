@@ -41,7 +41,7 @@ class SymbolTable:
 		else:
 			self.globalScopeTable[symbol] = SymbolMapping(_type, beginAddress)
 		
-	def lookupSymbol(self, symbol, scope=None):
+	def lookupSymbol(self, symbol, scope=None, level=None):
 		"""
 			Lookup a symbol in the symboltable. This method checks the local symbol tables first before checking the global table.
 			None is returned in case the symbol is not found in any table.
@@ -52,7 +52,10 @@ class SymbolTable:
 		elif scope == Scope.GLOBAL:
 			return self.searchSymbolGlobal(symbol)
 		elif scope == Scope.LOCAL:
-			return self.searchSymbolLocal(symbol)
+			if level == None:
+				return self.searchSymbolLocal(symbol)
+			else:
+				return self.localScopeTables[level].lookupSymbol(symbol)
 
 		return None
 
@@ -134,7 +137,9 @@ class STSingleScope:
 		return symbol in self.table
 
 	def lookupSymbol(self, symbol):
-		return self.table[symbol]
+		if symbol in self.table:
+			return self.table[symbol]
+		return None
 
 	def addSymbol(self, symbol, _type, addr = 0):
 		self.table[symbol] = SymbolMapping(_type, addr)
