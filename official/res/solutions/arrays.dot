@@ -22,11 +22,11 @@ digraph AST {
 13 -> 15;
 16 [label="For"];
 17 [label="ForStmt1"];
-18 [label="Assignment"];
-19 [label="IntDecl \ni"];
+18 [label="IntDecl \ni"];
+19 [label="Initialization"];
 20 [label="RValueInt \n0"];
+19 -> 20;
 18 -> 19;
-18 -> 20;
 17 -> 18;
 21 [label="ForStmt2"];
 22 [label="Less"];

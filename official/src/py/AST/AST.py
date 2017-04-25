@@ -41,7 +41,10 @@ class AST:
 			ptrCount += 1
 			nextPtr = nextPtr.ptr()
 
-		self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
+		self.currentPointer = self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
+		# if ctx.initialization() == None:
+		# 	self.climbTree()
+
 	
 	def addArrayDeclaration(self, ctx):
 		# Same as a normal declaration (the type part), with the addition of the 'array' itself
@@ -67,10 +70,10 @@ class AST:
 			nextPtr = nextPtr.ptr()
 
 		self.currentPointer.addChild(ASTNodeType.ArrayType, pointerType(_type, ptrCount))
-	
 		self.currentPointer.addChild(ASTNodeType.ArraySize, int(getStringOfArray(ctx.digits().DIGIT())))
-		self.climbTree()
 
+	def addInitialization(self):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Initialization)
 
 	#====================================================================
 	#= 						Array element access						=
@@ -366,7 +369,23 @@ class AST:
 		if (self.currentPointer.parent.type == ASTNodeType.FunctionDecl):
 			self.addSignatureArgument(ctx)
 		elif (self.currentPointer.parent.type == ASTNodeType.Function):
-			self.addNormalDeclaration(ctx)
+			_type = None
+			if (ctx.dec_type().INT() != None):
+				_type = ASTNodeType.IntDecl
+			elif (ctx.dec_type().FLOAT() != None):
+				_type = ASTNodeType.FloatDecl
+			elif (ctx.dec_type().CHAR() != None):
+				_type = ASTNodeType.CharDecl
+
+			ptrCount = 0
+			nextPtr = ctx.dec_type().ptr()
+			if nextPtr != None:
+				nextPtr = nextPtr.ptr()
+			while nextPtr != None:
+				ptrCount += 1
+				nextPtr = nextPtr.ptr()
+
+			self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
 			
 	
 	def addSignatureArgument(self, ctx):

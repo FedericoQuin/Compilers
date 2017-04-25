@@ -26,11 +26,22 @@ class ASTCreator(cGrammarListener):
 	def enterNormal_declaration(self, ctx:cGrammarParser.Normal_declarationContext):
 		self.AST.addNormalDeclaration(ctx)
 
+	def exitNormal_declaration(self, ctx:cGrammarParser.Normal_declarationContext):
+		self.AST.climbTree()
 
 	def enterArray_declaration(self, ctx:cGrammarParser.Array_declarationContext):
 		self.AST.addArrayDeclaration(ctx)
 
+	def exitArray_declaration(self, ctx:cGrammarParser.Array_declarationContext):
+		self.AST.climbTree()
 
+
+	def enterInitialization(self, ctx:cGrammarParser.InitializationContext):
+		self.AST.addInitialization()
+
+	def exitInitialization(self, ctx:cGrammarParser.InitializationContext):
+		self.AST.climbTree()
+	
 
 
 

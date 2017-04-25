@@ -10,15 +10,19 @@ class TypeChecker:
 
 	def checkType(self, node):
 
+		#=======================================================
 		# Type checking for assignment between lvalue and rvalue
+		#=======================================================
 		if (node.type == ASTNodeType.Assignment):
-			leftType = self.getLType(node.children[0])
+			leftType = self.symbolTable.lookupSymbol(node.children[0].value).type
 			rightType = self.getRType(node.children[1])
 
 			if rightType != None and leftType != None and leftType != rightType:
 				raise Exception("Types for assignment don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
 		
+		#=================================================================
 		# Type checking left side and right side of condition (if present)
+		#=================================================================
 		elif node.type == ASTNodeType.Condition:
 			currentNode = node.children[0]
 			if len(currentNode.children) == 1 and currentNode.children[0].type == ASTNodeType.Not:
@@ -30,11 +34,15 @@ class TypeChecker:
 				if rightType != None and leftType != None and leftType != rightType:
 					raise Exception("Types for comparison don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
 		
+		#=======================================================
 		# Type checking for arguments given with a function call
+		#=======================================================
 		elif node.type == ASTNodeType.FunctionCall:
 			self.checkCallArguments(node)
 		
+		#==============================
 		# Type checking for return type
+		#==============================
 		elif node.type == ASTNodeType.Return:
 			functionSymbol = self.getFirstFunctionSymbol(node)
 			functionReturnType = self.symbolTable.lookupSymbol(functionSymbol).type.returnType
@@ -42,6 +50,17 @@ class TypeChecker:
 
 			if returnType != None and functionReturnType != None and functionReturnType != returnType:
 				raise Exception("Return type doesn't match '" + functionSymbol + "' signature: " + functionReturnType.getStrType() + " and " + returnType.getStrType() + ".")
+
+		#==================================
+		# Type checking for initializations
+		#==================================
+		elif node.type == ASTNodeType.Initialization:
+			# Check between the parent node and the child node
+			leftType = self.symbolTable.lookupSymbol(node.parent.value).type
+			rightType = self.getRType(node.children[0])
+
+			if rightType != leftType:
+				raise Exception("Types for initialization don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
 
 
 
@@ -67,7 +86,7 @@ class TypeChecker:
 		if node.type == ASTNodeType.Greater or node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Or or node.type == ASTNodeType.And or node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
 			type1 = self.getTypeComparison(node.children[0])
 			type2 = self.getTypeComparison(node.children[1])
-			if (type1 != type2):
+			if type1 != type2:
 				raise Exception("Types do not match: " + type1.getStrType() + " and " + type2.getStrType())
 			return type1
 		elif node.type == ASTNodeType.Not:
@@ -83,52 +102,29 @@ class TypeChecker:
 			return self.getFirstFunctionSymbol(node.parent)
 
 
-	def getLType(self, node):
-		if (node.type == ASTNodeType.LValue):
-			return self.symbolTable.lookupSymbol(node.value).type
-		elif (node.type == ASTNodeType.LValueArrayElement):
-			return self.symbolTable.lookupSymbol(node.value).type
-		elif (node.type == ASTNodeType.ArrayDecl):
-			arrayType = PointerType(mapToPrimitiveType(node.children[0].value.type), node.children[0].value.ptrCount)
-			size = node.children[1].value
-			return ArrayType(arrayType, size)
-		elif (node.type == ASTNodeType.IntDecl):
-			return IntType()
-		elif (node.type == ASTNodeType.CharDecl):
-			return CharType()
-		elif (node.type == ASTNodeType.FloatDecl):
-			return FloatType()
-		elif (node.type == ASTNodeType.Void):
-			return VoidType()
-		elif (type(node.type) is pointerType):
-			return PointerType(self.getLType(node.type), node.type.ptrCount)
-		elif (node.type == ASTNodeType.ReturnType):
-			return self.getLType(node.value)
-
-		return None
 
 	def getRType(self, node):
-		if (node.type == ASTNodeType.RValueChar):
+		if node.type == ASTNodeType.RValueChar:
 			return CharType()
-		elif (node.type == ASTNodeType.RValueInt):
+		elif node.type == ASTNodeType.RValueInt:
 			return IntType()
-		elif (node.type == ASTNodeType.RValueFloat):
+		elif node.type == ASTNodeType.RValueFloat:
 			return FloatType()
-		elif (node.type == ASTNodeType.RValueID):
+		elif node.type == ASTNodeType.RValueID:
 			return self.symbolTable.lookupSymbol(node.value).type
-		elif (node.type == ASTNodeType.Addition):
+		elif node.type == ASTNodeType.Addition:
 			return self.checkTypeChildrenExpression(node.children)
-		elif (node.type == ASTNodeType.Subtraction):
+		elif node.type == ASTNodeType.Subtraction:
 			return self.checkTypeChildrenExpression(node.children)
-		elif (node.type == ASTNodeType.Mul):
+		elif node.type == ASTNodeType.Mul:
 			return self.checkTypeChildrenExpression(node.children)
-		elif (node.type == ASTNodeType.Div):
+		elif node.type == ASTNodeType.Div:
 			return self.checkTypeChildrenExpression(node.children)
-		elif (node.type == ASTNodeType.Brackets):
+		elif node.type == ASTNodeType.Brackets:
 			return self.getRType(node.children[0])
-		elif (node.type == ASTNodeType.FunctionCall):
+		elif node.type == ASTNodeType.FunctionCall:
 			return self.symbolTable.lookupSymbol(node.value).type
-		elif (node.type == ASTNodeType.RValueArrayElement):
+		elif node.type == ASTNodeType.RValueArrayElement:
 			return self.symbolTable.lookupSymbol(node.value).type
 
 

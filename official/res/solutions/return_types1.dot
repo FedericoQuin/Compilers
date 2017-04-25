@@ -11,11 +11,11 @@ digraph AST {
 8 [label="ReturnType \nIntDecl"];
 9 [label="FunctionArgs"];
 10 [label="FunctionBody"];
-11 [label="Assignment"];
-12 [label="IntDecl \na"];
+11 [label="IntDecl \na"];
+12 [label="Initialization"];
 13 [label="FunctionCall \ntesting"];
+12 -> 13;
 11 -> 12;
-11 -> 13;
 10 -> 11;
 7 -> 8;
 7 -> 9;

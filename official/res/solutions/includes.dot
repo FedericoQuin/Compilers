@@ -11,11 +11,11 @@ digraph AST {
 11 -> 12;
 11 -> 13;
 14 [label="FunctionBody"];
-15 [label="Assignment"];
-16 [label="FloatDecl \ntests"];
+15 [label="FloatDecl \ntests"];
+16 [label="Initialization"];
 17 [label="RValueFloat \n0.0"];
+16 -> 17;
 15 -> 16;
-15 -> 17;
 14 -> 15;
 9 -> 10;
 9 -> 11;
