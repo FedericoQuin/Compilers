@@ -25,7 +25,7 @@ digraph AST {
 17 [label="LValue \nb"];
 18 [label="RValueAddress"];
 19 [label="LValueArrayElement \nintArray"];
-20 [label="ArrayElementIndex \n5"];
+20 [label="RValueInt \n5"];
 19 -> 20;
 18 -> 19;
 16 -> 17;

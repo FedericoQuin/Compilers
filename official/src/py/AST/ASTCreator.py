@@ -52,10 +52,15 @@ class ASTCreator(cGrammarListener):
 	def enterArrayelement_lvalue(self, ctx:cGrammarParser.Arrayelement_lvalueContext):
 		self.AST.addArrayElement(ctx, "lvalue")
 
+	def exitArrayelement_lvalue(self, ctx:cGrammarParser.Arrayelement_lvalueContext):
+		self.AST.climbTree()
+
 	
 	def enterArrayelement_rvalue(self, ctx:cGrammarParser.Arrayelement_rvalueContext):
 		self.AST.addArrayElement(ctx, "rvalue")
 
+	def exitArrayelement_rvalue(self, ctx:cGrammarParser.Arrayelement_rvalueContext):
+		self.AST.climbTree()
 
 
 	

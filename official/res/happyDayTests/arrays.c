@@ -17,4 +17,7 @@ int main() {
 	if (pointerArray[0] > 0.0) {
 		pointerArray[2] = 50.0;
 	}
+	int index = 10;
+
+	b[index * 2 + 10] = 10;
 }

@@ -250,17 +250,20 @@ rvalue
 	| numericalvalue 		// NOTE: no differentiation between int value and pointer value, would match the same anyways
 	| functioncall
 	| arrayelement_rvalue
-	| address_value;
+	| address_value
+	| pointer_dereference;
 
 address_value : 
 	OPERATOR_DEREF lvalue;
+
+pointer_dereference :
+	'notthisonepleasenohavemercydontselectmeplease'; 
 
 arrayelement_rvalue : arrayelement;
 arrayelement_lvalue : arrayelement;
 
 arrayelement :
-	ID LSQUAREBRACKET digits RSQUAREBRACKET
-	| ID LSQUAREBRACKET ID RSQUAREBRACKET;
+	ID LSQUAREBRACKET expression RSQUAREBRACKET;
 
 
 
@@ -273,6 +276,9 @@ floatvalue : OPERATOR_MINUS? digits? '.' digits;
 
 
 
+//////////////////////////////////////////////////////////
+// Miscellaneous										//
+//////////////////////////////////////////////////////////
 
 digits : DIGIT+;
 returntype : dec_type | VOID;
@@ -288,6 +294,11 @@ ptr :
 	|;
 
 
+
+
+//////////////////////////////////////////////////////////
+// Lexer Rules											//
+//////////////////////////////////////////////////////////
 
 
 INCLUDE_MACRO : '#include';

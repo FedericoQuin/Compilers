@@ -86,14 +86,8 @@ class AST:
 		elif (val == "rvalue"):
 			_type = ASTNodeType.RValueArrayElement
 
-		if (ctx.arrayelement().digits() != None):
-			self.currentPointer = self.currentPointer.addChild(_type, str(ctx.arrayelement().ID(0)))
-			self.currentPointer.addChild(ASTNodeType.ArrayElementIndex, int(getStringOfArray(ctx.arrayelement().digits().DIGIT())))
-			self.climbTree()
-		elif (len(ctx.arrayelement().ID()) == 2):
-			self.currentPointer = self.currentPointer.addChild(_type, str(ctx.arrayelement().ID(0)))
-			self.currentPointer.addChild(ASTNodeType.ArrayElementIndex, str(ctx.arrayelement().ID(1)))
-			self.climbTree()
+		self.currentPointer = self.currentPointer.addChild(_type, str(ctx.arrayelement().ID()))
+
 
 	#====================================================================
 	#= 						RValue handling								=

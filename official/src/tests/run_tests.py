@@ -296,3 +296,20 @@ def test_wrong_returns():
 			assert(string == errorMessages[i])
 
 
+def test_array_wrongAccess():
+	errorFiles = [
+		"array_wrong_access1.c",
+		"array_wrong_access2.c"
+		]
+	errorMessages = [
+		"Elements of array 'a' should be accessed with an integer.",
+		"Elements of array 'myString' should be accessed with an integer."
+	]
+	for i in range(len(errorFiles)):
+		try:
+			ASTNode.ID = 0
+			parseNoCatch(errorFiles[i], "", "")
+		except Exception as inst:
+			string = str(inst)
+			assert(string == errorMessages[i])
+

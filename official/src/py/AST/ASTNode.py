@@ -24,7 +24,6 @@ class ASTNodeType(AutoNumber):
 	LValue = ()
 	LValueArrayElement = ()
 	RValueArrayElement = ()
-	ArrayElementIndex = ()
 	RValueInt = ()
 	RValueFloat = ()
 	RValueChar = ()

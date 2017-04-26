@@ -62,6 +62,15 @@ class TypeChecker:
 			if rightType != leftType:
 				raise Exception("Types for initialization don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
 
+		#======================================
+		# Type checking for array element index
+		#======================================
+		elif node.type == ASTNodeType.LValueArrayElement or node.type == ASTNodeType.RValueArrayElement:
+			# Make sure that the index is a (positive -> TODO at runtime?) int value
+			indexType = self.getRType(node.children[0])
+			if indexType != IntType():
+				raise Exception("Elements of array '" + str(node.value) + "' should be accessed with an integer.")
+
 
 
 	def checkCallArguments(self, node):
