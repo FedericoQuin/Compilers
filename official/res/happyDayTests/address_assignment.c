@@ -3,5 +3,7 @@ int main() {
 
 	int* b = &a;
 
-	
+	int intArray[10];
+
+	b = &intArray[5];	
 }

@@ -89,7 +89,7 @@ class TypeChecker:
 			if type1 != type2:
 				raise Exception("Types do not match: " + type1.getStrType() + " and " + type2.getStrType())
 			return type1
-		elif node.type == ASTNodeType.Not:
+		elif node.type == ASTNodeType.Not or node.type == ASTNodeType.NegateBrackets or node.type == ASTNodeType.Brackets:
 			return self.getTypeComparison(node.children[0])
 		else:
 			return self.getRType(node)
@@ -126,6 +126,10 @@ class TypeChecker:
 			return self.symbolTable.lookupSymbol(node.value).type
 		elif node.type == ASTNodeType.RValueArrayElement:
 			return self.symbolTable.lookupSymbol(node.value).type
+		elif node.type == ASTNodeType.RValueAddress:
+			return self.symbolTable.lookupSymbol(node.children[0].value).type.dereference()
+		else:
+			raise Exception("Could not deduct type of node '" + str(node.type.name) + "'.")
 
 
 	def checkTypeChildrenExpression(self, children):

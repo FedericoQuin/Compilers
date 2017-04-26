@@ -169,6 +169,8 @@ def test_return_types2():
 def test_minus_values():
 	parse("minus_values.c", "minus_values.dot", "minus_values.p", "minus_values.symboltable")
 
+def test_address_assignment():
+	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p", "address_assignment.symboltable")
 
 
 

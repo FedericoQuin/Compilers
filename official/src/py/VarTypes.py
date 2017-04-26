@@ -22,6 +22,8 @@ class VarType:
 	def getStrType(self):
 		return str(self)
 
+
+
 class VoidType(VarType):
 	def __str__(self):
 		return "void"
@@ -32,7 +34,8 @@ class VoidType(VarType):
 		elif type(object) is PointerType:
 			return object == self
 		return False
-	
+
+
 
 class IntType(VarType):
 	def __init__(self):
@@ -50,6 +53,10 @@ class IntType(VarType):
 			return True
 		return False
 
+	def dereference(self):
+		return PointerType(self, 1)
+
+
 class FloatType(VarType):
 	def __init__(self):
 		self.memorySize = 4
@@ -66,6 +73,10 @@ class FloatType(VarType):
 			return True
 		return False
 
+	def dereference(self):
+		return PointerType(self, 1)
+
+
 class CharType(VarType):
 	def __init__(self):
 		self.memorySize = 1
@@ -81,6 +92,10 @@ class CharType(VarType):
 		if type(object) == type(self):
 			return True
 		return False
+
+	def dereference(self):
+		return PointerType(self, 1)
+
 
 
 class PointerType(VarType):
@@ -103,6 +118,9 @@ class PointerType(VarType):
 			return self.ptrCount == object.ptrCount and self.type == object.type
 		return False
 
+	def dereference(self):
+		return PointerType(self.type, self.ptrCount + 1)
+
 
 class ArrayType(VarType):
 	def __init__(self, _type, size):
@@ -124,6 +142,10 @@ class ArrayType(VarType):
 	def getStrType(self):
 		return str(self.type)
 
+	def dereference(self):
+		return self.type.dereference()
+
+
 class FunctionType(VarType):
 	def __init__(self, returnType, arguments, initialized = False):
 		self.returnType = returnType
@@ -142,6 +164,9 @@ class FunctionType(VarType):
 
 	def getStrType(self):
 		return str(self.returnType)
+
+	def dereference(self):
+		raise Exception("Dereferencing of functions is not supported.")
 
 
 
