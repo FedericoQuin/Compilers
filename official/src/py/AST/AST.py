@@ -126,6 +126,9 @@ class AST:
 	def addFunctionCall(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, str(ctx.ID()))
 
+	def addDereference(self):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueAddress)
+
 
 
 	#====================================================================
@@ -134,10 +137,6 @@ class AST:
 
 	def addAssignment(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment)
-		if (ctx.lvalue().ID() != None):
-			self.currentPointer.addChild(ASTNodeType.LValue, str(ctx.lvalue().ID()))
-		else:
-			pass
 
 	def enterExpression(self, ctx):
 		if ctx.OPERATOR_AS() != None:

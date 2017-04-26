@@ -29,6 +29,7 @@ class ASTNodeType(AutoNumber):
 	RValueFloat = ()
 	RValueChar = ()
 	RValueID = ()
+	RValueAddress = ()
 	FunctionCall = ()
 	Program = ()
 	Block = ()

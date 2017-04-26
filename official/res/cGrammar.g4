@@ -242,14 +242,18 @@ global_declaration :
 //////////////////////////////////////////////////////////
 
 lvalue 
-	: ID
+	: lvalue_identifier
 	| arrayelement_lvalue;
 
 rvalue 
 	: charvalue
 	| numericalvalue 		// NOTE: no differentiation between int value and pointer value, would match the same anyways
 	| functioncall
-	| arrayelement_rvalue;
+	| arrayelement_rvalue
+	| address_value;
+
+address_value : 
+	OPERATOR_DEREF lvalue;
 
 arrayelement_rvalue : arrayelement;
 arrayelement_lvalue : arrayelement;
@@ -316,6 +320,8 @@ OPERATOR_GT : '>';
 OPERATOR_GE : '>=' | '=>';
 OPERATOR_LT : '<';
 OPERATOR_LE : '<=' | '=<';
+
+OPERATOR_DEREF : '&';
 
 OPERATOR_OR :
 	'||'

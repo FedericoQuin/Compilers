@@ -108,6 +108,13 @@ class ASTCreator(cGrammarListener):
 		self.AST.climbTree()
 
 
+	def enterAddress_value(self, ctx:cGrammarParser.Address_valueContext):
+		self.AST.addDereference()
+
+	def exitAddress_value(self, ctx:cGrammarParser.Address_valueContext):
+		self.AST.climbTree()
+
+
 
 	#################################################
 	# Operator stuff								#
