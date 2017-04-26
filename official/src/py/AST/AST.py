@@ -109,14 +109,14 @@ class AST:
 		self.currentPointer.addChild(ASTNodeType.RValueChar, ctx.CHARVALUE())
 
 	def setIntValueNode(self, ctx):
-		self.currentPointer.value = int(getStringOfArray(ctx.DIGIT()))
+		self.currentPointer.value = int(("" if ctx.OPERATOR_MINUS() == None else "-") + getStringOfArray(ctx.DIGIT()))
 
 	def setFloatValueNode(self, ctx):
 		floatString = ""
-		if (len(ctx.digits()) == 1):
-			floatString = "0." + getStringOfArray(ctx.digits(0).DIGIT())
-		elif (len(ctx.digits()) == 2):
-			floatString = \
+		if len(ctx.digits()) == 1:
+			floatString = ("" if ctx.OPERATOR_MINUS() == None else "-") + "0." + getStringOfArray(ctx.digits(0).DIGIT())
+		elif len(ctx.digits()) == 2:
+			floatString = ("" if ctx.OPERATOR_MINUS() == None else "-") + \
 				getStringOfArray(ctx.digits(0).DIGIT()) + \
 				"." + \
 				getStringOfArray(ctx.digits(1).DIGIT())

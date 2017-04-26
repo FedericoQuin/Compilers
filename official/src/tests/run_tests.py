@@ -166,6 +166,10 @@ def test_return_types1():
 def test_return_types2():
 	parse("return_types2.c", "return_types2.dot", "return_types2.p", "return_types2.symboltable")
 
+def test_minus_values():
+	parse("minus_values.c", "minus_values.dot", "minus_values.p", "minus_values.symboltable")
+
+
 
 
 def test_errors():

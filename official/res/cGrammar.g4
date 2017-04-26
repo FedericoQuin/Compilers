@@ -263,8 +263,8 @@ arrayelement :
 charvalue : CHARVALUE;
 numericalvalue : floatvalue | intvalue;
 
-intvalue : DIGIT DIGIT*;
-floatvalue : digits? '.' digits;
+intvalue : OPERATOR_MINUS? DIGIT DIGIT*;
+floatvalue : OPERATOR_MINUS? digits? '.' digits;
 
 
 
