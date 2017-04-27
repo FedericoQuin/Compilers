@@ -172,8 +172,12 @@ def test_minus_values():
 def test_address_assignment():
 	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p", "address_assignment.symboltable")
 
-def test_dereference():
-	parse("dereference.c", "dereference.dot", "dereference.p", "dereference.symboltable")
+def test_dereference1():
+	parse("dereference1.c", "dereference1.dot", "dereference1.p", "dereference1.symboltable")
+
+# def test_dereference2():
+# 	parse("dereference2.c", "dereference2.dot", "dereference2.p", "dereference2.symboltable")
+
 
 
 
