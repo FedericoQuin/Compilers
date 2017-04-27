@@ -1,0 +1,27 @@
+digraph AST {
+1 [label="Program"];
+2 [label="Function \nmain"];
+3 [label="ReturnType \nIntDecl"];
+4 [label="FunctionArgs"];
+5 [label="FunctionBody"];
+6 [label="IntDecl \na"];
+7 [label="Initialization"];
+8 [label="RValueInt \n5"];
+7 -> 8;
+6 -> 7;
+9 [label="PrefixIncr \na"];
+10 [label="IntDecl \nb"];
+11 [label="Initialization"];
+12 [label="RValueInt \n-10"];
+11 -> 12;
+10 -> 11;
+13 [label="PrefixDecr \nb"];
+5 -> 6;
+5 -> 9;
+5 -> 10;
+5 -> 13;
+2 -> 3;
+2 -> 4;
+2 -> 5;
+1 -> 2;
+}
