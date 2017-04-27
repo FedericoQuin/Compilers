@@ -25,7 +25,8 @@ initialfunctionargument :
 type_arguments :	
 	',' type_argument type_arguments
 	|;
-type_argument : dec_type ID;
+type_argument : 
+	dec_type OPERATOR_ADDROF? ID;
 
 
 

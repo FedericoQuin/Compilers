@@ -76,6 +76,7 @@ class ASTNodeType(AutoNumber):
 	FormatString = ()
 	Condition = ()
 	Dereference = ()
+	ByReference = ()
 
 
 class ASTNode:
