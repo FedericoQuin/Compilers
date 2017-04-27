@@ -55,10 +55,10 @@ return_stmt : RETURN expression?;
 expression :	// TODO add brackets
 	lvalue OPERATOR_AS add_sub
 	| add_sub
-	| ID POST_OPERATOR_INCR
-	| PRE_OPERATOR_INCR lvalue_identifier		// NOTE: the prefix operators don't work for some mysterious reason
-	| ID POST_OPERATOR_DECR
-	| PRE_OPERATOR_DECR ID
+	| ID postfix_inc
+	| ID postfix_dec
+	| prefix_inc ID		// NOTE: the prefix operators don't work for some mysterious reason
+	| prefix_dec ID
 	| condition
 	| rvalue;
 
@@ -305,6 +305,14 @@ dec_type :
 	| INT ptr;
 
 
+prefix_inc:
+	OPERATOR_INCR;
+postfix_inc:
+	OPERATOR_INCR;
+prefix_dec:
+	OPERATOR_DECR;
+postfix_dec:
+	OPERATOR_DECR;
 
 
 
@@ -328,11 +336,9 @@ RETURN : 'return';
 
 
 OPERATOR_AS : '=';
+OPERATOR_INCR : '++';
+OPERATOR_DECR : '--';
 OPERATOR_PLUS : '+';
-POST_OPERATOR_INCR : '++';
-POST_OPERATOR_DECR : '--';
-PRE_OPERATOR_INCR : '++';
-PRE_OPERATOR_DECR : '--';
 OPERATOR_MINUS : '-';
 OPERATOR_DIV : '/';
 OPERATOR_MUL : '*';

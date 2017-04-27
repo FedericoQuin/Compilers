@@ -118,6 +118,9 @@ def test_singleLineComment():
 def test_increment():
 	parse("increment.c", "increment.dot", "increment.p", "increment.symboltable")
 
+def test_prefixIncDec():
+	parse("prefixIncDec.c", "prefixIncDec.dot", "prefixIncDec.p", "prefixIncDec.symboltable")
+
 def test_ifelse():
 	parse("ifelse.c", "ifelse.dot", "ifelse.p", "ifelse.symboltable")
 
