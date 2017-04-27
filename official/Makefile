@@ -17,3 +17,9 @@ grammar:
 	@mv res/*.tokens src/
 	@mv res/*.py src/
 	@echo "Compiled language without errors."
+
+clean:
+	@rm -rf `find -type d -name __pycache__`
+	@find . -name \*.pyc -delete
+	@rm -f c2p.py
+
