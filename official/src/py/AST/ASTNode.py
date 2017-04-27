@@ -75,6 +75,7 @@ class ASTNodeType(AutoNumber):
 	Printf = ()
 	FormatString = ()
 	Condition = ()
+	Dereference = ()
 
 
 class ASTNode:

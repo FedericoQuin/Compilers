@@ -113,11 +113,12 @@ class ASTCreator(cGrammarListener):
 		self.AST.climbTree()
 
 
-	def enterAddress_value(self, ctx:cGrammarParser.Address_valueContext):
-		self.AST.addDereference()
+	# TODO were these really necessary?
+	# def enterLvalue_brackets(self, ctx:cGrammarParser.Lvalue_bracketsContext):
+	# 	self.AST.makeBrackets(ctx)
 
-	def exitAddress_value(self, ctx:cGrammarParser.Address_valueContext):
-		self.AST.climbTree()
+	# def exitLvalue_brackets(self, ctx:cGrammarParser.Lvalue_bracketsContext):
+	# 	self.AST.climbTree()
 
 
 
@@ -362,6 +363,37 @@ class ASTCreator(cGrammarListener):
 
 	def exitFunction(self, ctx:cGrammarParser.FunctionContext):
 		self.AST.climbTree()
+
+
+
+	#################################################
+	# Pointers and addresses						#
+	#################################################
+
+
+	def enterAddress_value(self, ctx:cGrammarParser.Address_valueContext):
+		self.AST.addAddressOf()
+
+	def exitAddress_value(self, ctx:cGrammarParser.Address_valueContext):
+		self.AST.climbTree()
+
+	def enterPointer_dereference(self, ctx:cGrammarParser.Pointer_dereferenceContext):
+		self.AST.addDereference(ctx)
+
+	def exitPointer_dereference(self, ctx:cGrammarParser.Pointer_dereferenceContext):
+		if ctx.expression() != None:
+			self.AST.climbTree()
+
+
+	# def enterDereference_bracket(self, ctx:cGrammarParser.Dereference_bracketContext):
+	# 	# TODO might not be necessary, since those brackets don't really add priority (only the one from the expression itself)
+	# 	# 	 	--> would also simplify the deref (keep in one node instead of serveral)
+	# 	self.AST.makeBrackets(ctx)
+
+	# def exitDereference_bracket(self, ctx:cGrammarParser.Dereference_bracketContext):
+	# 	self.AST.climbTree()
+
+
 
 
 

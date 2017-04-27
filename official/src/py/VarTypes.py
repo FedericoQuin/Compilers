@@ -53,7 +53,7 @@ class IntType(VarType):
 			return True
 		return False
 
-	def dereference(self):
+	def addressOf(self):
 		return PointerType(self, 1)
 
 
@@ -73,7 +73,7 @@ class FloatType(VarType):
 			return True
 		return False
 
-	def dereference(self):
+	def addressOf(self):
 		return PointerType(self, 1)
 
 
@@ -93,7 +93,7 @@ class CharType(VarType):
 			return True
 		return False
 
-	def dereference(self):
+	def addressOf(self):
 		return PointerType(self, 1)
 
 
@@ -118,8 +118,13 @@ class PointerType(VarType):
 			return self.ptrCount == object.ptrCount and self.type == object.type
 		return False
 
-	def dereference(self):
+	def addressOf(self):
 		return PointerType(self.type, self.ptrCount + 1)
+
+	def dereference(self, amt = 1):
+		if amt > self.ptrCount:
+			raise Exception("Cannot dereference variable more times than its pointer count.")
+		return PointerType(self.type, self.ptrCount - amt)
 
 
 class ArrayType(VarType):
@@ -142,8 +147,11 @@ class ArrayType(VarType):
 	def getStrType(self):
 		return str(self.type)
 
-	def dereference(self):
-		return self.type.dereference()
+	def addressOf(self):
+		return self.type.addressOf()
+
+	def dereference(self, amt = 1):
+		return self.type.dereference(amt)
 
 
 class FunctionType(VarType):
@@ -165,7 +173,7 @@ class FunctionType(VarType):
 	def getStrType(self):
 		return str(self.returnType)
 
-	def dereference(self):
+	def addressOf(self):
 		raise Exception("Dereferencing of functions is not supported.")
 
 

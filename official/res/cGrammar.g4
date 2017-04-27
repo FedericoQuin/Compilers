@@ -243,7 +243,11 @@ global_declaration :
 
 lvalue 
 	: lvalue_identifier
-	| arrayelement_lvalue;
+	| arrayelement_lvalue
+	| lvalue_brackets
+	| pointer_dereference;
+
+lvalue_brackets : LBRACKET lvalue RBRACKET;
 
 rvalue 
 	: charvalue
@@ -253,11 +257,6 @@ rvalue
 	| address_value
 	| pointer_dereference;
 
-address_value : 
-	OPERATOR_DEREF lvalue;
-
-pointer_dereference :
-	'notthisonepleasenohavemercydontselectmeplease'; 
 
 arrayelement_rvalue : arrayelement;
 arrayelement_lvalue : arrayelement;
@@ -274,6 +273,23 @@ intvalue : OPERATOR_MINUS? DIGIT DIGIT*;
 floatvalue : OPERATOR_MINUS? digits? '.' digits;
 
 
+//////////////////////////////////////////////////////////
+// Pointers and addresses								//
+//////////////////////////////////////////////////////////
+
+address_value : 
+	OPERATOR_ADDROF lvalue;
+
+pointer_dereference : 
+	dereference_bracket
+	| OPERATOR_MUL+ pointer_dereference
+	| OPERATOR_MUL+ expression;
+
+
+dereference_bracket :
+	LBRACKET pointer_dereference RBRACKET; // TODO add to lvalue as a whole?
+
+ptr : '*' ptr |;
 
 
 //////////////////////////////////////////////////////////
@@ -288,10 +304,6 @@ dec_type :
 	| FLOAT ptr
 	| INT ptr;
 
-
-ptr : 
-	'*' ptr
-	|;
 
 
 
@@ -332,7 +344,7 @@ OPERATOR_GE : '>=' | '=>';
 OPERATOR_LT : '<';
 OPERATOR_LE : '<=' | '=<';
 
-OPERATOR_DEREF : '&';
+OPERATOR_ADDROF : '&';
 
 OPERATOR_OR :
 	'||'

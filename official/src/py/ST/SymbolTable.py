@@ -157,6 +157,8 @@ class SymbolMapping:
 		self.addr = addr
 	
 	def __str__(self):
+		return str(self.type)
+		# TODO make sure what to do with addr
 		return "(" + str(self.type) + ", " + str(self.addr) + ")"
 
 	def __repr__(self):

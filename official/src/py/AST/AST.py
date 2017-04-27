@@ -120,10 +120,25 @@ class AST:
 	def addFunctionCall(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, str(ctx.ID()))
 
-	def addDereference(self):
+
+
+	#====================================================================
+	#= 					Pointers and addresses							=
+	#====================================================================
+
+	def addAddressOf(self):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueAddress)
 
 
+	def addDereference(self, ctx):
+		# Don't add a node if this one is just adding brackets
+		if ctx.dereference_bracket() != None:
+			return
+		
+		if self.currentPointer.type == ASTNodeType.Dereference:
+			self.currentPointer.value += "".join([ "*" for i in range(len(ctx.OPERATOR_MUL())) ])
+		else:
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Dereference, "".join(["*" for i in range(len(ctx.OPERATOR_MUL()))]))
 
 	#====================================================================
 	#= 					Assignments and Expressions						=
