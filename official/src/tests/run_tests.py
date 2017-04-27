@@ -172,6 +172,9 @@ def test_minus_values():
 def test_address_assignment():
 	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p", "address_assignment.symboltable")
 
+def test_dereference():
+	parse("dereference.c", "dereference.dot", "dereference.p", "dereference.symboltable")
+
 
 
 def test_errors():
@@ -312,4 +315,29 @@ def test_array_wrongAccess():
 		except Exception as inst:
 			string = str(inst)
 			assert(string == errorMessages[i])
+
+
+def test_derefences():
+	errorFiles = [
+		"dereference1.c",
+		"dereference2.c",
+		"dereference3.c",
+		"dereference4.c",
+		"dereference5.c"
+		]
+	errorMessages = [
+		"Error: cannot dereference variable 'a' 4 times (only 3 times allowed).",
+		"Types for assignment don't match: int and float.",
+		"Error: cannot dereference more than 1 variable.",
+		"Types do not match: int* and char.",
+		"Error: cannot dereference non-pointer variable 'a'."
+	]
+	for i in range(len(errorFiles)):
+		try:
+			ASTNode.ID = 0
+			parseNoCatch(errorFiles[i], "", "")
+		except Exception as inst:
+			string = str(inst)
+			assert(string == errorMessages[i])
+
 
