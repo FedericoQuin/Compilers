@@ -393,7 +393,12 @@ class AST:
 				ptrCount += 1
 				nextPtr = nextPtr.ptr()
 
-			self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
+			if ctx.OPERATOR_ADDROF() != None:
+				self.currentPointer = self.currentPointer.addChild(ASTNodeType.ByReference)
+				self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
+				self.climbTree()
+			else:
+				self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
 			
 	
 	def addSignatureArgument(self, ctx):

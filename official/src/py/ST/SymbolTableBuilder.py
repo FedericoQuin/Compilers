@@ -70,13 +70,18 @@ class SymbolTableBuilder:
 	def addFunctionSignature(self, node, initialized = False):
 		children = node.children
 		# TODO Func is a placeholder until subclassed
-		returnType = PointerType(mapToPrimitiveType(children[0].value.type), children[0].value.ptrCount)
+		returnType = PointerType(mapToPrimitiveType(children[0].value), children[0].value.ptrCount)
 		
 		# Iterate over the function arguments and add their types to the signature
 		# NOTE: The type attribute of the function arguments nodes are objects of the class PointerType.
 		#		The actual type has to be accessed by getting the type attribute from that class.
-		functionSignature = [PointerType(mapToPrimitiveType(i.type.type), i.type.ptrCount) for i in children[1].children]
-		# functionSignature += ",".join([ mapToPrimitiveName(child.type.type) for child in children[1].children ]) + ")"
+		functionSignature = []
+		for i in children[1].children:
+			if i.type == ASTNodeType.ByReference:
+				functionSignature.append(PointerType(mapToPrimitiveType(i.children[0].type), i.children[0].type.ptrCount))
+			else:
+				functionSignature.append(PointerType(mapToPrimitiveType(i.type), i.type.ptrCount))
+
 		self.symbolTable.insertEntry(str(node.value), FunctionType(returnType, functionSignature, initialized) , Scope.GLOBAL)
 
 
@@ -101,7 +106,7 @@ class SymbolTableBuilder:
 			self.addFunctionSignature(node)
 		elif (node.type == ASTNodeType.ArrayDecl):
 			self.checkDuplicateDeclaration(str(node.value))
-			arrayType = PointerType(mapToPrimitiveType(node.children[0].value.type), node.children[0].value.ptrCount)
+			arrayType = PointerType(mapToPrimitiveType(node.children[0].value), node.children[0].value.ptrCount)
 			size = node.children[1].value
 			self.symbolTable.insertEntry(str(node.value), ArrayType(arrayType, size), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 		elif (type(node.type) is pointerType):
@@ -111,7 +116,7 @@ class SymbolTableBuilder:
 			
 			self.checkDuplicateDeclaration(str(node.value))			
 			# Type consists of the primitive type + optionally pointer operators
-			symbolType = PointerType(mapToPrimitiveType(node.type.type), node.type.ptrCount)
+			symbolType = PointerType(mapToPrimitiveType(node.type), node.type.ptrCount)
 			self.symbolTable.insertEntry(str(node.value), symbolType, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 
 
@@ -186,20 +191,24 @@ class SymbolTableBuilder:
 		symbolTableFile.close()
 
 
-def mapToPrimitiveType(nodeType):
-	if (nodeType == ASTNodeType.IntDecl):
+def mapToPrimitiveType(node):
+	nodeType = node.type
+	if nodeType == ASTNodeType.IntDecl:
 		return IntType()
-	elif (nodeType == ASTNodeType.FloatDecl):
+	elif nodeType == ASTNodeType.FloatDecl:
 		return FloatType()
-	elif (nodeType == ASTNodeType.CharDecl):
+	elif nodeType == ASTNodeType.CharDecl:
 		return CharType()
-	if (nodeType == ASTNodeType.IntSignature):
+	elif nodeType == ASTNodeType.IntSignature:
 		return IntType()
-	elif (nodeType == ASTNodeType.FloatSignature):
+	elif nodeType == ASTNodeType.FloatSignature:
 		return FloatType()
-	elif (nodeType == ASTNodeType.CharSignature):
+	elif nodeType == ASTNodeType.CharSignature:
 		return CharType()
-	elif (nodeType == ASTNodeType.Void):
+	elif nodeType == ASTNodeType.Void:
 		return VoidType()
+	# Special case for dereference -> check child node
+	elif nodeType == ASTNodeType.ByReference:
+		return mapToPrimitiveType(node.children[0])
 		
 	return None
