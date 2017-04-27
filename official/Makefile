@@ -10,7 +10,7 @@ install: build
 all: build
 
 test: grammar
-	@pytest ./src/tests/run_tests.py
+	@pytest --tb=short ./src/tests/run_tests.py
 
 grammar:
 	@java -jar antlr/antlr-4.6-complete.jar -Dlanguage=Python3 res/cGrammar.g4 -visitor

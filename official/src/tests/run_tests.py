@@ -175,6 +175,7 @@ def test_address_assignment():
 def test_dereference1():
 	parse("dereference1.c", "dereference1.dot", "dereference1.p", "dereference1.symboltable")
 
+# TODO unlock this task when 'advanced' dereferencing is finished
 # def test_dereference2():
 # 	parse("dereference2.c", "dereference2.dot", "dereference2.p", "dereference2.symboltable")
 

@@ -3,7 +3,7 @@
 int main() {
 	int*** a[10];
 
-	int*** b = a;
+	int**** b = a;
 
 	*(**(b) + 1) = 5;
 
@@ -16,6 +16,6 @@ int main() {
 
 	float* arrayPtr = array;
 
-	*(arrayPtr + *var1 + *var2) = 2.00;
+	*(arrayPtr + *(var1) + *(var2)) = 2.00;
 
 }

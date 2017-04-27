@@ -196,7 +196,9 @@ class TypeChecker:
 		elif node.type == ASTNodeType.RValueFloat:
 			return FloatType()
 		elif node.type == ASTNodeType.RValueID:
-			return self.symbolTable.lookupSymbol(node.value).type
+			nodeType = self.symbolTable.lookupSymbol(node.value).type
+			# Return the type, except if the ID references an array (without element access)
+			return nodeType if not(type(nodeType) is ArrayType) else nodeType.addressOf()
 		elif node.type == ASTNodeType.Addition:
 			return self.checkTypeChildrenExpression(node.children)
 		elif node.type == ASTNodeType.Subtraction:
