@@ -10,36 +10,23 @@ class Scope(Enum):
 class SymbolTable:
 	""" 
 		Class used to store the symbol table when constructing the program text.
-		Used implementation: hash tables for different scopes.
+		Used implementation: tree like structure with hash tables for different scopes.
 	"""
 
-	# Static variable to hold current Allocation Address for new symbols, denoted in bytes.
-	AllocationAddress = 0
-	
 	
 	def __init__(self):
 		self.globalScopeTable = {}
-		self.localScopeTables = []
+		self.localScopeTables = STTree()
 
-	def __str__(self):
-		return "Global - " + str(self.globalScopeTable) + "\n" + \
-			"\n".join(["Scope " + str(self.localScopeTables.index(table)+1) + " - " + str(table) for table in self.localScopeTables])
 
 	def insertEntry(self, symbol, _type, scope = Scope.LOCAL):
 		"""
 			Insert an entry into the symbol table, at the specified scope (GLOBAL or LOCAL).
 		"""
-
-		# assign enough memory, depending on the type of the symbol
-		# NOTE global variables should not collide with local variables,
-		#	   since global variables can only be inserted when no local scope is open
-		beginAddress = self.assignAddress(_type)
-
 		if (scope == Scope.LOCAL):
-			assert len(self.localScopeTables) != 0
-			self.localScopeTables[-1].addSymbol(symbol, _type, beginAddress)
+			self.localScopeTables.addSymbol(symbol, _type)
 		else:
-			self.globalScopeTable[symbol] = SymbolMapping(_type, beginAddress)
+			self.globalScopeTable[symbol] = SymbolMapping(_type)
 		
 	def lookupSymbol(self, symbol, scope=None, level=None):
 		"""
@@ -47,53 +34,46 @@ class SymbolTable:
 			None is returned in case the symbol is not found in any table.
 		"""
 		if scope == None:
-			localResult = self.searchSymbolLocal(symbol)
+			localResult = self.searchSymbolLocal(symbol, level)
 			return localResult if localResult != None else self.searchSymbolGlobal(symbol)
 		elif scope == Scope.GLOBAL:
 			return self.searchSymbolGlobal(symbol)
 		elif scope == Scope.LOCAL:
-			if level == None:
-				return self.searchSymbolLocal(symbol)
-			else:
-				return self.localScopeTables[level].lookupSymbol(symbol)
+			return self.searchSymbolLocal(symbol, level)
 
 		return None
 
+
 	def symbolExists(self, symbol, scope=None):
 		if (scope == None):
-			return True if self.lookupSymbol(symbol) != None else False
+			return self.lookupSymbol(symbol) != None
 		elif (scope == Scope.LOCAL):
-			return True if self.searchSymbolLocal(symbol) != None else False
+			return self.searchSymbolLocal(symbol) != None
 		elif (scope == Scope.GLOBAL):
-			return True if symbol in self.globalScopeTable else False
+			return symbol in self.globalScopeTable
 		
 		return False
+
 
 	def enterScope(self):
 		"""
 			Enters a new scope.
 		"""
-		self.localScopeTables.append(STSingleScope(SymbolTable.AllocationAddress))
+		self.localScopeTables.enterScope()
 
 	def leaveScope(self):
 		"""
 			Leaves the current local scope.
 		"""
-		# 'free' up all the memory addresses used in the local scope first
-		SymbolTable.AllocationAddress = self.localScopeTables[-1].getBeginAddress()
-		del self.localScopeTables[-1]
+		self.localScopeTables.leaveScope()
 
-	def searchSymbolLocal(self, symbol):
+
+	def searchSymbolLocal(self, symbol, level=None):
 		"""
 			Searches for the symbol in the local symbol tables.
 			Returns None if the symbol is not found.
 		"""
-		for table in reversed(self.localScopeTables):
-			# reversed order because the most local table is found at the last entry.
-			if (table.contains(symbol)):
-				return table.lookupSymbol(symbol)
-
-		return None
+		return self.localScopeTables.lookupSymbol(symbol, level)
 
 	def searchSymbolGlobal(self, symbol):
 		"""
@@ -105,61 +85,111 @@ class SymbolTable:
 
 		return None
 
-	def assignAddress(self, _type):
-		"""
-			Provides (virtual) space for a variable of type _type.
-		"""
-		# TODO not sure if values are accurate
-		address = SymbolTable.AllocationAddress
+	def searchFunction(self, symbol):
+		# TODO write this --> look in global scope, maybe add amt variables used in function body, etc...
+		return None
 
-		SymbolTable.AllocationAddress += self.getMemorySize(_type)
-		if address == SymbolTable.AllocationAddress:
-			return None
-		return address
 
-	def getMemorySize(self, _type):
-		return _type.getMemorySize()
 
+
+class STTree:
+	def __init__(self):
+		self.root = STSingleScope()
+
+	def addSymbol(self, symbol, _type):
+		#propagate to lowest level in symbol table
+		assert self.rootActive()
+		self.root.addSymbol(symbol, _type)
+
+	def lookupSymbol(self, symbol, level):
+		# Looks up the symbol in the symbol table
+		# @param forced: forces to look in all possible scopes
+		if level != None:
+			level += 1
+		return self.root.lookupSymbol(symbol, level)
+
+	def enterScope(self):
+		self.root.enterScope()
+
+	def leaveScope(self):
+		assert self.rootActive()
+		self.root.leaveScope()
+
+	def rootActive(self):
+		return self.root.childActive == True		
 
 
 class STSingleScope:
 	"""
-		Class used to store the symbol table for a single scope segment.
+		Class used to store the symbol table for a single scope segment, and all the scopes below it.
 	"""
-	def __init__(self, beginAddress):
+	def __init__(self, parent=None):
 		self.table = {}
-		self.beginAddress = beginAddress
+		self.subScopes = []
+		self.parent = parent
+
+		# Variable used to indicate wether the last child is 'active' --> used when adding new symbols
+		self.childActive = False 
 
 	def __str__(self):
 		return str(self.table)
 
 	def contains(self, symbol):
-		return symbol in self.table
-
-	def lookupSymbol(self, symbol):
 		if symbol in self.table:
-			return self.table[symbol]
-		return None
+			return True
+		if self.childActive == True:
+			return self.subScopes[-1].contains(symbol)
+		return False
 
-	def addSymbol(self, symbol, _type, addr = 0):
-		self.table[symbol] = SymbolMapping(_type, addr)
+	def lookupSymbol(self, symbol, level):
+		if level != None:
+			if level == 0:
+				return self.table[symbol] if symbol in self.table else None
+			else:
+				assert self.childActive
+				return self.subScopes[-1].lookupSymbol(symbol, level - 1)
+		
+		mapping = None
+		# Give priority to subscopes if present
+		if self.childActive == True:
+			mapping = self.subScopes[-1].lookupSymbol(symbol, None)
+		
+		if (mapping == None) and (symbol in self.table):
+			mapping = self.table[symbol]
+		return mapping
+
+	def addSymbol(self, symbol, _type):
+		if self.childActive == True:
+			self.subScopes[-1].addSymbol(symbol, _type)
+			return
+		self.table[symbol] = SymbolMapping(_type)
 	
 	def getSymbolCount(self):
 		return len(self.table)
 
-	def getBeginAddress(self):
-		return self.beginAddress
+	def enterScope(self):
+		if self.childActive == True:
+			self.subScopes[-1].enterScope()
+			return
+			
+		self.childActive = True
+		self.subScopes.append(STSingleScope(self))
+		
+	def leaveScope(self):
+		if self.childActive == True and self.subScopes[-1].childActive == True:
+			self.subScopes[-1].leaveScope()
+			return
+		self.childActive = False
+		print("Leaving scope...")
+
 
 
 class SymbolMapping:
-	def __init__(self, _type, addr):
+	def __init__(self, _type):
 		self.type = _type
-		self.addr = addr
 	
 	def __str__(self):
 		return str(self.type)
-		# TODO make sure what to do with addr
-		return "(" + str(self.type) + ", " + str(self.addr) + ")"
 
 	def __repr__(self):
 		return str(self)

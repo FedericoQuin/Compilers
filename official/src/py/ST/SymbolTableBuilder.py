@@ -86,7 +86,7 @@ class SymbolTableBuilder:
 
 
 	def addPrimitiveType(self, symbol, type):
-		seld.checkDuplicateDeclaration(symbol)
+		self.checkDuplicateDeclaration(symbol)
 		self.symbolTable.insertEntry(symbol, type, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 
 	def checkDuplicateDeclaration(self, symbol):
