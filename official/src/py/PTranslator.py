@@ -4,6 +4,8 @@ from src.py.ST.SymbolTableBuilder import SymbolTableBuilder
 from src.py.ST.SymbolTable import SymbolTable
 from src.py.SA.TypeChecker import TypeChecker
 from src.py.SA.ExistenceChecker import ExistenceChecker
+from src.py.UTIL.TypeDeductor import TypeDeductor
+from src.py.UTIL.VarTypes import *
 
 class PTranslator:
     def __init__(self):
@@ -14,7 +16,7 @@ class PTranslator:
     def translate(self, ast, symbolTableFileName="", printDescription=False):
         self.AST = ast
         symbolTable = SymbolTable()
-        symbolTableBuilder = SymbolTableBuilder(symbolTable)
+        self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
         existenceChecker = ExistenceChecker(symbolTable)
 
         astwalker = ASTWalker(self.AST)
@@ -22,62 +24,70 @@ class PTranslator:
 
         # Existence checking
         for (node, nodeLevel) in nodes:
-            symbolTableBuilder.processNode(node, nodeLevel)
+            #TODO symbol table unnecessary?
+            self.symbolTableBuilder.processNode(node, nodeLevel)
             existenceChecker.checkExistence(node)
 
         symbolTable = SymbolTable()
-        symbolTableBuilder = SymbolTableBuilder(symbolTable, symbolTableFileName, printDescription)
+        self.symbolTableBuilder = SymbolTableBuilder(symbolTable, symbolTableFileName, printDescription)
         typeChecker = TypeChecker(symbolTable)
 
         # Type checking and actual translation
         for (node, nodeLevel) in nodes:
-            symbolTableBuilder.processNode(node, nodeLevel)
+            #TODO symbol table unnecessary?
+            self.symbolTableBuilder.processNode(node, nodeLevel)
             typeChecker.checkType(node)
 
-        symbolTableBuilder.saveSymbolTable("a")
+        self.symbolTableBuilder.saveSymbolTable("a")
 
-        self.fringe.append(nodes[0][0])
+        symbolTable = SymbolTable()
+        self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
+
+        self.fringe.append(nodes[0])
         self.parseExpression()
 
         self.saveProgram("test")
-        # print(self.programText)
-        # print("KEKEKEKEKEK3\n")
 
     def parseExpression(self):
         if len(self.fringe) == 0:
             return
 
-        node = self.fringe[0]
-        nodeLevel = self.fringe[0]
+        node = self.fringe[0][0]
+        nodeLevel = self.fringe[0][1]
+        self.symbolTableBuilder.processNode(node, nodeLevel)
 
         if node.type == ASTNodeType.Program:
-            self.fringe += self.fringe[0].children
-            del self.fringe[0]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
 
         elif node.type == ASTNodeType.Function:
             # TODO
-            self.fringe += self.fringe[0].children
-            self.programText += "label_" + self.fringe[0].value + ":\n"
-            del self.fringe[0]
+            self.programText += "label_" + node.value + ":\n"
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
 
         elif node.type == ASTNodeType.ReturnType:
             # TODO
-            self.fringe += self.fringe[0].children
-            del self.fringe[0]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
 
         elif node.type == ASTNodeType.FunctionArgs:
             # TODO
-            # self.fringe += self.fringe[0].children
+            # self.fringe += node.children
             del self.fringe[0]
             self.parseExpression()
 
         elif node.type == ASTNodeType.FunctionBody:
             # TODO
-            self.fringe += self.fringe[0].children
-            del self.fringe[0]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
 
             while len(self.fringe) != 0:
                 self.parseExpression()
@@ -90,71 +100,83 @@ class PTranslator:
             self.programText += "// TODO declare variable <" + str(node.value) + ">\n"
 
             if len(elf.fringe[0].children) != 0:
-                self.fringe = self.fringe[0].children + self.fringe
-                del self.fringe[1]
+                child_amount = len(node.children)
+                self.addChildrenToFringe(node, nodeLevel)
+                del self.fringe[child_amount]
                 self.parseExpression()
             else:
                 del self.fringe[0]
 
         elif isinstance(node.type, pointerType) and node.type.type == ASTNodeType.FloatDecl:
             self.programText += "// TODO declare variable <" + str(node.value) + ">\n"
-            self.fringe = self.fringe[0].children + self.fringe
-            del self.fringe[1]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
 
         elif isinstance(node.type, pointerType) and node.type.type == ASTNodeType.IntDecl:
             self.programText += "// TODO declare variable <" + str(node.value) + ">\n"
-            self.fringe = self.fringe[0].children + self.fringe
-            del self.fringe[1]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
 
         #################################
         # Operations                    #
         #################################
         elif node.type == ASTNodeType.Initialization:
-            self.fringe = self.fringe[0].children + self.fringe
-            del self.fringe[1]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
             self.programText += "// TODO assign to variable (get to stacktop + assign)\n"
 
         elif node.type == ASTNodeType.Addition:
-            self.fringe = self.fringe[0].children + self.fringe
-            del self.fringe[2]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
             # TODO make not hardcoded integer
-            self.programText += "add i\n"
+            myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
+            self.programText += "add " + myType.getPString() + "\n"
 
         elif node.type == ASTNodeType.Subtraction:
-            self.fringe = self.fringe[0].children + self.fringe
-            del self.fringe[2]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
             # TODO make not hardcoded integer
-            self.programText += "sub i\n"
+            myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
+            self.programText += "sub " + myType.getPString() + "\n"
 
         elif node.type == ASTNodeType.Mul:
-            self.fringe = self.fringe[0].children + self.fringe
-            del self.fringe[2]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
             # TODO make not hardcoded integer
-            self.programText += "mul i\n"
+            myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
+            self.programText += "mul " + myType.getPString() + "\n"
 
         elif node.type == ASTNodeType.Div:
-            self.fringe = self.fringe[0].children + self.fringe
-            del self.fringe[2]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
             # TODO make not hardcoded integer
-            self.programText += "div i\n"
+            myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
+            self.programText += "div " + myType.getPString() + "\n"
 
         elif node.type == ASTNodeType.Assignment:
-            self.fringe = self.fringe[0].children + self.fringe
-            del self.fringe[2]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
-            # TODO make not hardcoded integer
             self.programText += "// TODO assign stuff (lvalue assignment)\n"
 
         #################################
@@ -162,6 +184,14 @@ class PTranslator:
         #################################
         elif node.type == ASTNodeType.RValueInt:
             self.programText += "ldc i " + str(node.value) + "\n"
+            del self.fringe[0]
+
+        elif node.type == ASTNodeType.RValueChar:
+            self.programText += "ldc c " + str(node.value) + "\n"
+            del self.fringe[0]
+
+        elif node.type == ASTNodeType.RValueFloat:
+            self.programText += "ldc r " + str(node.value) + "\n"
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueID:
@@ -176,9 +206,14 @@ class PTranslator:
         # Other                         #
         #################################
         elif node.type == ASTNodeType.Brackets:
-            self.fringe = self.fringe[0].children + self.fringe
-            del self.fringe[1]
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
             self.parseExpression()
+
+    def addChildrenToFringe(self, node, nodeLevel):
+        for child in reversed(node.children):
+            self.fringe = [(child, nodeLevel + 1)] + self.fringe
 
     def saveProgram(self, filename):
         programFile = open(filename, 'w')

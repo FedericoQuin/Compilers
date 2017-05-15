@@ -22,6 +22,9 @@ class VarType:
 	def getStrType(self):
 		return str(self)
 
+	def getPString(self):
+		return ""
+
 
 
 class VoidType(VarType):
@@ -56,6 +59,9 @@ class IntType(VarType):
 	def addressOf(self):
 		return PointerType(self, 1)
 
+	def getPString(self):
+		return "i"
+
 
 class FloatType(VarType):
 	def __init__(self):
@@ -76,6 +82,9 @@ class FloatType(VarType):
 	def addressOf(self):
 		return PointerType(self, 1)
 
+	def getPString(self):
+		return "r"
+
 
 class CharType(VarType):
 	def __init__(self):
@@ -95,6 +104,9 @@ class CharType(VarType):
 
 	def addressOf(self):
 		return PointerType(self, 1)
+
+	def getPString(self):
+		return "c"
 
 
 
