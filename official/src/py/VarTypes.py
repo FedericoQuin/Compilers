@@ -160,6 +160,7 @@ class FunctionType(VarType):
 		self.arguments = arguments
 		self.memorySize = 0
 		self.initialized = initialized
+		self.declaredVariables = []
 
 	def __str__(self):
 		return str(self.returnType) + " func(" + ",".join([str(i) for i in self.arguments]) + ")"
@@ -169,6 +170,9 @@ class FunctionType(VarType):
 			return self.returnType == object.returnType
 		
 		return self.returnType == object
+
+	def addDeclaredVariable(self, varType):
+		self.declaredVariables.append(varType)
 
 	def getStrType(self):
 		return str(self.returnType)

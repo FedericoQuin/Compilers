@@ -44,6 +44,13 @@ class SymbolTable:
 		return None
 
 
+	def lookupFunction(self, symbol):
+		"""
+			Looks up a function in the symbol table (equivalent of a normal lookup, but always in the global scope).
+		"""
+		return lookupSymbol(symbol, Scope.GLOBAL)
+
+
 	def symbolExists(self, symbol, scope=None):
 		if (scope == None):
 			return self.lookupSymbol(symbol) != None
@@ -180,7 +187,6 @@ class STSingleScope:
 			self.subScopes[-1].leaveScope()
 			return
 		self.childActive = False
-		print("Leaving scope...")
 
 
 

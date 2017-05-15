@@ -45,9 +45,15 @@ class SymbolTableBuilder:
 			self.enterScope(nodeLevel)
 			if (self.symbolTable.symbolExists(str(node.value), Scope.GLOBAL) == False):
 				self.addFunctionSignature(node, True)
+
+				# Add the used variables in the function body to the function type
+				self.addUsedVariablesFunction(self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type, node)
+
 			elif type(self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type) is FunctionType:
 				if self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type.initialized == False:
 					self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type.initialized = True
+					# Add the used variables in the function body to the function type
+					self.addUsedVariablesFunction(self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type, node)
 				else:
 					raise Exception("Function '" + str(node.value) + "' has already been initialized.")
 			else:
@@ -119,6 +125,22 @@ class SymbolTableBuilder:
 			symbolType = PointerType(mapToPrimitiveType(node.type), node.type.ptrCount)
 			self.symbolTable.insertEntry(str(node.value), symbolType, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 
+	def getTypeDecl(self, node):
+		# TODO refactor to use method above, kind of hacked in for now
+		if node.type == ASTNodeType.FloatDecl:
+			return FloatType()
+		elif node.type == ASTNodeType.IntDecl:
+			return IntType()
+		elif node.type == ASTNodeType.CharDecl:
+			return CharType()
+		elif node.type == ASTNodeType.ArrayDecl:
+			arrayType = PointerType(mapToPrimitiveType(node.children[0].value), node.children[0].value.ptrCount)
+			size = node.children[1].value
+			return ArrayType(arrayType, size)
+		elif type(node.type) is pointerType:
+			return PointerType(mapToPrimitiveType(node.type), node.type.ptrCount)
+
+		return None
 
 	def isSignatureType(self, _type):
 		"""
@@ -180,6 +202,19 @@ class SymbolTableBuilder:
 		self.symbolTable.enterScope()
 
 
+	def addUsedVariablesFunction(self, functionType, rootNode):
+		queue = [rootNode]
+
+		while len(queue) != 0:
+			node = queue.pop(0)
+			for child in node.children:
+				queue.append(child)
+		
+			possibleDecl = self.getTypeDecl(node)
+			if possibleDecl != None:
+				functionType.addDeclaredVariable(possibleDecl)
+		
+
 	def saveSymbolTable(self, mode):
 		"""
 			Saves the symbol tables (if a filename was given with the constructor).
@@ -212,3 +247,6 @@ def mapToPrimitiveType(node):
 		return mapToPrimitiveType(node.children[0])
 		
 	return None
+
+
+
