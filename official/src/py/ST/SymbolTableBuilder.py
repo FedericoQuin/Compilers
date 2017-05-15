@@ -1,6 +1,6 @@
 from src.py.ST.SymbolTable import *
 from src.py.AST.ASTNode import ASTNodeType, ASTNode, pointerType
-from src.py.VarTypes import * 
+from src.py.UTIL.VarTypes import * 
 
 class SymbolTableBuilder:
 	def __init__(self, symbolTable, filename="", printDescription=False):

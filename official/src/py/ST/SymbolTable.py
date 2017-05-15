@@ -1,5 +1,5 @@
 from enum import Enum
-from src.py.VarTypes import *
+from src.py.UTIL.VarTypes import *
 
 
 class Scope(Enum):
