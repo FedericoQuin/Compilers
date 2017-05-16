@@ -40,6 +40,19 @@ class TypeDeductor:
 			return symbolTable.lookupSymbol(node.children[0].value).type.addressOf()
 		elif node.type == ASTNodeType.Dereference:
 			return TypeDeductor.checkDereferenceValidity(node, symbolTable)
+		elif node.type == ASTNodeType.Greater or \
+			node.type == ASTNodeType.GreaterOrEqual or \
+			node.type == ASTNodeType.Or or \
+			node.type == ASTNodeType.And or \
+			node.type == ASTNodeType.Equals or \
+			node.type == ASTNodeType.NotEquals or \
+			node.type == ASTNodeType.Less or \
+			node.type == ASTNodeType.LessOrEqual:
+			return TypeDeductor.checkTypeChildrenExpression(node.children, symbolTable)
+		elif node.type == ASTNodeType.Not or \
+			node.type == ASTNodeType.Brackets or \
+			node.type == ASTNodeType.NegateBrackets:
+			return TypeDeductor.deductType(node.children[0], symbolTable)
 		else:
 			raise Exception("Could not deduct type of node '" + str(node.type.name) + "'.")
 

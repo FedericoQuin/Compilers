@@ -43,8 +43,8 @@ class TypeChecker:
 				# No checking needs to be done if it is not compared to anything
 				pass
 			elif len(currentNode.children) == 2:
-				leftType = self.getTypeComparison(currentNode.children[0])
-				rightType = self.getTypeComparison(currentNode.children[1])
+				leftType = TypeDeductor.deductType(currentNode.children[0], self.symbolTable)
+				rightType = TypeDeductor.deductType(currentNode.children[1], self.symbolTable)
 				if rightType != None and leftType != None and leftType != rightType:
 					raise Exception("Types for comparison don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
 		
@@ -120,22 +120,6 @@ class TypeChecker:
 				raise Exception("Argument for function call '" + str(node.value) + "' did not match the signature: " \
 					+ argumentRequired.getStrType() + " and " + TypeDeductor.deductType(argumentGiven, self.symbolTable).getStrType() + " (argument #" + str(arguments.index(argumentGiven)+1) + ")." )
 
-
-	def getTypeComparison(self, node):
-		"""
-			Checks and validates that both types in the comparison are equal, throws Exception otherwise.
-			Returns the type if both are equal.
-		"""
-		if node.type == ASTNodeType.Greater or node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Or or node.type == ASTNodeType.And or node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
-			type1 = self.getTypeComparison(node.children[0])
-			type2 = self.getTypeComparison(node.children[1])
-			if type1 != type2:
-				raise Exception("Types do not match: " + type1.getStrType() + " and " + type2.getStrType())
-			return type1
-		elif node.type == ASTNodeType.Not or node.type == ASTNodeType.NegateBrackets or node.type == ASTNodeType.Brackets:
-			return self.getTypeComparison(node.children[0])
-		else:
-			return TypeDeductor.deductType(node, self.symbolTable)
 		
 	
 	def getFirstFunctionSymbol(self, node):
