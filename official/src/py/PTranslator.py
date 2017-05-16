@@ -214,10 +214,9 @@ class PTranslator:
             del self.fringe[0]
 
         #################################
-        # Loops                         #
+        # While Loops                   #
         #################################
         elif node.type == ASTNodeType.While:
-            # TODO make unique
             loopBegin = self.currentFunction + "_while_" + str(self.nextLabelNumber)
             skipLoopLabel = self.currentFunction + "_while_" + str(self.nextLabelNumber) + "_false"
 
@@ -237,7 +236,6 @@ class PTranslator:
             del self.currentWhileLoops[-1]
 
         elif node.type == ASTNodeType.WhileBody:
-            # TODO make unique
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
@@ -247,6 +245,54 @@ class PTranslator:
 
             self.programText += "ujp " + self.currentWhileLoops[-1][0] + "\n"
             self.programText += self.currentWhileLoops[-1][1] + ":\n"
+
+
+        #################################
+        # For Loops                     #
+        #################################
+        elif node.type == ASTNodeType.For:
+            loopBegin = self.currentFunction + "_for_" + str(self.nextLabelNumber)
+            skipLoopLabel = self.currentFunction + "_for_" + str(self.nextLabelNumber) + "_false"
+
+            self.currentForloops.append((loopBegin, skipLoopLabel))
+
+            self.nextLabelNumber += 1
+
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            self.parseExpression()
+            self.programText += loopBegin + ":\n"
+            self.parseExpression()
+            self.programText += "fjp " + skipLoopLabel + "\n"
+
+            # swap the body with the third for statement, as the third for statement has to be executed AFTER the body
+            self.fringe[0], self.fringe[1] = self.fringe[1], self.fringe[0]
+            self.parseExpression()
+            self.parseExpression()
+
+            self.programText += "ujp " + self.currentForloops[-1][0] + "\n"
+            self.programText += self.currentForloops[-1][1] + ":\n"
+
+            del self.currentForloops[-1]
+
+        elif node.type == ASTNodeType.ForStmt1 or node.type == ASTNodeType.ForStmt2 or node.type == ASTNodeType.ForStmt3:
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+            if child_amount != 0:
+                self.parseExpression()
+            elif node.type == ASTNodeType.ForStmt2:
+                self.programText += "ldc b true\n"
+
+        elif node.type == ASTNodeType.ForBody:
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            for i in range(child_amount):
+                self.parseExpression()
 
         #################################
         # Booleans and conditions       #
