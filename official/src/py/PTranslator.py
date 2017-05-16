@@ -25,7 +25,7 @@ class PTranslator:
         # For readability, include this in the label of while loops, for loops, ifelse,...
         self.currentFunction = ""
 
-    def translate(self, ast, symbolTableFileName="", printDescription=False):
+    def translate(self, ast, symbolTableFileName="", printDescription=False, translate = False):
         self.AST = ast
         symbolTable = SymbolTable()
         self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
@@ -56,7 +56,10 @@ class PTranslator:
         self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
 
         self.fringe.append(nodes[0])
-        self.parseExpression()
+
+        # TODO remove
+        if translate:
+            self.parseExpression()
 
         self.saveProgram("test")
 
@@ -403,11 +406,14 @@ class PTranslator:
             del self.fringe[child_amount]
             self.parseExpression()
 
+        else:
+            del self.fringe[0]
+
     def addChildrenToFringe(self, node, nodeLevel):
         for child in reversed(node.children):
             self.fringe = [(child, nodeLevel + 1)] + self.fringe
 
     def saveProgram(self, filename):
         programFile = open(filename, 'w')
-        programFile.write(self.programText)
+        # programFile.write(self.programText)
         programFile.close()
