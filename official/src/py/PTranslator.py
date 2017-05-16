@@ -17,6 +17,7 @@ class PTranslator:
         # This is needed for break and continue statements (they must know where to jump to)
         self.currentWhileLoops = []
         self.currentForloops = []
+        self.currentIfElses = []
         self.mostRecentLoop = None
 
         self.nextLabelNumber = 0
@@ -64,7 +65,6 @@ class PTranslator:
             return
 
         node = self.fringe[0][0]
-        print(node.type)
         nodeLevel = self.fringe[0][1]
         self.symbolTableBuilder.processNode(node, nodeLevel)
 
@@ -112,7 +112,7 @@ class PTranslator:
         elif isinstance(node.type, pointerType) and node.type.type == ASTNodeType.CharDecl:
             self.programText += "// TODO declare variable <" + str(node.value) + ">\n"
 
-            if len(elf.fringe[0].children) != 0:
+            if len(self.fringe[0].children) != 0:
                 child_amount = len(node.children)
                 self.addChildrenToFringe(node, nodeLevel)
                 del self.fringe[child_amount]
@@ -125,14 +125,18 @@ class PTranslator:
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
-            self.parseExpression()
+
+            if child_amount != 0:
+                self.parseExpression()
 
         elif isinstance(node.type, pointerType) and node.type.type == ASTNodeType.IntDecl:
             self.programText += "// TODO declare variable <" + str(node.value) + ">\n"
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
-            self.parseExpression()
+
+            if child_amount != 0:
+                self.parseExpression()
 
         #################################
         # Operations                    #
@@ -321,6 +325,39 @@ class PTranslator:
             else:
                 self.programText += self.currentWhileLoops[-1][0] + "\n"
 
+        #################################
+        # If-else                       #
+        #################################
+        elif node.type == ASTNodeType.IfElse:
+            self.mostRecentLoop = "for"
+
+            ifElseFalse = self.currentFunction + "_ifelse_" + str(self.nextLabelNumber) + "_false"
+            ifElseEnd = self.currentFunction + "_ifelse_" + str(self.nextLabelNumber) + "_end"
+
+            self.currentIfElses.append((ifElseFalse, ifElseEnd))
+
+            self.nextLabelNumber += 1
+
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            self.parseExpression()
+            self.programText += "fjp " + ifElseFalse + "\n"
+            self.parseExpression()
+            self.programText += "ujp " + ifElseEnd + "\n"
+            self.programText += ifElseFalse + ":\n"
+            if child_amount == 3:
+                self.parseExpression()
+            self.programText += ifElseEnd + ":\n"
+
+        elif node.type == ASTNodeType.IfTrue or node.type == ASTNodeType.IfFalse:
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            for i in range(child_amount):
+                self.parseExpression()
 
         #################################
         # Booleans and conditions       #
