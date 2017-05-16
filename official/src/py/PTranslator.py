@@ -13,6 +13,16 @@ class PTranslator:
         self.programText = ""
         self.fringe = []
 
+        # These arrays contain  tuple of begin and end labels of the loops
+        # This is needed for break and continue statements (they must know where to jump to)
+        self.currentWhileLoops = []
+        self.currentForloops = []
+
+        self.nextLabelNumber = 0
+
+        # For readability, include this in the label of while loops, for loops, ifelse,...
+        self.currentFunction = ""
+
     def translate(self, ast, symbolTableFileName="", printDescription=False):
         self.AST = ast
         symbolTable = SymbolTable()
@@ -65,6 +75,7 @@ class PTranslator:
         elif node.type == ASTNodeType.Function:
             # TODO
             self.programText += "label_" + node.value + ":\n"
+            self.currentFunction = node.value
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
@@ -137,7 +148,7 @@ class PTranslator:
             del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
-            # TODO make not hardcoded integer
+            
             myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
             self.programText += "add " + myType.getPString() + "\n"
 
@@ -147,7 +158,7 @@ class PTranslator:
             del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
-            # TODO make not hardcoded integer
+
             myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
             self.programText += "sub " + myType.getPString() + "\n"
 
@@ -157,7 +168,7 @@ class PTranslator:
             del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
-            # TODO make not hardcoded integer
+
             myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
             self.programText += "mul " + myType.getPString() + "\n"
 
@@ -167,7 +178,7 @@ class PTranslator:
             del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
-            # TODO make not hardcoded integer
+
             myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
             self.programText += "div " + myType.getPString() + "\n"
 
@@ -201,6 +212,76 @@ class PTranslator:
         elif node.type == ASTNodeType.LValue:
             self.programText += "//TODO load lvalue <" + node.value + "> on stack\n"
             del self.fringe[0]
+
+        #################################
+        # Loops                         #
+        #################################
+        elif node.type == ASTNodeType.While:
+            # TODO make unique
+            loopBegin = self.currentFunction + "_while_" + str(self.nextLabelNumber)
+            skipLoopLabel = self.currentFunction + "_while_" + str(self.nextLabelNumber) + "_false"
+
+            self.currentWhileLoops.append((loopBegin, skipLoopLabel))
+
+            self.nextLabelNumber += 1
+
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            self.programText += loopBegin + ":\n"
+            self.parseExpression()
+            self.programText += "fjp " + skipLoopLabel + "\n"
+            self.parseExpression()
+
+            del self.currentWhileLoops[-1]
+
+        elif node.type == ASTNodeType.WhileBody:
+            # TODO make unique
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            for i in range(child_amount):
+                self.parseExpression()
+
+            self.programText += "ujp " + self.currentWhileLoops[-1][0] + "\n"
+            self.programText += self.currentWhileLoops[-1][1] + ":\n"
+
+        #################################
+        # Booleans and conditions       #
+        #################################
+        elif node.type == ASTNodeType.Condition:
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+            self.parseExpression()
+
+        elif node.type == ASTNodeType.Not or node.type == ASTNodeType.NegateBrackets or node.type == ASTNodeType.And or node.type == ASTNodeType.Or:
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            for i in range(child_amount):
+                self.parseExpression()
+
+            operators = {ASTNodeType.Not: "not\n", ASTNodeType.NegateBrackets: "not\n", ASTNodeType.And: "and\n", ASTNodeType.Or: "or\n"}
+            self.programText += operators[node.type]
+        
+        elif node.type == ASTNodeType.Equals or node.type == ASTNodeType.NotEquals or node.type == ASTNodeType.Greater or \
+            node.type == ASTNodeType.GreaterOrEqual or node.type == ASTNodeType.Less or node.type == ASTNodeType.LessOrEqual:
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            for i in range(child_amount):
+                self.parseExpression()
+
+            operators = {ASTNodeType.Equals: "equ ", ASTNodeType.NotEquals: "neq ", ASTNodeType.Greater: "grt ", ASTNodeType.GreaterOrEqual: "geq ",
+                ASTNodeType.Less: "les ", ASTNodeType.LessOrEqual: "leq "}
+
+            myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
+            self.programText += operators[node.type] + myType.getPString() + "\n"
 
         #################################
         # Other                         #

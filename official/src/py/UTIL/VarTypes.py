@@ -23,7 +23,7 @@ class VarType:
 		return str(self)
 
 	def getPString(self):
-		return ""
+		return "default"
 
 
 
@@ -137,6 +137,9 @@ class PointerType(VarType):
 		if amt > self.ptrCount:
 			raise Exception("Cannot dereference variable more times than its pointer count.")
 		return PointerType(self.type, self.ptrCount - amt)
+
+	def getPString(self):
+		return self.type.getPString() + ''.join(["*" for i in range(self.ptrCount)])
 
 
 class ArrayType(VarType):
