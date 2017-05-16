@@ -17,6 +17,7 @@ class PTranslator:
         # This is needed for break and continue statements (they must know where to jump to)
         self.currentWhileLoops = []
         self.currentForloops = []
+        self.mostRecentLoop = None
 
         self.nextLabelNumber = 0
 
@@ -63,6 +64,7 @@ class PTranslator:
             return
 
         node = self.fringe[0][0]
+        print(node.type)
         nodeLevel = self.fringe[0][1]
         self.symbolTableBuilder.processNode(node, nodeLevel)
 
@@ -217,6 +219,8 @@ class PTranslator:
         # While Loops                   #
         #################################
         elif node.type == ASTNodeType.While:
+            self.mostRecentLoop = "while"
+
             loopBegin = self.currentFunction + "_while_" + str(self.nextLabelNumber)
             skipLoopLabel = self.currentFunction + "_while_" + str(self.nextLabelNumber) + "_false"
 
@@ -251,6 +255,8 @@ class PTranslator:
         # For Loops                     #
         #################################
         elif node.type == ASTNodeType.For:
+            self.mostRecentLoop = "for"
+
             loopBegin = self.currentFunction + "_for_" + str(self.nextLabelNumber)
             skipLoopLabel = self.currentFunction + "_for_" + str(self.nextLabelNumber) + "_false"
 
@@ -293,6 +299,28 @@ class PTranslator:
 
             for i in range(child_amount):
                 self.parseExpression()
+
+        #################################
+        # Break and continue            #
+        #################################
+        elif node.type == ASTNodeType.Break:
+            del self.fringe[0]
+
+            self.programText += "ujp "
+            if self.mostRecentLoop == "for":
+                self.programText += self.currentForloops[-1][1] + "\n"
+            else:
+                self.programText += self.currentWhileLoops[-1][1] + "\n"
+
+        elif node.type == ASTNodeType.Continue:
+            del self.fringe[0]
+
+            self.programText += "ujp "
+            if self.mostRecentLoop == "for":
+                self.programText += self.currentForloops[-1][0] + "\n"
+            else:
+                self.programText += self.currentWhileLoops[-1][0] + "\n"
+
 
         #################################
         # Booleans and conditions       #
