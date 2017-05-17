@@ -58,7 +58,7 @@ class PTranslator:
         self.fringe.append(nodes[0])
 
         # TODO remove
-        if True:
+        if translate:
             self.parseExpression()
 
         self.saveProgram("test")
@@ -66,7 +66,6 @@ class PTranslator:
     def parseExpression(self):
         if len(self.fringe) == 0:
             return
-
 
         node = self.fringe[0][0]
         nodeLevel = self.fringe[0][1]
@@ -83,11 +82,12 @@ class PTranslator:
         # Functions                     #
         #################################
         elif node.type == ASTNodeType.Function:
-            # TODO
+            # Set the current function name
+            self.currentFunction = node.value
 
             # Process the arguments
             for arg in node.children[1].children:
-                self.symbolTableBuilder.processNode(arg, nodeLevel)
+                self.symbolTableBuilder.processNode(arg, nodeLevel + 2)
 
             # calculate the amout of space needed
             declarations = self.getAmoutOfDeclarations(node)
@@ -104,19 +104,20 @@ class PTranslator:
             del self.fringe[child_amount]
             self.parseExpression()
 
-            if node.children[0].value.type == ASTNodeType.Void:
-                self.programText += "retp\n"
-            else:
-                self.programText += "retf\n"
-
         elif node.type == ASTNodeType.FunctionCall:
             del self.fringe[0]
 
             # calculate the amout of space needed
             arguments = len(self.symbolTableBuilder.symbolTable.lookupSymbol(node.value).type.arguments)
 
-            # TODO get defining occurence difference from symbol table
-            self.programText += "mst TODO\n"
+            # Get defining occurence difference from symbol table
+            definingOccurrence = self.symbolTableBuilder.symbolTable.getDefOcc(node.value)
+
+            # Get applied occurrence
+            appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
+
+
+            self.programText += "mst " + str(appliedOccurrence - definingOccurrence) + "\n"
 
             # Set the arguments:
             self.setFunctionArguments(node)
@@ -125,19 +126,25 @@ class PTranslator:
             self.programText += "cup " + str(arguments * 4) + " " + node.value + "\n"
 
         elif node.type == ASTNodeType.ReturnType:
-            # TODO
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
             self.parseExpression()
 
-        elif node.type == ASTNodeType.FunctionArgs:
-            # TODO
-            # self.fringe += node.children
-            del self.fringe[0]
-            self.parseExpression()
-
         elif node.type == ASTNodeType.FunctionBody:
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            for i in range(child_amount):
+                self.parseExpression()
+
+            if node.parent.children[0].value.type == ASTNodeType.Void:
+                self.programText += "retp\n"
+            else:
+                self.programText += "retf\n"
+
+        elif node.type == ASTNodeType.Return:
             # TODO
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
@@ -146,13 +153,15 @@ class PTranslator:
             for i in range(child_amount):
                 self.parseExpression()
 
-        #################################f
+            if len(node.children) != 0:
+                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
+                self.programText += "str " + myType.getPString() + " 0 0\nretf\n"
+
+        #################################
         # Declarations                  #
         #################################
 
         elif isinstance(node.type, pointerType) and node.type.type == ASTNodeType.CharDecl:
-            self.programText += "// TODO declare variable <" + str(node.value) + ">\n"
-
             if len(self.fringe[0][0].children) != 0:
                 child_amount = len(node.children)
                 self.addChildrenToFringe(node, nodeLevel)
@@ -162,7 +171,6 @@ class PTranslator:
                 del self.fringe[0]
 
         elif isinstance(node.type, pointerType) and node.type.type == ASTNodeType.FloatDecl:
-            self.programText += "// TODO declare variable <" + str(node.value) + ">\n"
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
@@ -171,7 +179,6 @@ class PTranslator:
                 self.parseExpression()
 
         elif isinstance(node.type, pointerType) and node.type.type == ASTNodeType.IntDecl:
-            self.programText += "// TODO declare variable <" + str(node.value) + ">\n"
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
@@ -187,7 +194,23 @@ class PTranslator:
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
             self.parseExpression()
-            self.programText += "// TODO assign to variable (get to stacktop + assign)\n"
+
+            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.parent.value)
+
+            # Get defining occurence difference from symbol table
+            definingOccurrence = self.symbolTableBuilder.symbolTable.getDefOcc(node.parent.value)
+
+            # Get defining occurence difference from symbol table
+            appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
+
+            if definingOccurrence == 0:
+                # The scope is global
+                # TODO
+                pass
+            else:
+                # Look for the symbol in this function, thank you C for being this easy
+
+                self.programText += "str " + mapping.type.getPString() + " 0 " + str(mapping.address + 8) + "\n"
 
         elif node.type == ASTNodeType.Addition:
             child_amount = len(node.children)
@@ -235,7 +258,24 @@ class PTranslator:
             del self.fringe[child_amount]
             self.parseExpression()
             self.parseExpression()
-            self.programText += "// TODO assign stuff (lvalue assignment)\n"
+
+            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
+
+            # Get defining occurence difference from symbol table
+            definingOccurrence = self.symbolTableBuilder.symbolTable.getDefOcc(node.children[0].value)
+
+            # Get defining occurence difference from symbol table
+            appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
+
+            if definingOccurrence == 0:
+                # The scope is global
+                # TODO
+                pass
+            else:
+                # Look for the symbol in this function, thank you C for being this easy
+
+                self.programText += "str " + mapping.type.getPString() + " 0 " + str(mapping.address + 8) + "\n"
+
 
         #################################
         # Values                        #
@@ -253,11 +293,29 @@ class PTranslator:
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueID:
-            self.programText += "//TODO load <" + node.value + "> on stack\n"
+            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+
+            # Get defining occurence difference from symbol table
+            definingOccurrence = self.symbolTableBuilder.symbolTable.getDefOcc(node.value)
+
+            # Get defining occurence difference from symbol table
+            appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
+
+            if definingOccurrence == 0:
+                # The scope is global
+                # TODO
+                pass
+            else:
+                # Look for the symbol in this function, thank you C for being this easy
+                nestingDifference = appliedOccurrence - definingOccurrence
+
+                self.programText += "lod " + mapping.type.getPString() + " 0 " + str(mapping.address + 8) + "\n"
+
+
             del self.fringe[0]
 
         elif node.type == ASTNodeType.LValue:
-            self.programText += "//TODO load lvalue <" + node.value + "> on stack\n"
+            # TODO remove?
             del self.fringe[0]
 
         #################################
@@ -461,15 +519,33 @@ class PTranslator:
         return declarations
 
     def setFunctionArguments(self, functionNode):
-        arguments = self.symbolTableBuilder.symbolTable.lookupSymbol(functionNode.value).type.arguments
 
-        for (argumentType, actualArgument) in zip(arguments, functionNode.children):
-            # TODO include references
-            if isinstance(argumentType.type, FloatType) or isinstance(argumentType.type, CharType) or \
-                isinstance(argumentType.type, IntType) or isinstance(argumentType.type, PointerType):
-                self.programText += "ldc " + str(actualArgument.value) + "\n"
-            elif argumentType.type == ASTNodeType.RValueID:
-                return
+        for argument in functionNode.children:
+            # TODO include references and array elements and stuff
+            if argument.type == ASTNodeType.RValueFloat:
+                self.programText += "ldc r " + str(argument.value) + "\n"
+            elif argument.type == ASTNodeType.RValueInt:
+                self.programText += "ldc i " + str(argument.value) + "\n"
+            elif argument.type == ASTNodeType.RValueChar:
+                self.programText += "ldc c " + str(argument.value) + "\n"
+            elif argument.type == ASTNodeType.RValueID:
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
+
+                # Get defining occurence difference from symbol table
+                definingOccurrence = self.symbolTableBuilder.symbolTable.getDefOcc(argument.value)
+
+                # Get defining occurence difference from symbol table
+                appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
+
+                if definingOccurrence == 0:
+                    # The scope is global
+                    # TODO
+                    pass
+                else:
+                    # Look for the symbol in this function, thank you C for being this easy
+                    nestingDifference = appliedOccurrence - definingOccurrence
+
+                    self.programText += "lod " + mapping.type.getPString() + " 0 " + str(mapping.address + 8) + "\n"
 
     def saveProgram(self, filename):
         programFile = open(filename, 'w')

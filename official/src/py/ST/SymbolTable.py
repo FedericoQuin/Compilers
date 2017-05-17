@@ -98,7 +98,7 @@ class SymbolTable:
 		else:
 			return self.localScopeTables.getDefOcc(symbol)
 
-	def getCurrentAppOcc(self):
+	def getAppOcc(self):
 		return self.localScopeTables.getDeepestLevel()
 
 
@@ -141,10 +141,11 @@ class STSingleScope:
 	"""
 		Class used to store the symbol table for a single scope segment, and all the scopes below it.
 	"""
-	def __init__(self, parent=None):
+	def __init__(self, parent=None, nextAddress=0):
 		self.table = {}
 		self.subScopes = []
 		self.parent = parent
+		self.nextAddress = nextAddress
 
 		# Variable used to indicate wether the last child is 'active' --> used when adding new symbols
 		self.childActive = False 
@@ -180,7 +181,10 @@ class STSingleScope:
 		if self.childActive == True:
 			self.subScopes[-1].addSymbol(symbol, _type)
 			return
-		self.table[symbol] = SymbolMapping(_type)
+		self.table[symbol] = SymbolMapping(_type, self.nextAddress)
+
+		if self.parent != None:
+			self.nextAddress += 4
 	
 	def getSymbolCount(self):
 		return len(self.table)
@@ -191,7 +195,7 @@ class STSingleScope:
 			return
 			
 		self.childActive = True
-		self.subScopes.append(STSingleScope(self))
+		self.subScopes.append(STSingleScope(self, self.nextAddress))
 		
 	def leaveScope(self):
 		if self.childActive == True and self.subScopes[-1].childActive == True:
@@ -199,9 +203,12 @@ class STSingleScope:
 			return
 		self.childActive = False
 
+		if self.parent != None:
+			self.nextAddress = self.subScopes[-1].nextAddress
+
 	def getDefOcc(self, symbol, level=0):
 		lowerLevelOcc = None
-		if len(self.subScopes) != 0:
+		if self.childActive:
 			lowerLevelOcc = self.subScopes[-1].getDefOcc(symbol, level+1)
 		
 		if lowerLevelOcc != None:
@@ -212,14 +219,15 @@ class STSingleScope:
 		return None
 
 	def getDeepestLevel(self, level=0):
-		if len(subScopes) != 0:
-			return subScopes[-1].getDeepestLevel(level+1)
+		if self.childActive:
+			return self.subScopes[-1].getDeepestLevel(level+1)
 		return level
 
 
 class SymbolMapping:
-	def __init__(self, _type):
+	def __init__(self, _type, address=0):
 		self.type = _type
+		self.address = address
 	
 	def __str__(self):
 		return str(self.type)
