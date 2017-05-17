@@ -92,9 +92,11 @@ class SymbolTable:
 
 		return None
 
-	def searchFunction(self, symbol):
-		# TODO write this --> look in global scope, maybe add amt variables used in function body, etc...
-		return None
+	def getDefOcc(self, symbol):
+		if self.symbolExists(symbol, Scope.GLOBAL):
+			return 0
+		else:
+			return self.localScopeTables.getDefOcc(symbol)
 
 
 
@@ -123,7 +125,10 @@ class STTree:
 		self.root.leaveScope()
 
 	def rootActive(self):
-		return self.root.childActive == True		
+		return self.root.childActive == True
+
+	def getDefOcc(self, symbol):
+		return self.root.getDefOcc(symbol)	
 
 
 class STSingleScope:
@@ -188,6 +193,17 @@ class STSingleScope:
 			return
 		self.childActive = False
 
+	def getDefOcc(self, symbol, level=0):
+		lowerLevelOcc = None
+		if len(self.subScopes) != 0:
+			lowerLevelOcc = self.subScopes[-1].getDefOcc(symbol, level+1)
+		
+		if lowerLevelOcc != None:
+			return lowerLevelOcc
+		elif self.contains(symbol):
+			return level
+		
+		return None
 
 
 class SymbolMapping:
