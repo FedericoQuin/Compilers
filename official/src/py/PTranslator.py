@@ -58,7 +58,7 @@ class PTranslator:
         self.fringe.append(nodes[0])
 
         # TODO remove
-        if translate:
+        if True:
             self.parseExpression()
 
         self.saveProgram("test")
@@ -66,6 +66,7 @@ class PTranslator:
     def parseExpression(self):
         if len(self.fringe) == 0:
             return
+
 
         node = self.fringe[0][0]
         nodeLevel = self.fringe[0][1]
@@ -75,16 +76,53 @@ class PTranslator:
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
-            self.parseExpression()
+            while (len(self.fringe) != 0):
+                self.parseExpression()
 
+        #################################
+        # Functions                     #
+        #################################
         elif node.type == ASTNodeType.Function:
             # TODO
+
+            # Process the arguments
+            for arg in node.children[1].children:
+                self.symbolTableBuilder.processNode(arg, nodeLevel)
+
+            # calculate the amout of space needed
+            declarations = self.getAmoutOfDeclarations(node)
+
             self.programText += "label_" + node.value + ":\n"
+            self.programText += "ssp " + str(declarations * 4) + "\n"
+            # TODO copy arrays?
+            self.programText += "sep wat? hoe moet ik dit nu weten?\n"
+            # Local procedure declarations are not possible in C so some things can be skipped
+
             self.currentFunction = node.value
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
             self.parseExpression()
+
+            if node.children[0].value.type == ASTNodeType.Void:
+                self.programText += "retp\n"
+            else:
+                self.programText += "retf\n"
+
+        elif node.type == ASTNodeType.FunctionCall:
+            del self.fringe[0]
+
+            # calculate the amout of space needed
+            arguments = len(self.symbolTableBuilder.symbolTable.lookupSymbol(node.value).type.arguments)
+
+            # TODO get defining occurence difference from symbol table
+            self.programText += "mst TODO\n"
+
+            # Set the arguments:
+            self.setFunctionArguments(node)
+
+            # Jump to the function
+            self.programText += "cup " + str(arguments * 4) + " " + node.value + "\n"
 
         elif node.type == ASTNodeType.ReturnType:
             # TODO
@@ -105,17 +143,17 @@ class PTranslator:
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
 
-            while len(self.fringe) != 0:
+            for i in range(child_amount):
                 self.parseExpression()
 
-        #################################
+        #################################f
         # Declarations                  #
         #################################
 
         elif isinstance(node.type, pointerType) and node.type.type == ASTNodeType.CharDecl:
             self.programText += "// TODO declare variable <" + str(node.value) + ">\n"
 
-            if len(self.fringe[0].children) != 0:
+            if len(self.fringe[0][0].children) != 0:
                 child_amount = len(node.children)
                 self.addChildrenToFringe(node, nodeLevel)
                 del self.fringe[child_amount]
@@ -232,7 +270,6 @@ class PTranslator:
             skipLoopLabel = self.currentFunction + "_while_" + str(self.nextLabelNumber) + "_false"
 
             self.currentWhileLoops.append((loopBegin, skipLoopLabel))
-
             self.nextLabelNumber += 1
 
             child_amount = len(node.children)
@@ -413,7 +450,28 @@ class PTranslator:
         for child in reversed(node.children):
             self.fringe = [(child, nodeLevel + 1)] + self.fringe
 
+    def getAmoutOfDeclarations(self, functionNode):
+        declarations = 0
+        for node in functionNode.children:
+            if isinstance(node.type, pointerType) and node.type.ptrCount == 0 and \
+                (node.type.type == ASTNodeType.FloatDecl or node.type.type == ASTNodeType.IntDecl or node.type.type == ASTNodeType.CharDecl):
+                declarations += 1
+            else:
+                declarations += self.getAmoutOfDeclarations(node)
+        return declarations
+
+    def setFunctionArguments(self, functionNode):
+        arguments = self.symbolTableBuilder.symbolTable.lookupSymbol(functionNode.value).type.arguments
+
+        for (argumentType, actualArgument) in zip(arguments, functionNode.children):
+            # TODO include references
+            if isinstance(argumentType.type, FloatType) or isinstance(argumentType.type, CharType) or \
+                isinstance(argumentType.type, IntType) or isinstance(argumentType.type, PointerType):
+                self.programText += "ldc " + str(actualArgument.value) + "\n"
+            elif argumentType.type == ASTNodeType.RValueID:
+                return
+
     def saveProgram(self, filename):
         programFile = open(filename, 'w')
-        # programFile.write(self.programText)
+        programFile.write(self.programText)
         programFile.close()
