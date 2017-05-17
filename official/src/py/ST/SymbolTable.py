@@ -98,6 +98,9 @@ class SymbolTable:
 		else:
 			return self.localScopeTables.getDefOcc(symbol)
 
+	def getCurrentAppOcc(self):
+		return self.localScopeTables.getDeepestLevel()
+
 
 
 
@@ -129,6 +132,9 @@ class STTree:
 
 	def getDefOcc(self, symbol):
 		return self.root.getDefOcc(symbol)	
+	
+	def getDeepestLevel(self):
+		return self.root.getDeepestLevel()
 
 
 class STSingleScope:
@@ -204,6 +210,11 @@ class STSingleScope:
 			return level
 		
 		return None
+
+	def getDeepestLevel(self, level=0):
+		if len(subScopes) != 0:
+			return subScopes[-1].getDeepestLevel(level+1)
+		return level
 
 
 class SymbolMapping:
