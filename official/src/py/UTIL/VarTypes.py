@@ -108,6 +108,21 @@ class CharType(VarType):
 	def getPString(self):
 		return "c"
 
+class ReferenceType(VarType):
+	def __init__(self, _type):
+		self.referencedType = _type
+
+	def __str__(self):
+		return str(self.referencedType)
+
+	def __eq__(self, object):
+		return object == self.referencedType
+
+	def addressOf(self):
+		return self.referencedType.addressOf()
+	
+	def getPString(self):
+		return self.referencedType.getPString()
 
 
 class PointerType(VarType):
