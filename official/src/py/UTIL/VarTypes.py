@@ -52,6 +52,8 @@ class IntType(VarType):
 			return object == self
 		elif type(object) is ArrayType:
 			return object == self
+		elif type(object) is ReferenceType:
+			return object == self
 		if type(object) == type(self):
 			return True
 		return False
@@ -75,6 +77,8 @@ class FloatType(VarType):
 			return object == self
 		elif type(object) is ArrayType:
 			return object == self
+		elif type(object) is ReferenceType:
+			return object == self
 		if type(object) == type(self):
 			return True
 		return False
@@ -97,6 +101,8 @@ class CharType(VarType):
 		if type(object) is PointerType:
 			return object == self
 		elif type(object) is ArrayType:
+			return object == self
+		elif type(object) is ReferenceType:
 			return object == self
 		if type(object) == type(self):
 			return True
@@ -136,6 +142,8 @@ class PointerType(VarType):
 
 	def __eq__(self, object):
 		if type(object) is ArrayType:
+			return object == self
+		elif type(object) is ReferenceType:
 			return object == self
 		elif type(object) is IntType and self.ptrCount != 0:
 			return True
