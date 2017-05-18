@@ -7,7 +7,7 @@ class ExType(Enum):
 
 	def __str__(self):
 		if self.value == ExType.error.value:
-			return "\033[4;31m" + "Error: " + "\033[0m"
+			return "\033[1;31m" + "Error: " + "\033[0m"
 		elif self.value == ExType.warning.value:
 			return "\033[1;35m" + "Warning: " + "\033[0m"
 		return ""
@@ -25,7 +25,7 @@ class ErrorMsgHandler:
 
 
 	@staticmethod
-	def functionAlreadyDeclared(node):
+	def functionAlreadyInitialised(node):
 		ErrorMsgHandler.throwErrorMessage(ExType.error, "Funtion '" + str(node.value) + "' has already been initialized.")
 
 	@staticmethod
@@ -39,11 +39,11 @@ class ErrorMsgHandler:
 
 	@staticmethod
 	def functionBeforeDecl(node):
-		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' before declaration.")
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' called before declaration.")
 
 	@staticmethod
 	def functionBeforeInit(node):
-		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' before initialisation.")
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' called before initialisation.")
 
 
 	@staticmethod
