@@ -208,7 +208,6 @@ class PTranslator:
                 pass
             else:
                 # Look for the symbol in this function, thank you C for being this easy
-
                 self.programText += "str " + mapping.type.getPString() + " 0 " + str(mapping.address + 8) + "\n"
 
         elif node.type == ASTNodeType.Addition:
@@ -218,7 +217,7 @@ class PTranslator:
             self.parseExpression()
 
             # If the other operand is a pointer, multiply this operand by the size of the type
-            if node.children[1].type.ptrCount != 0:
+            if isinstance(node.children[1], pointerType) and node.children[1].type.ptrCount != 0:
                 myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
                 self.programText += "ldc i 4\n"
                 self.programText += "mul " + myType.getPString() + "\n"
@@ -226,7 +225,7 @@ class PTranslator:
             self.parseExpression()
 
             # If the other operand is a pointer, multiply this operand by the size of the type
-            if node.children[0].type.ptrCount != 0:
+            if isinstance(node.children[0], pointerType) and node.children[0].type.ptrCount != 0:
                 myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
                 self.programText += "ldc i 4\n"
                 self.programText += "mul " + myType.getPString() + "\n"
@@ -563,6 +562,30 @@ class PTranslator:
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
             self.parseExpression()
+
+        elif node.type == ASTNodeType.RValueAddress:
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            # The argument should be (and will be because of error detection) an lvalue
+            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
+
+            # Get defining occurence difference from symbol table
+            definingOccurrence = self.symbolTableBuilder.symbolTable.getDefOcc(node.children[0].value)
+
+            # Get defining occurence difference from symbol table
+            appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
+
+            if definingOccurrence == 0:
+                # The scope is global
+                # TODO
+                pass
+            else:
+                # Look for the symbol in this function, thank you C for being this easy
+                nestingDifference = appliedOccurrence - definingOccurrence
+
+                self.programText += "lda " + mapping.type.getPString() + " 0 " + str(mapping.address + 8) + "\n"
 
         else:
             del self.fringe[0]
