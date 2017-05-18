@@ -84,6 +84,9 @@ class TypeDeductor:
 					raise Exception("Error: cannot dereference non-int/pointer expressions.")
 		
 		rvalueIdType = symbolTable.lookupSymbol(rvalueSymbol).type
+		if type(rvalueIdType) is ArrayType:
+			rvalueIdType = rvalueIdType.addressOf()
+		
 		if not(type(rvalueIdType) is PointerType):
 			raise Exception("Error: cannot dereference non-pointer variable '" + str(rvalueSymbol) + "'.")
 		if derefCount > rvalueIdType.ptrCount:
