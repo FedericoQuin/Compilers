@@ -13,9 +13,13 @@ from src.py.PTranslator import PTranslator
 from src.py.AST.ASTNode import *
 from src.py.AST.ASTCreator import ASTCreator
 from src.py.ST.SymbolTable import SymbolTable
+from src.py.SA.ErrorMsgHandler import ExType
 
 testdir = os.path.dirname(os.path.abspath(__file__))
 resdir = os.getcwd() + "/res"
+
+ERROR_STRING = str(ExType.error)
+
 
 def parse(inputFile, dotSolution, pSolution, symbolTableSolution = ""):
 	ASTNode.ID = 0
@@ -259,10 +263,10 @@ def test_existences():
 		"existence4.c"
 		]
 	errorMessages = [
-		"Error: variable 'a' referenced before declaration.",
-		"Error: function 'getCookies' called before declaration.",
-		"Error: variable 'tedt' referenced before declaration.",
-		"Error: function 'test' called before initialisation."
+		ERROR_STRING + "Variable 'a' referenced before declaration.",
+		ERROR_STRING + "Function 'getCookies' called before declaration.",
+		ERROR_STRING + "Variable 'tedt' referenced before declaration.",
+		ERROR_STRING + "Function 'test' called before initialisation."
 	]
 	for i in range(len(errorFiles)):
 		try:
@@ -278,8 +282,8 @@ def test_duplicate_declarations():
 		"dup_decl2.c"
 		]
 	errorMessages = [
-		"Symbol 'a' has already been defined in this scope.",
-		"Symbol 'testing' has already been defined in this scope."
+		ERROR_STRING + "Symbol 'a' has already been declared in this scope.",
+		ERROR_STRING + "Symbol 'testing' has already been declared in this scope."
 	]
 	for i in range(len(errorFiles)):
 		try:
