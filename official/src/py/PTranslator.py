@@ -58,7 +58,7 @@ class PTranslator:
         self.fringe.append(nodes[0])
 
         # TODO remove
-        if translate:
+        if True:
             self.parseExpression()
 
         self.saveProgram("test")
@@ -86,8 +86,7 @@ class PTranslator:
             self.currentFunction = node.value
 
             # Process the arguments
-            for arg in node.children[1].children:
-                self.symbolTableBuilder.processNode(arg, nodeLevel + 2)
+            self.processFunctionArgs(node.children[1], nodeLevel + 2)
 
             # calculate the amout of space needed
             declarations = self.getAmoutOfDeclarations(node)
@@ -217,7 +216,21 @@ class PTranslator:
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
             self.parseExpression()
+
+            # If the other operand is a pointer, multiply this operand by the size of the type
+            if node.children[1].type.ptrCount != 0:
+                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
+                self.programText += "ldc i 4\n"
+                self.programText += "mul " + myType.getPString() + "\n"
+
             self.parseExpression()
+
+            # If the other operand is a pointer, multiply this operand by the size of the type
+            if node.children[0].type.ptrCount != 0:
+                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
+                self.programText += "ldc i 4\n"
+                self.programText += "mul " + myType.getPString() + "\n"
+
             
             myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
             self.programText += "add " + myType.getPString() + "\n"
@@ -227,7 +240,20 @@ class PTranslator:
             self.addChildrenToFringe(node, nodeLevel)
             del self.fringe[child_amount]
             self.parseExpression()
+
+            # If the other operand is a pointer, multiply this operand by the size of the type
+            if node.children[1].type.ptrCount != 0:
+                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
+                self.programText += "ldc i 4\n"
+                self.programText += "mul " + myType.getPString() + "\n"
+
             self.parseExpression()
+
+            # If the other operand is a pointer, multiply this operand by the size of the type
+            if node.children[0].type.ptrCount != 0:
+                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
+                self.programText += "ldc i 4\n"
+                self.programText += "mul " + myType.getPString() + "\n"
 
             myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
             self.programText += "sub " + myType.getPString() + "\n"
@@ -253,28 +279,47 @@ class PTranslator:
             self.programText += "div " + myType.getPString() + "\n"
 
         elif node.type == ASTNodeType.Assignment:
-            child_amount = len(node.children)
-            self.addChildrenToFringe(node, nodeLevel)
-            del self.fringe[child_amount]
-            self.parseExpression()
-            self.parseExpression()
+            # TODO references
+            if node.children[0].type != ASTNodeType.Dereference:
+                child_amount = len(node.children)
+                self.addChildrenToFringe(node, nodeLevel)
+                del self.fringe[child_amount]
+                self.parseExpression()
+                self.parseExpression()
 
-            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
 
-            # Get defining occurence difference from symbol table
-            definingOccurrence = self.symbolTableBuilder.symbolTable.getDefOcc(node.children[0].value)
+                # Get defining occurence difference from symbol table
+                definingOccurrence = self.symbolTableBuilder.symbolTable.getDefOcc(node.children[0].value)
 
-            # Get defining occurence difference from symbol table
-            appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
+                # Get defining occurence difference from symbol table
+                appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
 
-            if definingOccurrence == 0:
-                # The scope is global
-                # TODO
-                pass
-            else:
-                # Look for the symbol in this function, thank you C for being this easy
+                if definingOccurrence == 0:
+                    # The scope is global
+                    # TODO
+                    pass
+                else:
+                    # Look for the symbol in this function, thank you C for being this easy
+                    self.programText += "str " + mapping.type.getPString() + " 0 " + str(mapping.address + 8) + "\n"
 
-                self.programText += "str " + mapping.type.getPString() + " 0 " + str(mapping.address + 8) + "\n"
+            elif node.children[0].type == ASTNodeType.Dereference:
+                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
+
+                derefNode = node.children[0]
+                child_amount = len(derefNode.children)
+                self.addChildrenToFringe(derefNode, nodeLevel)
+                del self.fringe[child_amount]
+
+                # Parse the lsh (without executing the outmost *-operators)
+                for i in range(child_amount):
+                    self.parseExpression()
+
+                # Dereference (not all! we need the address)
+                for i in range(len(derefNode.value) - 1):
+                    self.programText += "ind a\n"
+
+                self.programText += "sto " + myType.type.getPString() + "\n"
 
 
         #################################
@@ -317,6 +362,24 @@ class PTranslator:
         elif node.type == ASTNodeType.LValue:
             # TODO remove?
             del self.fringe[0]
+
+        ##################################
+        # Pointers and arrays#
+        ##################################
+        elif node.type == ASTNodeType.Dereference:
+            child_amount = len(node.children)
+            self.addChildrenToFringe(node, nodeLevel)
+            del self.fringe[child_amount]
+
+            for i in range(child_amount):
+                self.parseExpression()
+
+            myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
+            for i in range(len(node.value) - 1):
+                self.programText += "ind a\n"
+
+            self.programText += "ind " + myType.type.getPString() + "\n"
+
 
         #################################
         # While Loops                   #
@@ -511,9 +574,14 @@ class PTranslator:
     def getAmoutOfDeclarations(self, functionNode):
         declarations = 0
         for node in functionNode.children:
-            if isinstance(node.type, pointerType) and node.type.ptrCount == 0 and \
+            if isinstance(node.type, pointerType) and \
                 (node.type.type == ASTNodeType.FloatDecl or node.type.type == ASTNodeType.IntDecl or node.type.type == ASTNodeType.CharDecl):
                 declarations += 1
+            elif node.type == ASTNodeType.ArrayDecl:
+                # The identifier of the array aka the pointer to the first element
+                declarations += 1
+                # The values held by the array
+                declarations += node.children[1].value
             else:
                 declarations += self.getAmoutOfDeclarations(node)
         return declarations
@@ -546,6 +614,12 @@ class PTranslator:
                     nestingDifference = appliedOccurrence - definingOccurrence
 
                     self.programText += "lod " + mapping.type.getPString() + " 0 " + str(mapping.address + 8) + "\n"
+
+    def processFunctionArgs(self, functionNode, nodeLevel):
+        for arg in functionNode.children:
+            if arg.type == ASTNodeType.ByReference:
+                self.processFunctionArgs(arg, nodeLevel + 1)
+            self.symbolTableBuilder.processNode(arg, nodeLevel)
 
     def saveProgram(self, filename):
         programFile = open(filename, 'w')

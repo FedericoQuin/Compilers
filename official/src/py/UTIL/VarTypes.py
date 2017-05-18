@@ -139,7 +139,7 @@ class PointerType(VarType):
 		return PointerType(self.type, self.ptrCount - amt)
 
 	def getPString(self):
-		return self.type.getPString() + ''.join(["*" for i in range(self.ptrCount)])
+		return "a"
 
 
 class ArrayType(VarType):
