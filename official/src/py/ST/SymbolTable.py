@@ -12,12 +12,14 @@ class SymbolTable:
 		Class used to store the symbol table when constructing the program text.
 		Used implementation: tree like structure with hash tables for different scopes.
 	"""
+	
 
 	
 	def __init__(self):
 		self.globalScopeTable = {}
 		self.localScopeTables = STTree()
 
+		self.nextGlobalAddress = 0
 
 	def insertEntry(self, symbol, _type, scope = Scope.LOCAL):
 		"""
@@ -26,7 +28,9 @@ class SymbolTable:
 		if (scope == Scope.LOCAL):
 			self.localScopeTables.addSymbol(symbol, _type)
 		else:
-			self.globalScopeTable[symbol] = SymbolMapping(_type)
+			self.globalScopeTable[symbol] = SymbolMapping(_type, self.nextGlobalAddress)
+			if not(type(_type) is FunctionType):
+				self.nextGlobalAddress += 4
 		
 	def lookupSymbol(self, symbol, scope=None, level=None):
 		"""
@@ -230,7 +234,7 @@ class SymbolMapping:
 		self.address = address
 	
 	def __str__(self):
-		return str(self.type)
+		return "Type: " + str(self.type) + ", relative address: " + self.address
 
 	def __repr__(self):
 		return str(self)
