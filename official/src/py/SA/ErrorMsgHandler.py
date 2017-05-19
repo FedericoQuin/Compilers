@@ -59,7 +59,7 @@ class ErrorMsgHandler:
 	# =============================
 	@staticmethod
 	def functionAlreadyInitialised(node):
-		ErrorMsgHandler.throwErrorMessage(ExType.error, "Funtion '" + str(node.value) + "' has already been initialized.", node)
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' has already been initialized.", node)
 
 	@staticmethod
 	def symbolAlreadyDeclared(node):

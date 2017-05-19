@@ -258,13 +258,15 @@ def test_existences():
 		"existence1.c",
 		"existence2.c",
 		"existence3.c",
-		"existence4.c"
+		"existence4.c",
+		"existence5.c"
 		]
 	errorMessages = [
 		determineExPrefix(ExType.error, (2,1)) + "Variable 'a' referenced before declaration.",
 		determineExPrefix(ExType.error, (4,1)) + "Function 'getCookies' called before declaration.",
 		determineExPrefix(ExType.error, (11,25)) + "Variable 'tedt' referenced before declaration.",
-		determineExPrefix(ExType.error, (4,9)) + "Function 'test' called before initialisation."
+		determineExPrefix(ExType.error, (4,9)) + "Function 'test' called before initialisation.",
+		determineExPrefix(ExType.error, (9,0)) + "Function 'testing' has already been initialized."
 	]
 	for i in range(len(errorFiles)):
 		try:
