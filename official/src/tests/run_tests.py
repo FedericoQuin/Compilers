@@ -17,7 +17,7 @@ from src.py.ST.SymbolTable import SymbolTable
 testdir = os.path.dirname(os.path.abspath(__file__))
 resdir = os.getcwd() + "/res"
 
-def parse(inputFile, dotSolution, pSolution, symbolTableSolution = ""):
+def parse(inputFile, dotSolution, pSolution, symbolTableSolution = "", translate=True):
 	ASTNode.ID = 0
 	SymbolTable.AllocationAddress = 0
 
@@ -48,7 +48,7 @@ def parse(inputFile, dotSolution, pSolution, symbolTableSolution = ""):
 		ast = ASTbuilder.getAST()
 
 		translator = PTranslator()
-		translator.translate(ast, stResultPath)
+		translator.translate(ast, stResultPath, translate=translate)
 
 		translator.saveProgram(pResultPath)
 		ASTbuilder.toDot(dotResultPath)
@@ -116,10 +116,10 @@ def test_singleLineComment():
 	parse("singleLineComment.c", "singleLineComment.dot", "singleLineComment.p", "singleLineComment.symboltable")
 
 def test_increment():
-	parse("increment.c", "increment.dot", "increment.p", "increment.symboltable")
+	parse("increment.c", "increment.dot", "increment.p", "increment.symboltable", translate=False)
 
 def test_prefixIncDec():
-	parse("prefixIncDec.c", "prefixIncDec.dot", "prefixIncDec.p", "prefixIncDec.symboltable")
+	parse("prefixIncDec.c", "prefixIncDec.dot", "prefixIncDec.p", "prefixIncDec.symboltable", translate=False)
 
 def test_ifelse():
 	parse("ifelse.c", "ifelse.dot", "ifelse.p", "ifelse.symboltable")
@@ -140,25 +140,25 @@ def test_functions():
 	parse("functions.c", "functions.dot", "functions.p", "functions.symboltable")
 
 def test_pointer():
-	parse("pointer.c", "pointer.dot", "pointer.p", "pointer.symboltable")
+	parse("pointer.c", "pointer.dot", "pointer.p", "pointer.symboltable", translate=False)
 
 def test_function_calls():
 	parse("function_calls.c", "function_calls.dot", "function_calls.p", "function_calls.symboltable")
 
 def test_arrays():
-	parse("arrays.c", "arrays.dot", "arrays.p", "arrays.symboltable")
+	parse("arrays.c", "arrays.dot", "arrays.p", "arrays.symboltable", translate=False)
 
 def test_global_vars():
-	parse("global_vars.c", "global_vars.dot", "global_vars.p", "global_vars.symboltable")
+	parse("global_vars.c", "global_vars.dot", "global_vars.p", "global_vars.symboltable", translate=False)
 
 def test_includes():
-	parse("includes.c", "includes.dot", "includes.p", "includes.symboltable")
+	parse("includes.c", "includes.dot", "includes.p", "includes.symboltable", translate=False)
 
 def test_scanf():
-	parse("scanf.c", "scanf.dot", "scanf.p", "scanf.symboltable")
+	parse("scanf.c", "scanf.dot", "scanf.p", "scanf.symboltable", translate=False)
 
 def test_printf():
-	parse("printf.c", "printf.dot", "printf.p", "printf.symboltable")
+	parse("printf.c", "printf.dot", "printf.p", "printf.symboltable", translate=False)
 
 def test_redefining_symbols():
 	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p", "redefining_symbols.symboltable")
@@ -173,17 +173,17 @@ def test_minus_values():
 	parse("minus_values.c", "minus_values.dot", "minus_values.p", "minus_values.symboltable")
 
 def test_address_assignment():
-	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p", "address_assignment.symboltable")
+	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p", "address_assignment.symboltable", translate=False)
 
 def test_dereference1():
-	parse("dereference1.c", "dereference1.dot", "dereference1.p", "dereference1.symboltable")
+	parse("dereference1.c", "dereference1.dot", "dereference1.p", "dereference1.symboltable", translate=False)
 
 # TODO unlock this task when 'advanced' dereferencing is finished
 # def test_dereference2():
 # 	parse("dereference2.c", "dereference2.dot", "dereference2.p", "dereference2.symboltable")
 
 def test_by_reference():
-	parse("by_reference.c", "by_reference.dot", "by_reference.p", "by_reference.symboltable")
+	parse("by_reference.c", "by_reference.dot", "by_reference.p", "by_reference.symboltable", translate=False)
 
 
 def test_errors():

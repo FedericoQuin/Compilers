@@ -9,7 +9,7 @@ void getThePointOfLife(int age){
 		return;
 	} else {
 		while (age < 100) {
-			age++;
+			age = age + 1;
 		}
 		return;
 	}
