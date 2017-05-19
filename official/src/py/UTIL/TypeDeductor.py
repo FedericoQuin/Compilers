@@ -3,6 +3,7 @@ from src.py.AST.ASTNode import ASTNodeType, pointerType
 from src.py.AST.AST import AST
 from src.py.ST.SymbolTable import SymbolTable, SymbolMapping
 from src.py.UTIL.VarTypes import *
+from src.py.SA.ErrorMsgHandler import ErrorMsgHandler
 
 
 class TypeDeductor:
@@ -64,7 +65,7 @@ class TypeDeductor:
 			Returns the type after dereferencing.
 		"""
 		queue = [node]
-		rvalueSymbol = None
+		derefNode = None
 		derefCount = 0
 
 		while len(queue) != 0:
@@ -74,26 +75,25 @@ class TypeDeductor:
 			if currentNode.type == ASTNodeType.Dereference:
 				derefCount += len(currentNode.value)
 			elif currentNode.type == ASTNodeType.RValueID:
-				if rvalueSymbol != None:
-					raise Exception("Error: cannot dereference more than 1 variable.")
-				rvalueSymbol = currentNode.value
+				if derefNode != None:
+					ErrorMsgHandler.derefMultipleVars(node)
+				derefNode = currentNode
 			else:
 				# All other nodes are part of an expression
 				rType = type(TypeDeductor.deductType(currentNode, symbolTable))
 				if not(rType is IntType) and not(rType is PointerType):
-					raise Exception("Error: cannot dereference non-int/pointer expressions.")
+					ErrorMsgHandler.derefInvalidExpression(node)
 		
-		rvalueIdType = symbolTable.lookupSymbol(rvalueSymbol).type
+		rvalueIdType = symbolTable.lookupSymbol(derefNode.value).type
 		if type(rvalueIdType) is ArrayType:
 			rvalueIdType = rvalueIdType.addressOf()
 		
 		if not(type(rvalueIdType) is PointerType):
-			raise Exception("Error: cannot dereference non-pointer variable '" + str(rvalueSymbol) + "'.")
+			ErrorMsgHandler.derefNonPointer(derefNode)
 		if derefCount > rvalueIdType.ptrCount:
 			if rvalueIdType.ptrCount == 0:
-				raise Exception("Error: cannot dereference non-pointer variable '" + str(rvalueSymbol) + "'.")
-			raise Exception("Error: cannot dereference variable '" + rvalueSymbol + "' " + str(derefCount) + " times (only " \
-				+ str(rvalueIdType.ptrCount) + (" times" if rvalueIdType.ptrCount != 1 else " time") + " allowed).")
+				ErrorMsgHandler.derefNonPointer(derefNode)
+			ErrorMsgHandler.overDereferencing(derefNode, rvalueIdType.ptrCount, derefCount)
 
 		return rvalueIdType.dereference(derefCount)
 
@@ -107,5 +107,5 @@ class TypeDeductor:
 		type1 = TypeDeductor.deductType(children[0], symbolTable)
 		type2 = TypeDeductor.deductType(children[1], symbolTable)
 		if (type1 != type2):
-			raise Exception("Types do not match: " + type1.getStrType() + " and " + type2.getStrType() + ".")
+			ErrorMsgHandler.typesOperationWrong(children[0], type1, type2, children[0].parent)
 		return type1

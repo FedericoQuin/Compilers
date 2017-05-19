@@ -3,6 +3,7 @@ from src.py.ST.SymbolTable import *
 from src.py.ST.SymbolTableBuilder import SymbolTableBuilder
 from src.py.UTIL.VarTypes import *
 from src.py.UTIL.TypeDeductor import TypeDeductor
+from src.py.SA.ErrorMsgHandler import ErrorMsgHandler
 
 
 class TypeChecker:
@@ -32,7 +33,7 @@ class TypeChecker:
 				rightType = TypeDeductor.deductType(node.children[1], self.symbolTable)
 
 			if rightType != None and leftType != None and leftType != rightType:
-				raise Exception("Types for assignment don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
+				ErrorMsgHandler.typesAssignmentWrong(node, leftType, rightType)
 		
 		#=================================================================
 		# Type checking left side and right side of condition (if present)
@@ -46,7 +47,7 @@ class TypeChecker:
 				leftType = TypeDeductor.deductType(currentNode.children[0], self.symbolTable)
 				rightType = TypeDeductor.deductType(currentNode.children[1], self.symbolTable)
 				if rightType != None and leftType != None and leftType != rightType:
-					raise Exception("Types for comparison don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
+					ErrorMsgHandler.typesComparisonWrong(node, leftType, rightType)
 		
 		#=======================================================
 		# Type checking for arguments given with a function call
@@ -63,7 +64,7 @@ class TypeChecker:
 			returnType = TypeDeductor.deductType(node.children[0], self.symbolTable) if len(node.children) == 1 else VoidType()
 
 			if returnType != None and functionReturnType != None and functionReturnType != returnType:
-				raise Exception("Return type doesn't match '" + functionSymbol + "' signature: " + functionReturnType.getStrType() + " and " + returnType.getStrType() + ".")
+				ErrorMsgHandler.returnTypeWrong(node, functionSymbol, functionReturnType, returnType)
 
 		#==================================
 		# Type checking for initializations
@@ -74,7 +75,7 @@ class TypeChecker:
 			rightType = TypeDeductor.deductType(node.children[0], self.symbolTable)
 
 			if rightType != leftType:
-				raise Exception("Types for initialization don't match: " + leftType.getStrType() + " and " + rightType.getStrType() + ".")
+				ErrorMsgHandler.typeInitWrong(node, leftType, rightType)
 
 		#======================================
 		# Type checking for array element index
@@ -83,7 +84,7 @@ class TypeChecker:
 			# Make sure that the index is a (positive -> TODO at runtime?) int value
 			indexType = TypeDeductor.deductType(node.children[0], self.symbolTable)
 			if indexType != IntType():
-				raise Exception("Elements of array '" + str(node.value) + "' should be accessed with an integer.")
+				ErrorMsgHandler.arrayElementWrongAccess(node)
 
 		#=========================================
 		# Type checking for dereference operations
@@ -110,15 +111,14 @@ class TypeChecker:
 		amtArgumentsRequired = len(functionSignature.arguments)
 		amtArgumentsGiven = len(arguments)
 		if amtArgumentsRequired != amtArgumentsGiven:
-			raise Exception("Function arguments invalid: '" + str(node.value) + "' takes " \
-				+ str(amtArgumentsRequired) + " " + ("arguments" if amtArgumentsRequired != 1 else "argument") + " " + \
-				"(" + str(amtArgumentsGiven) + " " + ("arguments" if amtArgumentsGiven != 1 else "argument") + " given).")
+			ErrorMsgHandler.functionArgsInvalid(node, amtArgumentsRequired, amtArgumentsGiven)
 		
 		for argumentRequired, argumentGiven in zip(functionSignature.arguments, arguments):
 			# Check the types for every argument given
 			if argumentRequired != TypeDeductor.deductType(argumentGiven, self.symbolTable):
-				raise Exception("Argument for function call '" + str(node.value) + "' did not match the signature: " \
-					+ argumentRequired.getStrType() + " and " + TypeDeductor.deductType(argumentGiven, self.symbolTable).getStrType() + " (argument #" + str(arguments.index(argumentGiven)+1) + ")." )
+				ErrorMsgHandler.functionArgWrong(node, argumentRequired, \
+					TypeDeductor.deductType(argumentGiven, self.symbolTable), \
+					arguments.index(argumentGiven)+1)
 
 		
 	
