@@ -13,12 +13,10 @@ from src.py.PTranslator import PTranslator
 from src.py.AST.ASTNode import *
 from src.py.AST.ASTCreator import ASTCreator
 from src.py.ST.SymbolTable import SymbolTable
-from src.py.SA.ErrorMsgHandler import ExType
+from src.py.SA.ErrorMsgHandler import ExType, determineExPrefix
 
 testdir = os.path.dirname(os.path.abspath(__file__))
 resdir = os.getcwd() + "/res"
-
-ERROR_STRING = str(ExType.error)
 
 
 def parse(inputFile, dotSolution, pSolution, symbolTableSolution = ""):
@@ -34,7 +32,7 @@ def parse(inputFile, dotSolution, pSolution, symbolTableSolution = ""):
 	parser._listeners = [MyErrorListener(inputFilePath)]
 	tree = parser.program()
 
-	ASTbuilder = ASTCreator()
+	ASTbuilder = ASTCreator(stream)
 
 	pResultPath = str(testdir) + "/program.p"
 	dotResultPath = str(testdir) + "/output.dot"
@@ -75,7 +73,7 @@ def parseNoCatch(inputFile, dotSolution, pSolution):
 		parser._listeners = [MyErrorListener(str(resdir) + "/deathTests/" + inputFile)]
 		tree = parser.program()
 
-		ASTbuilder = ASTCreator()
+		ASTbuilder = ASTCreator(stream)
 
 		walker = ParseTreeWalker()
 		walker.walk(ASTbuilder, tree)
@@ -263,10 +261,10 @@ def test_existences():
 		"existence4.c"
 		]
 	errorMessages = [
-		ERROR_STRING + "Variable 'a' referenced before declaration.",
-		ERROR_STRING + "Function 'getCookies' called before declaration.",
-		ERROR_STRING + "Variable 'tedt' referenced before declaration.",
-		ERROR_STRING + "Function 'test' called before initialisation."
+		determineExPrefix(ExType.error, (2,1)) + "Variable 'a' referenced before declaration.",
+		determineExPrefix(ExType.error, (4,1)) + "Function 'getCookies' called before declaration.",
+		determineExPrefix(ExType.error, (11,25)) + "Variable 'tedt' referenced before declaration.",
+		determineExPrefix(ExType.error, (4,9)) + "Function 'test' called before initialisation."
 	]
 	for i in range(len(errorFiles)):
 		try:
@@ -282,8 +280,8 @@ def test_duplicate_declarations():
 		"dup_decl2.c"
 		]
 	errorMessages = [
-		ERROR_STRING + "Symbol 'a' has already been declared in this scope.",
-		ERROR_STRING + "Symbol 'testing' has already been declared in this scope."
+		determineExPrefix(ExType.error, (3,1)) + "Symbol 'a' has already been declared in this scope.",
+		determineExPrefix(ExType.error, (8,1)) + "Symbol 'testing' has already been declared in this scope."
 	]
 	for i in range(len(errorFiles)):
 		try:
@@ -352,5 +350,6 @@ def test_derefences():
 		except Exception as inst:
 			string = str(inst)
 			assert(string == errorMessages[i])
+
 
 
