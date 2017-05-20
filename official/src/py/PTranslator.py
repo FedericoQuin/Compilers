@@ -137,7 +137,6 @@ class PTranslator:
 
             if len(node.children) != 0:
                 myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
-                print("RETURN HAS STR " + myType.getPString())
                 self.programText += "str " + myType.getPString() + " 0 0\nretf\n"
             else:
                 returnType = self.symbolTableBuilder.symbolTable.lookupSymbol(self.currentFunction).type.returnType
@@ -236,18 +235,23 @@ class PTranslator:
 
             elif node.children[0].type == ASTNodeType.Dereference:
                 myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
-
                 derefNode = node.children[0]
-                child_amount = len(derefNode.children)
-                self.addChildrenToFringe(derefNode, nodeLevel, deleteFront=True)
-                self.parseMultipleExpressions(child_amount)
 
+                self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
+
+                # The dereference node must be done manually, it's children can be parsed by themselves
+                self.addChildrenToFringe(derefNode, nodeLevel + 1, deleteFront=True)
+
+                # Set the lhs address
+                self.parseExpression()
                 # Dereference (not all! we need the address)
                 for i in range(len(derefNode.value) - 1):
                     self.programText += "ind a\n"
 
-                self.programText += "sto " + myType.type.getPString() + "\n"
+                # Set the value of the rhs
+                self.parseExpression()
 
+                self.programText += "sto " + myType.type.getPString() + "\n"
 
         #################################
         # Values                        #
@@ -269,6 +273,14 @@ class PTranslator:
             followLinkCount = self.getFollowLinkCount(node.value)
             self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
             del self.fringe[0]
+
+        elif node.type == ASTNodeType.RValueAddress:
+            self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
+
+            # The argument should be (and will be because of error detection) an lvalue
+            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
+            followLinkCount = self.getFollowLinkCount(node.children[0].value)
+            self.programText += "lda " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
 
         elif node.type == ASTNodeType.LValue:
             # TODO remove?
@@ -449,13 +461,6 @@ class PTranslator:
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
             self.parseMultipleExpressions(child_amount)
 
-        elif node.type == ASTNodeType.RValueAddress:
-            self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
-
-            # The argument should be (and will be because of error detection) an lvalue
-            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
-            followLinkCount = self.getFollowLinkCount(node.children[0].value)
-            self.programText += "lda " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
         else:
             del self.fringe[0]
 

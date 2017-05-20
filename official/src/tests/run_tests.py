@@ -140,7 +140,7 @@ def test_functions():
 	parse("functions.c", "functions.dot", "functions.p", "functions.symboltable")
 
 def test_pointer():
-	parse("pointer.c", "pointer.dot", "pointer.p", "pointer.symboltable", translate=False)
+	parse("pointer.c", "pointer.dot", "pointer.p", "pointer.symboltable")
 
 def test_function_calls():
 	parse("function_calls.c", "function_calls.dot", "function_calls.p", "function_calls.symboltable")

@@ -1,3 +1,6 @@
 int main(int argc, char* argv) {
-	int***** x = 0;
+	int a = 5;
+	int***** x;
+	****x = &a;
+	*****x = 6;
 }
