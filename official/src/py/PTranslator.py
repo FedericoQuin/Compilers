@@ -140,7 +140,8 @@ class PTranslator:
                 self.programText += "str " + myType.getPString() + " 0 0\nretf\n"
             else:
                 returnType = self.symbolTableBuilder.symbolTable.lookupSymbol(self.currentFunction).type.returnType
-                if returnType == ASTNodeType.Void:
+
+                if isinstance(returnType, PointerType) and isinstance(returnType.type, VoidType):
                     self.programText += "retp\n"
                 else:
                     self.programText += "retf\n"
@@ -224,9 +225,9 @@ class PTranslator:
             self.programText += "div " + myType.getPString() + "\n"
 
         elif node.type == ASTNodeType.Assignment:
+            myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
 
-            # TODO references
-            if node.children[0].type != ASTNodeType.Dereference:
+            if node.children[0].type != ASTNodeType.Dereference and not isinstance(myType, ReferenceType):
                 self.parseChildrenFirst(node, nodeLevel)
 
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
@@ -234,7 +235,6 @@ class PTranslator:
                 self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
 
             elif node.children[0].type == ASTNodeType.Dereference:
-                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
                 derefNode = node.children[0]
 
                 self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
@@ -252,6 +252,23 @@ class PTranslator:
                 self.parseExpression()
 
                 self.programText += "sto " + myType.type.getPString() + "\n"
+
+            elif isinstance(myType, ReferenceType):
+                self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
+                # delete the reference node, we don't need to evaluate it
+                del self.fringe[0]
+
+                # Set address of the reference on the stack
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
+                followLinkCount = self.getFollowLinkCount(node.value)
+                self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
+
+                # evaluate the lhs
+                self.parseExpression()
+
+                self.programText += "sto " + myType.getPString() + "\n"
+
+
 
         #################################
         # Values                        #
@@ -498,9 +515,15 @@ class PTranslator:
 
     def setFunctionArguments(self, functionNode):
 
-        for argument in functionNode.children:
+        arguments = self.symbolTableBuilder.symbolTable.lookupSymbol(functionNode.value).type.arguments
+
+        for argument, argumentType in zip(functionNode.children, arguments):
             # TODO include references and array elements and stuff
-            if argument.type == ASTNodeType.RValueFloat:
+            if isinstance(argumentType, ReferenceType):
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
+                followLinkCount = self.getFollowLinkCount(argument.value)
+                self.programText += "lda " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
+            elif argument.type == ASTNodeType.RValueFloat:
                 self.programText += "ldc r " + str(argument.value) + "\n"
             elif argument.type == ASTNodeType.RValueInt:
                 self.programText += "ldc i " + str(argument.value) + "\n"

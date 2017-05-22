@@ -183,7 +183,7 @@ def test_dereference1():
 # 	parse("dereference2.c", "dereference2.dot", "dereference2.p", "dereference2.symboltable")
 
 def test_by_reference():
-	parse("by_reference.c", "by_reference.dot", "by_reference.p", "by_reference.symboltable", translate=False)
+	parse("by_reference.c", "by_reference.dot", "by_reference.p", "by_reference.symboltable")
 
 
 def test_errors():

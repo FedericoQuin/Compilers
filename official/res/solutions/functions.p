@@ -11,7 +11,7 @@ lod i 0 8
 ldc i 100
 grt i
 fjp getThePointOfLife_ifelse_0_false
-retf
+retp
 ujp getThePointOfLife_ifelse_0_end
 getThePointOfLife_ifelse_0_false:
 getThePointOfLife_while_1:
@@ -25,6 +25,6 @@ add i
 str i 0 8
 ujp getThePointOfLife_while_1
 getThePointOfLife_while_1_false:
-retf
+retp
 getThePointOfLife_ifelse_0_end:
 retp
