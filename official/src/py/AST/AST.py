@@ -3,9 +3,10 @@ from src.py.AST.ASTNode import ASTNode, ASTNodeType, getStringOfArray, pointerTy
 
 
 class AST:
-	def __init__(self):
+	def __init__(self, tokenStream):
 		self.root = ASTNode(ASTNodeType.Program)
 		self.currentPointer = self.root
+		self.tokenStream = tokenStream
 
 	def __str__(self):
 		return "digraph AST {\n" + str(self.root) + "}"
@@ -18,7 +19,7 @@ class AST:
 	#====================================================================
 	def addInclude(self, ctx):
 		includeName = str(ctx.INCLUDE_FILE())
-		self.currentPointer.addChild(ASTNodeType.Include, includeName[includeName.find('<') + 1 : len(includeName) - 1])
+		self.currentPointer.addChild(ASTNodeType.Include, self.getPosition(ctx), includeName[includeName.find('<') + 1 : len(includeName) - 1])
 
 
 	#====================================================================
@@ -41,7 +42,7 @@ class AST:
 			ptrCount += 1
 			nextPtr = nextPtr.ptr()
 
-		self.currentPointer = self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
+		self.currentPointer = self.currentPointer.addChild(pointerType(_type, ptrCount), self.getPosition(ctx), str(ctx.ID()))
 		# if ctx.initialization() == None:
 		# 	self.climbTree()
 
@@ -50,7 +51,7 @@ class AST:
 		# Same as a normal declaration (the type part), with the addition of the 'array' itself
 
 		# Add the first node (arraydecl with value ID)
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ArrayDecl, str(ctx.ID()))
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ArrayDecl, self.getPosition(ctx), str(ctx.ID()))
 
 		# Add subsequent nodes for array decl (array type and array size)
 		_type = None
@@ -69,11 +70,11 @@ class AST:
 			ptrCount += 1
 			nextPtr = nextPtr.ptr()
 
-		self.currentPointer.addChild(ASTNodeType.ArrayType, pointerType(_type, ptrCount))
-		self.currentPointer.addChild(ASTNodeType.ArraySize, int(getStringOfArray(ctx.digits().DIGIT())))
+		self.currentPointer.addChild(ASTNodeType.ArrayType, self.getPosition(ctx), pointerType(_type, ptrCount))
+		self.currentPointer.addChild(ASTNodeType.ArraySize, self.getPosition(ctx), int(getStringOfArray(ctx.digits().DIGIT())))
 
-	def addInitialization(self):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Initialization)
+	def addInitialization(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Initialization, self.getPosition(ctx))
 
 	#====================================================================
 	#= 						Array element access						=
@@ -86,7 +87,7 @@ class AST:
 		elif (val == "rvalue"):
 			_type = ASTNodeType.RValueArrayElement
 
-		self.currentPointer = self.currentPointer.addChild(_type, str(ctx.arrayelement().ID()))
+		self.currentPointer = self.currentPointer.addChild(_type, self.getPosition(ctx), str(ctx.arrayelement().ID()))
 
 
 	#====================================================================
@@ -95,12 +96,12 @@ class AST:
 
 	def addNumericalValue(self, ctx):
 		if (ctx.intvalue() != None):
-				self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueInt)
+				self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueInt, self.getPosition(ctx))
 		elif (ctx.floatvalue() != None):
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueFloat)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueFloat, self.getPosition(ctx))
 
 	def addCharValue(self, ctx):
-		self.currentPointer.addChild(ASTNodeType.RValueChar, ctx.CHARVALUE())
+		self.currentPointer.addChild(ASTNodeType.RValueChar, self.getPosition(ctx), ctx.CHARVALUE())
 
 	def setIntValueNode(self, ctx):
 		self.currentPointer.value = int(("" if ctx.OPERATOR_MINUS() == None else "-") + getStringOfArray(ctx.DIGIT()))
@@ -118,7 +119,7 @@ class AST:
 		self.currentPointer.value = float(floatString)
 
 	def addFunctionCall(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, str(ctx.ID()))
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, self.getPosition(ctx), str(ctx.ID()))
 
 
 
@@ -126,8 +127,8 @@ class AST:
 	#= 					Pointers and addresses							=
 	#====================================================================
 
-	def addAddressOf(self):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueAddress)
+	def addAddressOf(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueAddress, self.getPosition(ctx))
 
 
 	def addDereference(self, ctx):
@@ -138,45 +139,46 @@ class AST:
 		if self.currentPointer.type == ASTNodeType.Dereference:
 			self.currentPointer.value += "".join([ "*" for i in range(len(ctx.OPERATOR_MUL())) ])
 		else:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Dereference, "".join(["*" for i in range(len(ctx.OPERATOR_MUL()))]))
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Dereference, self.getPosition(ctx),\
+				"".join(["*" for i in range(len(ctx.OPERATOR_MUL()))]))
 
 	#====================================================================
 	#= 					Assignments and Expressions						=
 	#====================================================================
 
 	def addAssignment(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment, self.getPosition(ctx))
 
 	def enterExpression(self, ctx):
 		if ctx.OPERATOR_AS() != None:
 			self.addAssignment(ctx)
 		elif ctx.postfix_inc() != None:
-			self.currentPointer.addChild(ASTNodeType.PostfixIncr, str(ctx.ID()))
+			self.currentPointer.addChild(ASTNodeType.PostfixIncr, self.getPosition(ctx), str(ctx.ID()))
 		elif ctx.prefix_inc() != None:
-			self.currentPointer.addChild(ASTNodeType.PrefixIncr, str(ctx.ID()))
+			self.currentPointer.addChild(ASTNodeType.PrefixIncr, self.getPosition(ctx), str(ctx.ID()))
 		elif ctx.postfix_dec() != None:
-			self.currentPointer.addChild(ASTNodeType.PostfixDecr, str(ctx.ID()))
+			self.currentPointer.addChild(ASTNodeType.PostfixDecr, self.getPosition(ctx), str(ctx.ID()))
 		elif ctx.prefix_dec() != None:
-			self.currentPointer.addChild(ASTNodeType.PrefixDecr, str(ctx.ID()))
+			self.currentPointer.addChild(ASTNodeType.PrefixDecr, self.getPosition(ctx), str(ctx.ID()))
 
 	def enterAddSub(self, ctx):
 		if ctx.OPERATOR_PLUS() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Addition)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Addition, self.getPosition(ctx))
 		elif ctx.OPERATOR_MINUS() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Subtraction)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Subtraction, self.getPosition(ctx))
 
 	def enterMulDiv(self, ctx):
 		if ctx.OPERATOR_MUL() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Mul)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Mul, self.getPosition(ctx))
 		elif ctx.OPERATOR_DIV() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Div)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Div, self.getPosition(ctx))
 
 
 	def enterID(self, ctx, val):
 		if (val == "lvalue"):
-			self.currentPointer.addChild(ASTNodeType.LValue, str(ctx.ID()))
+			self.currentPointer.addChild(ASTNodeType.LValue, self.getPosition(ctx), str(ctx.ID()))
 		elif (val == "rvalue"):
-			self.currentPointer.addChild(ASTNodeType.RValueID, str(ctx.ID()))
+			self.currentPointer.addChild(ASTNodeType.RValueID, self.getPosition(ctx), str(ctx.ID()))
 
 
 	#====================================================================
@@ -184,17 +186,17 @@ class AST:
 	#====================================================================
 
 	def addIfElse(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfElse)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfElse, self.getPosition(ctx))
 
 	def enterFirstcondition(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Condition)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Condition, self.getPosition(ctx))
 
 	def exitFirstcondition(self, ctx):
 		pass
 
 	def enterFirst_true_statements(self, ctx):
 		self.climbTree()
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfTrue)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfTrue, self.getPosition(ctx))
 
 	def exitFirst_true_statements(self, ctx):
 		pass
@@ -202,7 +204,7 @@ class AST:
 
 	def enterFirst_true_statement(self, ctx):
 		self.climbTree()
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfTrue)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfTrue, self.getPosition(ctx))
 
 	def exitFirst_true_statement(self, ctx):
 		pass
@@ -210,7 +212,7 @@ class AST:
 
 	def enterFirst_false_statement(self, ctx):
 		self.climbTree()
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfFalse)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfFalse, self.getPosition(ctx))
 
 	def exitFirst_false_statement(self, ctx):
 		pass
@@ -218,11 +220,11 @@ class AST:
 
 	def enterFirst_false_statements(self, ctx):
 		self.climbTree()
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfFalse)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfFalse, self.getPosition(ctx))
 
 	def enterCondition(self, ctx):
 		if ctx.OPERATOR_OR() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Or)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Or, self.getPosition(ctx))
 
 	def exitCondition(self, ctx):
 		if ctx.OPERATOR_OR() != None:
@@ -231,7 +233,7 @@ class AST:
 
 	def enterCondition_and(self, ctx):
 		if ctx.OPERATOR_AND() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.And)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.And, self.getPosition(ctx))
 
 	def exitCondition_and(self, ctx):
 		if ctx.OPERATOR_AND() != None:
@@ -240,7 +242,7 @@ class AST:
 
 	def enterCondition_not(self, ctx):
 		if ctx.OPERATOR_NOT() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Not)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Not, self.getPosition(ctx))
 
 	def exitCondition_not(self, ctx):
 		if ctx.OPERATOR_NOT() != None:
@@ -248,15 +250,15 @@ class AST:
 
 	def enterComparison(self, ctx):
 		if ctx.comparator().OPERATOR_EQ() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Equals)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Equals, self.getPosition(ctx))
 		elif ctx.comparator().OPERATOR_GT() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Greater)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Greater, self.getPosition(ctx))
 		elif ctx.comparator().OPERATOR_GE() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.GreaterOrEqual)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.GreaterOrEqual, self.getPosition(ctx))
 		elif ctx.comparator().OPERATOR_LT() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Less)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Less, self.getPosition(ctx))
 		elif ctx.comparator().OPERATOR_LE() != None:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.LessOrEqual)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.LessOrEqual, self.getPosition(ctx))
 
 
 	def exitComparison(self, ctx):
@@ -273,9 +275,9 @@ class AST:
 
 	def makeBrackets(self, ctx, negate = False):
 		if not negate:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Brackets)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Brackets, self.getPosition(ctx))
 		else:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.NegateBrackets)
+			self.currentPointer = self.currentPointer.addChild(ASTNodeType.NegateBrackets, self.getPosition(ctx))
 
 
 	#====================================================================
@@ -283,16 +285,16 @@ class AST:
 	#====================================================================
 
 	def enterWhile_loop(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.While)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.While, self.getPosition(ctx))
 
 	def enterFirst_while_statements(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileBody)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileBody, self.getPosition(ctx))
 
 	def enterFirst_while_statement(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileBody)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileBody, self.getPosition(ctx))
 
 	def enterFirst_while_condition(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Condition)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Condition, self.getPosition(ctx))
 
 	
 	#====================================================================
@@ -300,13 +302,13 @@ class AST:
 	#====================================================================
 
 	def enterBreak_stmt(self, ctx):
-		self.currentPointer.addChild(ASTNodeType.Break)
+		self.currentPointer.addChild(ASTNodeType.Break, self.getPosition(ctx))
 	
 	def enterContinue_stmt(self, ctx):
-		self.currentPointer.addChild(ASTNodeType.Continue)
+		self.currentPointer.addChild(ASTNodeType.Continue, self.getPosition(ctx))
 
 	def returnStmt(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Return)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Return, self.getPosition(ctx))
 
 
 
@@ -316,27 +318,27 @@ class AST:
 	#====================================================================
 
 	def enterFor_loop(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.For)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.For, self.getPosition(ctx))
 
 
 	def enterFirst_for_statements(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForBody)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForBody, self.getPosition(ctx))
 
 
 	def enterFirst_for_statement(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForBody)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForBody, self.getPosition(ctx))
 
 
 	def enterFirst_stmt_for(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt1)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt1, self.getPosition(ctx))
 
 
 	def enterSecond_stmt_for(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt2)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt2, self.getPosition(ctx))
 
 
 	def enterThird_stmt_for(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt3)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.ForStmt3, self.getPosition(ctx))
 
 
 
@@ -364,14 +366,14 @@ class AST:
 				ptrCount += 1
 				nextPtr = nextPtr.ptr()
 
-			self.currentPointer = self.currentPointer.addChild(typeNode, str(ctx.ID()))
+			self.currentPointer = self.currentPointer.addChild(typeNode, self.getPosition(ctx), str(ctx.ID()))
 		elif ctx.returntype().VOID() != None:
-			self.currentPointer = self.currentPointer.addChild(typeNode, str(ctx.ID()))
+			self.currentPointer = self.currentPointer.addChild(typeNode, self.getPosition(ctx), str(ctx.ID()))
 			_type = ASTNodeType.Void
-		self.currentPointer.addChild(ASTNodeType.ReturnType, pointerType(_type, ptrCount))
+		self.currentPointer.addChild(ASTNodeType.ReturnType, self.getPosition(ctx), pointerType(_type, ptrCount))
 
 	def addFunctionArgumentList(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionArgs)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionArgs, self.getPosition(ctx))
 
 	def addArgument(self, ctx):
 		if (self.currentPointer.parent.type == ASTNodeType.FunctionDecl):
@@ -394,11 +396,11 @@ class AST:
 				nextPtr = nextPtr.ptr()
 
 			if ctx.OPERATOR_ADDROF() != None:
-				self.currentPointer = self.currentPointer.addChild(ASTNodeType.ByReference)
-				self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
+				self.currentPointer = self.currentPointer.addChild(ASTNodeType.ByReference, self.getPosition(ctx))
+				self.currentPointer.addChild(pointerType(_type, ptrCount), self.getPosition(ctx), str(ctx.ID()))
 				self.climbTree()
 			else:
-				self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
+				self.currentPointer.addChild(pointerType(_type, ptrCount), self.getPosition(ctx), str(ctx.ID()))
 			
 	
 	def addSignatureArgument(self, ctx):
@@ -418,10 +420,10 @@ class AST:
 			ptrCount += 1
 			nextPtr = nextPtr.ptr()
 
-		self.currentPointer.addChild(pointerType(_type, ptrCount), str(ctx.ID()))
+		self.currentPointer.addChild(pointerType(_type, ptrCount), self.getPosition(ctx), str(ctx.ID()))
 
 	def addFunctionBody(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionBody)
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionBody, self.getPosition(ctx))
 
 
 
@@ -429,16 +431,16 @@ class AST:
 	#= 						Scanf and Printf							=
 	#====================================================================
 
-	def addScanf(self):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Scanf)
+	def addScanf(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Scanf, self.getPosition(ctx))
 
-	def addPrintf(self):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Printf)
+	def addPrintf(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Printf, self.getPosition(ctx))
 
 	def addFormatString(self, ctx):
 		includeName = "".join([str(i) for i in ctx.getChildren()])
 		# Don't forget to cut the quotation marks
-		self.currentPointer.addChild(ASTNodeType.FormatString, includeName[1:len(includeName)-1])
+		self.currentPointer.addChild(ASTNodeType.FormatString, self.getPosition(ctx), includeName[1:len(includeName)-1])
 
 	
 	def climbTree(self, amt = 1):
@@ -449,11 +451,16 @@ class AST:
 			self.currentPointer = self.currentPointer.parent
 
 
-	def enterBlock(self, name):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Block)
+	def enterBlock(self, ctx, name):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Block, self.getPosition(ctx))
 	
 	def leaveBlock(self):
 		self.currentPointer = self.currentPointer.parent
 
 
 
+
+	def getPosition(self, ctx):
+		firstToken = self.tokenStream.get(ctx.getSourceInterval()[0])
+		return (firstToken.line, firstToken.column)
+		# print("Testing: " + str(tmp.line) + ", " + str(tmp.column))

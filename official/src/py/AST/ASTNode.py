@@ -82,11 +82,12 @@ class ASTNodeType(AutoNumber):
 class ASTNode:
 	ID = 0
 
-	def __init__(self, _type, parent=None, value=None):
+	def __init__(self, _type, position=(0,0), parent=None, value=None):
 		self.type = _type
 		self.children = []
 		self.parent = parent
 		self.value = value
+		self.position = position
 
 		self.uniqueID = ASTNode.ID
 		ASTNode.ID += 1
@@ -100,8 +101,8 @@ class ASTNode:
 			+ getStringOfArray(self.children) \
 			+ ''.join([(str(self.uniqueID) + " -> " + str(child.uniqueID) + ";\n") for child in self.children])
 
-	def addChild(self, type, value=None):
-		self.children.append(ASTNode(type, self, value))
+	def addChild(self, type, position=(0,0), value=None):
+		self.children.append(ASTNode(type, position, self, value))
 		return self.children[-1]
 
 	
