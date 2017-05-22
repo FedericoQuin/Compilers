@@ -22,6 +22,9 @@ class TypeDeductor:
 			nodeType = symbolTable.lookupSymbol(node.value).type
 			# Return the type, except if the ID references an array (without element access)
 			return nodeType if not(type(nodeType) is ArrayType) else nodeType.addressOf()
+		elif node.type == ASTNodeType.LValue:
+			nodeType = symbolTable.lookupSymbol(node.value).type
+			return nodeType if not(type(nodeType) is ArrayType) else nodeType.addressOf()
 		elif node.type == ASTNodeType.Addition:
 			return TypeDeductor.checkTypeChildrenExpression(node.children, symbolTable)
 		elif node.type == ASTNodeType.Subtraction:
@@ -35,6 +38,8 @@ class TypeDeductor:
 		elif node.type == ASTNodeType.FunctionCall:
 			return symbolTable.lookupSymbol(node.value).type
 		elif node.type == ASTNodeType.RValueArrayElement:
+			return symbolTable.lookupSymbol(node.value).type
+		elif node.type == ASTNodeType.LValueArrayElement:
 			return symbolTable.lookupSymbol(node.value).type
 		elif node.type == ASTNodeType.RValueAddress:
 			return symbolTable.lookupSymbol(node.children[0].value).type.addressOf()
