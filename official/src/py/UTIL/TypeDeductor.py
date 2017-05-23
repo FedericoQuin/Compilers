@@ -38,9 +38,9 @@ class TypeDeductor:
 		elif node.type == ASTNodeType.FunctionCall:
 			return symbolTable.lookupSymbol(node.value).type
 		elif node.type == ASTNodeType.RValueArrayElement:
-			return symbolTable.lookupSymbol(node.value).type
+			return symbolTable.lookupSymbol(node.value).type.type
 		elif node.type == ASTNodeType.LValueArrayElement:
-			return symbolTable.lookupSymbol(node.value).type
+			return symbolTable.lookupSymbol(node.value).type.type
 		elif node.type == ASTNodeType.RValueAddress:
 			return symbolTable.lookupSymbol(node.children[0].value).type.addressOf()
 		elif node.type == ASTNodeType.Dereference:
