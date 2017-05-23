@@ -19,6 +19,7 @@ class PTranslator:
         self.currentForloops = []
         self.currentIfElses = []
         self.mostRecentLoop = None
+        self.nextArrayAddress = 0
 
         self.nextLabelNumber = 0
 
@@ -87,13 +88,19 @@ class PTranslator:
             self.processFunctionArgs(node.children[1], nodeLevel + 2)
 
             # calculate the amout of space needed
-            declarations = self.getAmoutOfDeclarations(node)
+            declarations, declarationsWithArrays = self.getAmoutOfDeclarations(node)
+
+            if node.value == "main":
+                self.setMain()
 
             self.programText += "label_" + node.value + ":\n"
-            self.programText += "ssp " + str(declarations * 4) + "\n"
-            # TODO copy arrays?
-            self.programText += "sep wat? hoe moet ik dit nu weten?\n"
+            # We know that according to the slides, this only includes the static part, but we saw no other way to do this with arrays
+            self.programText += "ssp " + str(declarationsWithArrays + 5) + "\n"
+
+            self.programText += "sep 40\n"
             # Local procedure declarations are not possible in C so some things can be skipped
+
+            self.nextArrayAddress = declarations + 5
 
             self.currentFunction = node.value
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
@@ -115,10 +122,10 @@ class PTranslator:
             self.programText += "mst " + str(appliedOccurrence - definingOccurrence) + "\n"
 
             # Set the arguments:
-            self.setFunctionArguments(node)
+            self.setFunctionArguments(node, nodeLevel)
 
             # Jump to the function
-            self.programText += "cup " + str(arguments * 4) + " " + node.value + "\n"
+            self.programText += "cup " + str(arguments) + " label_" + node.value + "\n"
 
         elif node.type == ASTNodeType.ReturnType:
             self.parseChildrenFirst(node, nodeLevel)
@@ -161,53 +168,39 @@ class PTranslator:
         # Operations                    #
         #################################
         elif node.type == ASTNodeType.Initialization:
-            # TODO check?
+            # Set the rhs
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
             self.parseExpression()
 
             mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.parent.value)
             followLinkCount = self.getFollowLinkCount(node.parent.value)
-            self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
+            self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
         elif node.type == ASTNodeType.Addition:
+            myType0 = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
+            myType1 = TypeDeductor.deductType(node.children[1], self.symbolTableBuilder.symbolTable)
+
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
-            self.parseExpression()
 
-            # If the other operand is a pointer, multiply this operand by the size of the type
-            if isinstance(node.children[1], pointerType) and node.children[1].type.ptrCount != 0:
-                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
-                self.programText += "ldc i 4\n"
-                self.programText += "mul " + myType.getPString() + "\n"
+            if isinstance(myType0, PointerType) and myType0.ptrCount != 0:
+                self.parseMultipleExpressions(2)
+                self.programText += "ixa 1\n"
 
-            self.parseExpression()
+            elif isinstance(myType1, PointerType) and myType1.ptrCount != 0:
+                self.fringe[0], self.fringe[1] = self.fringe[1], self.fringe[0]
 
-            # If the other operand is a pointer, multiply this operand by the size of the type
-            if isinstance(node.children[0], pointerType) and node.children[0].type.ptrCount != 0:
-                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
-                self.programText += "ldc i 4\n"
-                self.programText += "mul " + myType.getPString() + "\n"
+                self.parseMultipleExpressions(2)
+                self.programText += "ixa 1\n"
 
-            
-            myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
-            self.programText += "add " + myType.getPString() + "\n"
+            else:
+                self.parseMultipleExpressions(2)
+                myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
+                self.programText += "add " + myType.getPString() + "\n"
 
         elif node.type == ASTNodeType.Subtraction:
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
             self.parseExpression()
-
-            # If the other operand is a pointer, multiply this operand by the size of the type
-            if isinstance(node.children[1], pointerType) and node.children[1].type.ptrCount != 0:
-                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
-                self.programText += "ldc i 4\n"
-                self.programText += "mul " + myType.getPString() + "\n"
-
             self.parseExpression()
-
-            # If the other operand is a pointer, multiply this operand by the size of the type
-            if isinstance(node.children[0], pointerType) and node.children[0].type.ptrCount != 0:
-                myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
-                self.programText += "ldc i 4\n"
-                self.programText += "mul " + myType.getPString() + "\n"
 
             myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
             self.programText += "sub " + myType.getPString() + "\n"
@@ -227,12 +220,19 @@ class PTranslator:
         elif node.type == ASTNodeType.Assignment:
             myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
 
-            if node.children[0].type != ASTNodeType.Dereference and not isinstance(myType, ReferenceType):
-                self.parseChildrenFirst(node, nodeLevel)
+            if node.children[0].type == ASTNodeType.LValueArrayElement:
+                self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
 
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
                 followLinkCount = self.getFollowLinkCount(node.children[0].value)
-                self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
+
+                # Set the value of the lhs
+                self.parseExpression()
+
+                # Set the value of the rhs
+                self.parseExpression()
+
+                self.programText += "sto " + myType.type.getPString() + "\n"
 
             elif node.children[0].type == ASTNodeType.Dereference:
                 derefNode = node.children[0]
@@ -261,12 +261,19 @@ class PTranslator:
                 # Set address of the reference on the stack
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
                 followLinkCount = self.getFollowLinkCount(node.value)
-                self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
+                self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
                 # evaluate the lhs
                 self.parseExpression()
 
                 self.programText += "sto " + myType.getPString() + "\n"
+
+            elif node.children[0].type != ASTNodeType.Dereference and not isinstance(myType, ReferenceType):
+                self.parseChildrenFirst(node, nodeLevel)
+
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
+                followLinkCount = self.getFollowLinkCount(node.children[0].value)
+                self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
 
 
@@ -278,7 +285,7 @@ class PTranslator:
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueChar:
-            self.programText += "ldc c " + str(node.value) + "\n"
+            self.programText += "ldc c '" + str(node.value) + "'\n"
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueFloat:
@@ -288,20 +295,51 @@ class PTranslator:
         elif node.type == ASTNodeType.RValueID:
             mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
             followLinkCount = self.getFollowLinkCount(node.value)
-            self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
+            self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueAddress:
-            self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
+            if node.children[0].type != ASTNodeType.LValueArrayElement:
+                del self.fringe[0]
 
-            # The argument should be (and will be because of error detection) an lvalue
-            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
-            followLinkCount = self.getFollowLinkCount(node.children[0].value)
-            self.programText += "lda " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
+                # The argument should be (and will be because of error detection) an lvalue
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
+                followLinkCount = self.getFollowLinkCount(node.children[0].value)
+                self.programText += "lda " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+
+            else:
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
+                followLinkCount = self.getFollowLinkCount(node.children[0].value)
+                self.programText += "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+
+                self.parseChildrenFirst(node.children[0], nodeLevel + 1, deleteFirst=True)
+                self.programText += "ixa 1\n"
+
 
         elif node.type == ASTNodeType.LValue:
             # TODO remove?
             del self.fringe[0]
+
+        elif node.type == ASTNodeType.RValueArrayElement:
+            self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
+
+            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+            followLinkCount = self.getFollowLinkCount(node.value)
+            self.programText += "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+            self.parseExpression()
+            self.programText += "ixa 1\n"
+            self.programText += "ind " + mapping.type.type.getPString() + "\n"
+
+        elif node.type == ASTNodeType.LValueArrayElement:
+            self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
+
+            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+            followLinkCount = self.getFollowLinkCount(node.value)
+            self.programText += "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+
+            self.parseExpression()
+
+            self.programText += "ixa 1\n"
 
         ##################################
         # Pointers and arrays#
@@ -316,6 +354,18 @@ class PTranslator:
                 self.programText += "ind a\n"
 
             self.programText += "ind " + myType.type.getPString() + "\n"
+
+        elif node.type == ASTNodeType.ArrayDecl:
+            del self.fringe[0]
+
+            mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+            followLinkCount = self.getFollowLinkCount(node.parent.value)
+            self.programText += "lda " + str(followLinkCount) + " " + str(self.nextArrayAddress) + "\n"
+            self.programText += "str a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+
+            self.nextArrayAddress += node.children[1].value
+
+            
 
 
         #################################
@@ -385,7 +435,7 @@ class PTranslator:
             if child_amount != 0:
                 self.parseExpression()
             elif node.type == ASTNodeType.ForStmt2:
-                self.programText += "ldc b true\n"
+                self.programText += "ldc b t\n"
 
         elif node.type == ASTNodeType.ForBody:
             child_amount = len(node.children)
@@ -489,9 +539,9 @@ class PTranslator:
         if deleteFront:
             del self.fringe[childAmount]
 
-    def parseChildrenFirst(self, node, nodeLevel):
+    def parseChildrenFirst(self, node, nodeLevel, deleteFirst=True):
         child_amount = len(node.children)
-        self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
+        self.addChildrenToFringe(node, nodeLevel, deleteFront=deleteFirst)
         self.parseMultipleExpressions(child_amount)
 
     def parseMultipleExpressions(self, count):
@@ -500,20 +550,25 @@ class PTranslator:
 
     def getAmoutOfDeclarations(self, functionNode):
         declarations = 0
+        declarationsWithArrays = 0
         for node in functionNode.children:
             if isinstance(node.type, pointerType) and \
                 (node.type.type == ASTNodeType.FloatDecl or node.type.type == ASTNodeType.IntDecl or node.type.type == ASTNodeType.CharDecl):
                 declarations += 1
+                declarationsWithArrays += 1
             elif node.type == ASTNodeType.ArrayDecl:
                 # The identifier of the array aka the pointer to the first element
                 declarations += 1
+                declarationsWithArrays += 1
                 # The values held by the array
-                declarations += node.children[1].value
+                declarationsWithArrays += node.children[1].value
             else:
-                declarations += self.getAmoutOfDeclarations(node)
-        return declarations
+                retVal = self.getAmoutOfDeclarations(node)
+                declarations += retVal[0]
+                declarationsWithArrays += retVal[1]
+        return declarations, declarationsWithArrays
 
-    def setFunctionArguments(self, functionNode):
+    def setFunctionArguments(self, functionNode, nodeLevel):
 
         arguments = self.symbolTableBuilder.symbolTable.lookupSymbol(functionNode.value).type.arguments
 
@@ -522,17 +577,26 @@ class PTranslator:
             if isinstance(argumentType, ReferenceType):
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
                 followLinkCount = self.getFollowLinkCount(argument.value)
-                self.programText += "lda " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
+                self.programText += "lda " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
             elif argument.type == ASTNodeType.RValueFloat:
                 self.programText += "ldc r " + str(argument.value) + "\n"
             elif argument.type == ASTNodeType.RValueInt:
                 self.programText += "ldc i " + str(argument.value) + "\n"
             elif argument.type == ASTNodeType.RValueChar:
-                self.programText += "ldc c " + str(argument.value) + "\n"
+                self.programText += "ldc c '" + str(argument.value) + "'\n"
             elif argument.type == ASTNodeType.RValueID:
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
                 followLinkCount = self.getFollowLinkCount(argument.value)
-                self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 8) + "\n"
+                self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+            elif argument.type == ASTNodeType.RValueArrayElement:
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
+                followLinkCount = self.getFollowLinkCount(argument.value)
+                self.programText += "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+
+                self.parseChildrenFirst(argument, nodeLevel + 1, deleteFirst=False)
+
+                self.programText += "add i\n"
+                self.programText += "ind " + mapping.type.type.getPString() + "\n"
 
     def processFunctionArgs(self, functionNode, nodeLevel):
         for arg in functionNode.children:
@@ -553,6 +617,35 @@ class PTranslator:
             else:
                 # Look for the symbol in this function, thank you C for being this easy
                 return 0
+
+    def setMain(self):
+        # calculate the amout of space needed
+        args = self.symbolTableBuilder.symbolTable.lookupSymbol("main").type.arguments
+        arguments = len(args)
+
+        # Get defining occurence difference from symbol table
+        definingOccurrence = self.symbolTableBuilder.symbolTable.getDefOcc("main")
+
+        # Get applied occurrence
+        appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
+
+        # Stop
+        self.programText = "hlt\n" + self.programText
+
+        # Jump to the function
+        self.programText = "cup " + str(arguments) + " label_main\n" + self.programText
+
+        # Set the arguments:
+        for arg in reversed(args):
+            # TODO, do not allow references and ptrs/arrays in main
+            if isinstance(arg.type, FloatType):
+                self.programText = "ldc r 0.0\n" + self.programText
+            elif isinstance(arg.type, IntType):
+                self.programText = "ldc i 0\n" + self.programText
+            elif isinstance(arg.type, CharType):
+                self.programText = "ldc c 'a'\n" + self.programText
+
+        self.programText = "mst 0\n" + self.programText
 
     def saveProgram(self, filename):
         programFile = open(filename, 'w')

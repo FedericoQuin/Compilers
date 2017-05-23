@@ -1,24 +1,27 @@
+mst 0
+cup 0 label_main
+hlt
 label_testing:
-ssp 4
-sep wat? hoe moet ik dit nu weten?
-lod i 0 8
+ssp 6
+sep 40
+lod i 0 5
 str i 0 0
 retf
 retf
 label_main:
-ssp 8
-sep wat? hoe moet ik dit nu weten?
+ssp 7
+sep 40
 mst 1
 ldc i 5
-cup 4 testing
-str i 0 8
-lod i 0 8
+cup 1 label_testing
+str i 0 5
+lod i 0 5
 ldc i 5
 equ i
 fjp main_ifelse_0_false
 ldc i 10
-str i 1 12
-lod i 1 12
+str i 0 6
+lod i 0 6
 str i 0 0
 retf
 ujp main_ifelse_0_end

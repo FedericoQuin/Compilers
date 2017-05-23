@@ -30,7 +30,7 @@ class SymbolTable:
 		else:
 			self.globalScopeTable[symbol] = SymbolMapping(_type, self.nextGlobalAddress)
 			if not(type(_type) is FunctionType):
-				self.nextGlobalAddress += 4
+				self.nextGlobalAddress += 1
 		
 	def lookupSymbol(self, symbol, scope=None, level=None):
 		"""
@@ -97,10 +97,12 @@ class SymbolTable:
 		return None
 
 	def getDefOcc(self, symbol):
-		if self.symbolExists(symbol, Scope.GLOBAL):
+		localResult = self.localScopeTables.getDefOcc(symbol)
+		if localResult != None:
+			return localResult
+		elif self.symbolExists(symbol, Scope.GLOBAL):
 			return 0
-		else:
-			return self.localScopeTables.getDefOcc(symbol)
+		return None
 
 	def getAppOcc(self):
 		return self.localScopeTables.getDeepestLevel()
@@ -188,7 +190,7 @@ class STSingleScope:
 		self.table[symbol] = SymbolMapping(_type, self.nextAddress)
 
 		if self.parent != None:
-			self.nextAddress += 4
+			self.nextAddress += 1
 	
 	def getSymbolCount(self):
 		return len(self.table)

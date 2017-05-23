@@ -1,4 +1,8 @@
+mst 0
+ldc r 0.0
+cup 1 label_main
+hlt
 label_main:
-ssp 8
-sep wat? hoe moet ik dit nu weten?
+ssp 7
+sep 40
 retp

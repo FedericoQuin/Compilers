@@ -57,7 +57,8 @@ def parse(inputFile, dotSolution, pSolution, symbolTableSolution = "", translate
 		fail("Failure for " + str(inputFile) + "\n" + str(inst))
 	
 	assert(cmp(dotResultPath, dotSolutionsPath))
-	assert(cmp(pResultPath, pSolutionsPath))
+	if translate:
+		assert(cmp(pResultPath, pSolutionsPath))
 	# assert(cmp(stResultPath, stSolutionsPath))
 
 def parseNoCatch(inputFile, dotSolution, pSolution):
@@ -140,7 +141,7 @@ def test_functions():
 	parse("functions.c", "functions.dot", "functions.p", "functions.symboltable")
 
 def test_pointer():
-	parse("pointer.c", "pointer.dot", "pointer.p", "pointer.symboltable")
+	parse("pointer.c", "pointer.dot", "pointer.p", "pointer.symboltable", translate=False)
 
 def test_function_calls():
 	parse("function_calls.c", "function_calls.dot", "function_calls.p", "function_calls.symboltable")
@@ -164,7 +165,7 @@ def test_redefining_symbols():
 	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p", "redefining_symbols.symboltable")
 
 def test_return_types1():
-	parse("return_types1.c", "return_types1.dot", "return_types1.p", "return_types1.symboltable")
+	parse("return_types1.c", "return_types1.dot", "return_types1.p", "return_types1.symboltable", translate=False)
 
 def test_return_types2():
 	parse("return_types2.c", "return_types2.dot", "return_types2.p", "return_types2.symboltable")
@@ -173,7 +174,7 @@ def test_minus_values():
 	parse("minus_values.c", "minus_values.dot", "minus_values.p", "minus_values.symboltable")
 
 def test_address_assignment():
-	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p", "address_assignment.symboltable", translate=False)
+	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p", "address_assignment.symboltable")
 
 def test_dereference1():
 	parse("dereference1.c", "dereference1.dot", "dereference1.p", "dereference1.symboltable", translate=False)
@@ -183,7 +184,7 @@ def test_dereference1():
 # 	parse("dereference2.c", "dereference2.dot", "dereference2.p", "dereference2.symboltable")
 
 def test_by_reference():
-	parse("by_reference.c", "by_reference.dot", "by_reference.p", "by_reference.symboltable")
+	parse("by_reference.c", "by_reference.dot", "by_reference.p", "by_reference.symboltable", translate=False)
 
 
 def test_errors():

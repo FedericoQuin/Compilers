@@ -5,5 +5,5 @@ int main() {
 
 	int intArray[10];
 
-	b = &intArray[5];	
+	b = &intArray[5];
 }
