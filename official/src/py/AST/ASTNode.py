@@ -92,6 +92,9 @@ class ASTNode:
 		self.uniqueID = ASTNode.ID
 		ASTNode.ID += 1
 
+		# Attribute that specifies wether the node (and its subnodes) should be kept on the stack of the p machine
+		self.useless = False
+
 	def __str__(self):
 		''' 
 		Returns the dot representation of this node and all its children.

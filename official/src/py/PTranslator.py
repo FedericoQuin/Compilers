@@ -6,6 +6,7 @@ from src.py.SA.TypeChecker import TypeChecker
 from src.py.SA.ExistenceChecker import ExistenceChecker
 from src.py.UTIL.TypeDeductor import TypeDeductor
 from src.py.UTIL.VarTypes import *
+from src.py.SA.UselessDecorator import UselessDecorator
 
 class PTranslator:
     def __init__(self):
@@ -36,19 +37,20 @@ class PTranslator:
 
         # Existence checking
         for (node, nodeLevel) in nodes:
-            #TODO symbol table unnecessary?
             self.symbolTableBuilder.processNode(node, nodeLevel)
             existenceChecker.checkExistence(node)
 
         symbolTable = SymbolTable()
         self.symbolTableBuilder = SymbolTableBuilder(symbolTable, symbolTableFileName, printDescription)
         typeChecker = TypeChecker(symbolTable)
+        uselessDecorator = UselessDecorator()
 
         # Type checking and actual translation
         for (node, nodeLevel) in nodes:
-            #TODO symbol table unnecessary?
             self.symbolTableBuilder.processNode(node, nodeLevel)
             typeChecker.checkType(node)
+            # Decorate nodes for uselessness
+            uselessDecorator.checkUselessness(node, nodeLevel)
 
         self.symbolTableBuilder.saveSymbolTable("a")
 
