@@ -4,11 +4,12 @@ from src.cGrammarParser import *
 from src.py.AST.AST import AST
 
 class ASTCreator(cGrammarListener):
-	def __init__(self):
+	def __init__(self, stream):
 		self.AST = None
+		self.tokenStream = stream
 
 	def enterProgram(self, ctx:cGrammarParser.ProgramContext):
-		self.AST = AST()
+		self.AST = AST(self.tokenStream)
 
 
 	#################################################
@@ -37,7 +38,7 @@ class ASTCreator(cGrammarListener):
 
 
 	def enterInitialization(self, ctx:cGrammarParser.InitializationContext):
-		self.AST.addInitialization()
+		self.AST.addInitialization(ctx)
 
 	def exitInitialization(self, ctx:cGrammarParser.InitializationContext):
 		self.AST.climbTree()
@@ -372,7 +373,7 @@ class ASTCreator(cGrammarListener):
 
 
 	def enterAddress_value(self, ctx:cGrammarParser.Address_valueContext):
-		self.AST.addAddressOf()
+		self.AST.addAddressOf(ctx)
 
 	def exitAddress_value(self, ctx:cGrammarParser.Address_valueContext):
 		self.AST.climbTree()
@@ -402,14 +403,14 @@ class ASTCreator(cGrammarListener):
 	#################################################
 
 	def enterScanf(self, ctx:cGrammarParser.ScanfContext):
-		self.AST.addScanf()
+		self.AST.addScanf(ctx)
 
 	def exitScanf(self, ctx:cGrammarParser.ScanfContext):
 		self.AST.climbTree()
 
 
 	def enterPrintf(self, ctx:cGrammarParser.PrintfContext):
-		self.AST.addPrintf()
+		self.AST.addPrintf(ctx)
 
 	def exitPrintf(self, ctx:cGrammarParser.PrintfContext):
 		self.AST.climbTree()

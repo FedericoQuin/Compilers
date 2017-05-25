@@ -13,6 +13,7 @@ from src.py.PTranslator import PTranslator
 from src.py.AST.ASTNode import *
 from src.py.AST.ASTCreator import ASTCreator
 from src.py.ST.SymbolTable import SymbolTable
+from src.py.SA.ErrorMsgHandler import ExType, determineExPrefix
 
 testdir = os.path.dirname(os.path.abspath(__file__))
 resdir = os.getcwd() + "/res"
@@ -30,7 +31,7 @@ def parse(inputFile, dotSolution, pSolution, symbolTableSolution = "", translate
 	parser._listeners = [MyErrorListener(inputFilePath)]
 	tree = parser.program()
 
-	ASTbuilder = ASTCreator()
+	ASTbuilder = ASTCreator(stream)
 
 	pResultPath = str(testdir) + "/program.p"
 	dotResultPath = str(testdir) + "/output.dot"
@@ -72,7 +73,7 @@ def parseNoCatch(inputFile, dotSolution, pSolution):
 		parser._listeners = [MyErrorListener(str(resdir) + "/deathTests/" + inputFile)]
 		tree = parser.program()
 
-		ASTbuilder = ASTCreator()
+		ASTbuilder = ASTCreator(stream)
 
 		walker = ParseTreeWalker()
 		walker.walk(ASTbuilder, tree)
@@ -228,19 +229,22 @@ def test_types():
 		"type_check7.c",
 		"type_check8.c",
 		"type_check9.c",
-		"type_check10.c"
+		"type_check10.c",
+		"type_check11.c",
+		# "type_check10.c"
 		]
 	errorMessages = [
-		"Types for initialization don't match: char and int.",
-		"Types for initialization don't match: float and int.",
-		"Types do not match: int and float.",
-		"Types for comparison don't match: int and float.",
-		"Function arguments invalid: 'getCookies' takes 0 arguments (1 argument given).",
-		"Function arguments invalid: 'somethingElse' takes 3 arguments (4 arguments given).",
-		"Argument for function call 'wrongTypes' did not match the signature: int and char (argument #2).",
-		"Argument for function call 'someFunction' did not match the signature: char and int (argument #1).",
-		"Argument for function call 'thatOtherFunction' did not match the signature: float and int (argument #2).",
-		"Types for initialization don't match: int and void."
+		determineExPrefix(ExType.error, (2,8)) + "Types for initialization don't match ('char' and 'int').",
+		determineExPrefix(ExType.error, (3,9)) + "Types for initialization don't match ('float' and 'int').",
+		determineExPrefix(ExType.error, (2,9)) + "Types for operation 'Addition' don't match ('int' and 'float').",
+		determineExPrefix(ExType.error, (4,5)) + "Types for comparison don't match ('int' and 'float').",
+		determineExPrefix(ExType.error, (5,1)) + "Function arguments invalid: 'getCookies' takes 0 arguments (1 argument given).",
+		determineExPrefix(ExType.error, (5,1)) + "Function arguments invalid: 'somethingElse' takes 3 arguments (4 arguments given).",
+		determineExPrefix(ExType.error, (4,14)) + "Argument for function call 'wrongTypes' did not match the signature ('int' required, 'char' given, argument #2).",
+		determineExPrefix(ExType.error, (16,14)) + "Argument for function call 'someFunction' did not match the signature ('char' required, 'int' given, argument #1).",
+		determineExPrefix(ExType.error, (6,13)) + "Argument for function call 'thatOtherFunction' did not match the signature ('float' required, 'int' given, argument #2).",
+		determineExPrefix(ExType.error, (4,7)) + "Types for initialization don't match ('int' and 'void').",
+		determineExPrefix(ExType.error, (8,9)) + "Argument for function call 'aFunction' is not a valid reference argument ('int' reference required, argument #1)."
 	]
 	for i in range(len(errorFiles)):
 		try:
@@ -257,13 +261,15 @@ def test_existences():
 		"existence1.c",
 		"existence2.c",
 		"existence3.c",
-		"existence4.c"
+		"existence4.c",
+		"existence5.c"
 		]
 	errorMessages = [
-		"Error: variable 'a' referenced before declaration.",
-		"Error: function 'getCookies' called before declaration.",
-		"Error: variable 'tedt' referenced before declaration.",
-		"Error: function 'test' called before initialisation."
+		determineExPrefix(ExType.error, (2,1)) + "Variable 'a' referenced before declaration.",
+		determineExPrefix(ExType.error, (4,1)) + "Function 'getCookies' called before declaration.",
+		determineExPrefix(ExType.error, (11,25)) + "Variable 'tedt' referenced before declaration.",
+		determineExPrefix(ExType.error, (4,9)) + "Function 'test' called before initialisation.",
+		determineExPrefix(ExType.error, (9,0)) + "Function 'testing' has already been initialized."
 	]
 	for i in range(len(errorFiles)):
 		try:
@@ -279,8 +285,8 @@ def test_duplicate_declarations():
 		"dup_decl2.c"
 		]
 	errorMessages = [
-		"Symbol 'a' has already been defined in this scope.",
-		"Symbol 'testing' has already been defined in this scope."
+		determineExPrefix(ExType.error, (3,1)) + "Symbol 'a' has already been declared in this scope.",
+		determineExPrefix(ExType.error, (8,1)) + "Symbol 'testing' has already been declared in this scope."
 	]
 	for i in range(len(errorFiles)):
 		try:
@@ -297,8 +303,8 @@ def test_wrong_returns():
 		"wrong_return2.c"
 		]
 	errorMessages = [
-		"Return type doesn't match 'testing' signature: int and char.",
-		"Return type doesn't match 'testing' signature: void and int."
+		determineExPrefix(ExType.error, (2,1)) + "Return type doesn't match 'testing' signature ('int' required, 'char' given).",
+		determineExPrefix(ExType.error, (2,1)) + "Return type doesn't match 'testing' signature ('void' required, 'int' given)."
 	]
 	for i in range(len(errorFiles)):
 		try:
@@ -315,8 +321,8 @@ def test_array_wrongAccess():
 		"array_wrong_access2.c"
 		]
 	errorMessages = [
-		"Elements of array 'a' should be accessed with an integer.",
-		"Elements of array 'myString' should be accessed with an integer."
+		determineExPrefix(ExType.error, (5,1)) + "Elements of array 'a' should be accessed with an integer.",
+		determineExPrefix(ExType.error, (6,1)) + "Elements of array 'myString' should be accessed with an integer."
 	]
 	for i in range(len(errorFiles)):
 		try:
@@ -336,11 +342,11 @@ def test_derefences():
 		"dereference5.c"
 		]
 	errorMessages = [
-		"Error: cannot dereference variable 'a' 4 times (only 3 times allowed).",
-		"Types for assignment don't match: int and float.",
-		"Error: cannot dereference more than 1 variable.",
-		"Types do not match: int* and char.",
-		"Error: cannot dereference non-pointer variable 'a'."
+		determineExPrefix(ExType.error, (5,5)) + "Cannot dereference variable 'a' 4 times (only 3 times allowed).",
+		determineExPrefix(ExType.error, (8,1)) + "Types for assignment don't match ('int' and 'float').",
+		determineExPrefix(ExType.error, (5,1)) + "Cannot dereference more than 1 variable.",
+		determineExPrefix(ExType.error, (5,3)) + "Types for operation 'Addition' don't match ('int*' and 'char').",
+		determineExPrefix(ExType.error, (4,2)) + "Cannot dereference non-pointer variable 'a'."
 	]
 	for i in range(len(errorFiles)):
 		try:
@@ -349,5 +355,6 @@ def test_derefences():
 		except Exception as inst:
 			string = str(inst)
 			assert(string == errorMessages[i])
+
 
 

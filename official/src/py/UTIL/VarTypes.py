@@ -1,4 +1,5 @@
 
+from src.py.SA.ErrorMsgHandler import ErrorMsgHandler
 
 
 class VarType:
@@ -158,7 +159,7 @@ class PointerType(VarType):
 
 	def dereference(self, amt = 1):
 		if amt > self.ptrCount:
-			raise Exception("Cannot dereference variable more times than its pointer count.")
+			ErrorMsgHandler.extensiveDereferencing()
 		return PointerType(self.type, self.ptrCount - amt)
 
 	def getPString(self):
@@ -219,7 +220,7 @@ class FunctionType(VarType):
 		return str(self.returnType)
 
 	def addressOf(self):
-		raise Exception("Dereferencing of functions is not supported.")
+		ErrorMsgHandler.addrOfFunction
 
 
 

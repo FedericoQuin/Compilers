@@ -1,6 +1,7 @@
 from src.py.ST.SymbolTable import *
 from src.py.AST.ASTNode import ASTNodeType, ASTNode, pointerType
-from src.py.UTIL.VarTypes import * 
+from src.py.UTIL.VarTypes import *
+from src.py.SA.ErrorMsgHandler import ErrorMsgHandler
 
 class SymbolTableBuilder:
 	def __init__(self, symbolTable, filename="", printDescription=False):
@@ -55,9 +56,9 @@ class SymbolTableBuilder:
 					# Add the used variables in the function body to the function type
 					self.addUsedVariablesFunction(self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL).type, node)
 				else:
-					raise Exception("Function '" + str(node.value) + "' has already been initialized.")
+					ErrorMsgHandler.functionAlreadyInitialised(node)
 			else:
-				raise Exception("Symbol '" + str(node.value) + "' has already been defined in this scope.")
+				ErrorMsgHandler.symbolAlreadyDeclared(node)
 
 		self.checkForDeclarations(node, nodeLevel)
 
@@ -91,15 +92,15 @@ class SymbolTableBuilder:
 		self.symbolTable.insertEntry(str(node.value), FunctionType(returnType, functionSignature, initialized) , Scope.GLOBAL)
 
 
-	def addPrimitiveType(self, symbol, _type, reference):
-		self.checkDuplicateDeclaration(symbol)
+	def addPrimitiveType(self, node, _type, reference):
+		self.checkDuplicateDeclaration(node)
 		if reference == True:
 			_type = ReferenceType(_type)
-		self.symbolTable.insertEntry(symbol, _type, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
+		self.symbolTable.insertEntry(str(node.value), _type, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 
-	def checkDuplicateDeclaration(self, symbol):
-		if self.symbolTable.lookupSymbol(symbol, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL, len(self.levelList)-1) != None:
-			raise Exception("Symbol '" + symbol + "' has already been defined in this scope.")
+	def checkDuplicateDeclaration(self, node):
+		if self.symbolTable.lookupSymbol(str(node.value), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL, len(self.levelList)-1) != None:
+			ErrorMsgHandler.symbolAlreadyDeclared(node)
 		
 
 	def checkForDeclarations(self, node, nodeLevel):
@@ -110,16 +111,16 @@ class SymbolTableBuilder:
 
 
 		if (node.type == ASTNodeType.FloatDecl):
-			self.addPrimitiveType(str(node.value), FloatType(), isReferenceDecl)
+			self.addPrimitiveType(node, FloatType(), isReferenceDecl)
 		elif (node.type == ASTNodeType.IntDecl):
-			self.addPrimitiveType(str(node.value), IntType(), isReferenceDecl)
+			self.addPrimitiveType(node, IntType(), isReferenceDecl)
 		elif (node.type == ASTNodeType.CharDecl):
-			self.addPrimitiveType(str(node.value), CharType(), isReferenceDecl)
+			self.addPrimitiveType(node, CharType(), isReferenceDecl)
 		elif (node.type == ASTNodeType.FunctionDecl):
-			self.checkDuplicateDeclaration(str(node.value))
+			self.checkDuplicateDeclaration(node)
 			self.addFunctionSignature(node)
 		elif (node.type == ASTNodeType.ArrayDecl):
-			self.checkDuplicateDeclaration(str(node.value))
+			self.checkDuplicateDeclaration(node)
 			arrayType = PointerType(mapToPrimitiveType(node.children[0].value), node.children[0].value.ptrCount)
 			size = node.children[1].value
 			self.symbolTable.insertEntry(str(node.value), ArrayType(arrayType, size), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
@@ -128,7 +129,7 @@ class SymbolTableBuilder:
 			if self.isSignatureType(node.type.type):
 				return
 			
-			self.checkDuplicateDeclaration(str(node.value))			
+			self.checkDuplicateDeclaration(node)			
 			# Type consists of the primitive type + optionally pointer operators
 			symbolType = PointerType(mapToPrimitiveType(node.type), node.type.ptrCount)
 			if isReferenceDecl:

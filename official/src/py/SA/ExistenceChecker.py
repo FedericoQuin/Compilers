@@ -1,5 +1,6 @@
 from src.py.AST.ASTNode import ASTNode, ASTNodeType
 from src.py.ST.SymbolTable import SymbolTable
+from src.py.SA.ErrorMsgHandler import ErrorMsgHandler
 
 class ExistenceChecker:
 	def __init__(self, symbolTable):
@@ -13,12 +14,12 @@ class ExistenceChecker:
 			
 			# Check wether the symbol is present in the symboltable, otherwise throw an error
 			if self.symbolTable.lookupSymbol(node.value) == None:
-				raise Exception("Error: variable '" + str(node.value) + "' referenced before declaration.")
+				ErrorMsgHandler.varRefBeforeDecl(node)
 		
 		elif node.type == ASTNodeType.FunctionCall:
 			# Is the function declared?
 			if self.symbolTable.lookupSymbol(node.value) == None:
-				raise Exception("Error: function '" + str(node.value) + "' called before declaration.")
+				ErrorMsgHandler.functionBeforeDecl(node)
 			# Is the function initialized yet?
 			elif self.symbolTable.lookupSymbol(node.value).type.initialized == False:
-				raise Exception("Error: function '" + str(node.value) + "' called before initialisation.")
+				ErrorMsgHandler.functionBeforeInit(node)
