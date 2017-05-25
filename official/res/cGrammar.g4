@@ -198,8 +198,7 @@ functioncall :
 	ID '(' call_argument_initial ')';
 
 call_argument_initial :
-	rvalue call_arguments
-	| rvalue_identifier call_arguments
+	expression call_arguments
 	|;
 
 call_arguments :
@@ -208,8 +207,7 @@ call_arguments :
 
 // TODO verify this
 call_argument :
-	rvalue
-	| rvalue_identifier;
+	expression;
 
 
 
