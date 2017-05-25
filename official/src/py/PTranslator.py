@@ -73,6 +73,7 @@ class PTranslator:
         self.symbolTableBuilder.processNode(node, nodeLevel)
 
         if node.type == ASTNodeType.Program:
+            self.setGlobalDeclarations(node, nodeLevel)
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
             while (len(self.fringe) != 0):
                 self.parseExpression()
@@ -87,6 +88,8 @@ class PTranslator:
             # Process the arguments
             self.processFunctionArgs(node.children[1], nodeLevel + 2)
 
+            print(self.calculateEP(node))
+
             # calculate the amout of space needed
             declarations, declarationsWithArrays = self.getAmoutOfDeclarations(node)
 
@@ -97,7 +100,7 @@ class PTranslator:
             # We know that according to the slides, this only includes the static part, but we saw no other way to do this with arrays
             self.programText += "ssp " + str(declarationsWithArrays + 5) + "\n"
 
-            self.programText += "sep 40\n"
+            self.programText += "sep " + str(max(self.calculateEP(node), 1)) + "\n"
             # Local procedure declarations are not possible in C so some things can be skipped
 
             self.nextArrayAddress = declarations + 5
@@ -163,6 +166,28 @@ class PTranslator:
 
             if child_amount != 0:
                 self.parseExpression()
+            else:
+                # Give a default value
+                if node.type.type == ASTNodeType.FloatDecl:
+                    self.programText += "ldc r 0.0\n"
+
+                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                    followLinkCount = self.getFollowLinkCount(node.value)
+                    self.programText += "str r " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                elif node.type.type == ASTNodeType.CharDecl:
+                    self.programText += "ldc c 'a'\n"
+
+                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                    followLinkCount = self.getFollowLinkCount(node.value)
+                    self.programText += "str c " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                elif node.type.type == ASTNodeType.IntDecl:
+                    self.programText += "ldc i 0\n"
+
+                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                    followLinkCount = self.getFollowLinkCount(node.value)
+                    self.programText += "str i " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+
+
 
         #################################
         # Operations                    #
@@ -363,10 +388,24 @@ class PTranslator:
             self.programText += "lda " + str(followLinkCount) + " " + str(self.nextArrayAddress) + "\n"
             self.programText += "str a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
-            self.nextArrayAddress += node.children[1].value
+            line = ""
+            if isinstance(node.children[0].value, pointerType):
+                if node.children[0].value.ptrCount != 0:
+                    # pointer
+                    line = "ldc a 0\nstr a " + str(followLinkCount) + " "
+                elif node.children[0].value.type == ASTNodeType.IntDecl:
+                    # int
+                    line = "ldc i 0\nstr i " + str(followLinkCount) + " "
+                elif node.children[0].value.type == ASTNodeType.FloatDecl:
+                    # float
+                    line = "ldc r 0.0\nstr r " + str(followLinkCount) + " "
+                elif node.children[0].value.type == ASTNodeType.CharDecl:
+                    # char
+                    line = "ldc c 'a'\nstr c " + str(followLinkCount) + " "
 
-            
-
+                for i in range(int(node.children[1].value)):
+                    self.programText += line + str(self.nextArrayAddress) + "\n"
+                    self.nextArrayAddress += 1
 
         #################################
         # While Loops                   #
@@ -611,11 +650,11 @@ class PTranslator:
             # Get defining occurence difference from symbol table
             appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
 
-            if definingOccurrence == 0:
+            if definingOccurrence == 0 and appliedOccurrence != 0:
                 # The scope is global
                 return 1
             else:
-                # Look for the symbol in this function, thank you C for being this easy
+                # Look for the symbol locally, thank you C for being this easy
                 return 0
 
     def setMain(self):
@@ -629,23 +668,151 @@ class PTranslator:
         # Get applied occurrence
         appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
 
-        # Stop
-        self.programText = "hlt\n" + self.programText
-
-        # Jump to the function
-        self.programText = "cup " + str(arguments) + " label_main\n" + self.programText
+        self.programText += "mst 0\n"
 
         # Set the arguments:
         for arg in reversed(args):
             # TODO, do not allow references and ptrs/arrays in main
             if isinstance(arg.type, FloatType):
-                self.programText = "ldc r 0.0\n" + self.programText
+                self.programText += "ldc r 0.0\n"
             elif isinstance(arg.type, IntType):
-                self.programText = "ldc i 0\n" + self.programText
+                self.programText += "ldc i 0\n"
             elif isinstance(arg.type, CharType):
-                self.programText = "ldc c 'a'\n" + self.programText
+                self.programText += "ldc c 'a'\n"
 
-        self.programText = "mst 0\n" + self.programText
+        # Jump to the function
+        self.programText += "cup " + str(arguments) + " label_main\n"
+
+        # Stop
+        self.programText += "hlt\n"
+
+    def setGlobalDeclarations(self, node, nodeLevel):
+        globalDataSize = 0
+        for child in node.children:
+            if isinstance(child.type, pointerType):
+                globalDataSize += 1
+            elif child.type == ASTNodeType.ArrayDecl:
+                globalDataSize += child.children[1].value
+                globalDataSize += 1
+
+        self.programText += "ssp " + str(5 + globalDataSize) + "\n"
+
+        # initialize them
+        offset = 5
+        for child in node.children:
+            if isinstance(child.type, pointerType) and child.type.type == ASTNodeType.IntDecl:
+                if child.children != []:
+                    # Set the rhs
+                    self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
+                    self.parseExpression()
+
+                    self.programText += "str i 0 " + str(offset) + "\n"
+
+                    offset += 1
+                else:
+                    self.programText += "ldc i 0\n"
+                    self.programText += "str i 0 " + str(offset) + "\n"
+                    offset += 1
+
+
+            elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.CharDecl:
+                if child.children != []:
+                    # Set the rhs
+                    self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
+                    self.parseExpression()
+
+                    self.programText += "str c 0 " + str(offset) + "\n"
+
+                    offset += 1
+                else:
+                    self.programText += "ldc c 'a\n"
+                    self.programText += "str c 0 " + str(offset) + "\n"
+                    offset += 1
+            elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.FloatDecl:
+                if child.children != []:
+                    # Set the rhs
+                    self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
+                    self.parseExpression()
+
+                    self.programText += "str r 0 " + str(offset) + "\n"
+
+                    offset += 1
+                else:
+                    self.programText += "ldc r 0.0\n"
+                    self.programText += "str r 0 " + str(offset) + "\n"
+                    offset += 1
+            elif child.type == ASTNodeType.ArrayDecl:
+                # TODO
+                pass
+
+    def calculateEP(self, node, level = 0):
+        maximum = 0
+        if node.type == ASTNodeType.ArrayDecl:
+            maximum = 3
+
+        elif node.type == ASTNodeType.RValueArrayElement or node.type == ASTNodeType.LValueArrayElement:
+            maximum = 1
+            for child in node.children:
+                maximum += self.calculateEP(child, level + 1)
+
+        elif self.isSimpleRValue(node.type):
+            maximum = 1
+
+        elif self.isSimpleDeclaration(node.type):
+            for child in node.children:
+                maximum = max(self.calculateEP(child, level + 1), maximum)
+            maximum = max(1, maximum)
+
+        elif self.isRelationalOperator(node.type) or self.isMathematicalOperator(node.type) or node.type == ASTNodeType.Assignment or \
+            node.type == ASTNodeType.Initialization or node.type == ASTNodeType.Condition or node.type == ASTNodeType.FunctionCall:
+
+            for child in node.children:
+                maximum += self.calculateEP(child, level + 1)
+
+        elif node.type == ASTNodeType.For or node.type == ASTNodeType.ForBody or node.type == ASTNodeType.IfElse or \
+            node.type == ASTNodeType.IfTrue or node.type == ASTNodeType.IfFalse or node.type == ASTNodeType.FunctionBody or \
+            node.type == ASTNodeType.ForStmt1 or node.type == ASTNodeType.ForStmt2 or node.type == ASTNodeType.ForStmt3 or \
+            node.type == ASTNodeType.WhileBody or node.type == ASTNodeType.While or node.type == ASTNodeType.Program:
+
+            for child in node.children:
+                maximum = max(self.calculateEP(child, level + 1), maximum)
+
+        elif node.type == ASTNodeType.Function:
+            maximum = self.calculateEP(node.children[2], level + 1)
+
+        return maximum
+
+    def isRelationalOperator(self, nodeType):
+        if nodeType == ASTNodeType.Less or nodeType == ASTNodeType.LessOrEqual or nodeType == ASTNodeType.Equals or \
+            nodeType == ASTNodeType.NotEquals or nodeType == ASTNodeType.Not or nodeType == ASTNodeType.Greater or \
+            nodeType == ASTNodeType.GreaterOrEqual or nodeType == ASTNodeType.And or nodeType == ASTNodeType.Or:
+
+            return True
+        else:
+            return False
+
+    def isMathematicalOperator(self, nodeType):
+        if nodeType == ASTNodeType.Addition or nodeType == ASTNodeType.Subtraction or nodeType == ASTNodeType.Mul or \
+            nodeType == ASTNodeType.Div:
+            return True
+        else:
+            return False
+
+    def isSimpleDeclaration(self, nodeType):
+        # TODO ptr?
+        if nodeType == ASTNodeType.IntDecl or nodeType == ASTNodeType.FloatDecl or nodeType == ASTNodeType.CharDecl:
+            return True
+        else:
+            return False
+
+    def isSimpleRValue(self, nodeType):
+        # TODO ptr?
+        if nodeType == ASTNodeType.RValueInt or nodeType == ASTNodeType.RValueID or nodeType == ASTNodeType.RValueFloat or \
+            nodeType == ASTNodeType.RValueChar or nodeType == ASTNodeType.RValueAddress:
+            return True
+        else:
+            return False
+                
 
     def saveProgram(self, filename):
         programFile = open(filename, 'w')
