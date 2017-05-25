@@ -229,7 +229,9 @@ def test_types():
 		"type_check7.c",
 		"type_check8.c",
 		"type_check9.c",
-		"type_check10.c"
+		"type_check10.c",
+		"type_check11.c",
+		# "type_check10.c"
 		]
 	errorMessages = [
 		determineExPrefix(ExType.error, (2,8)) + "Types for initialization don't match ('char' and 'int').",
@@ -241,7 +243,8 @@ def test_types():
 		determineExPrefix(ExType.error, (4,14)) + "Argument for function call 'wrongTypes' did not match the signature ('int' required, 'char' given, argument #2).",
 		determineExPrefix(ExType.error, (16,14)) + "Argument for function call 'someFunction' did not match the signature ('char' required, 'int' given, argument #1).",
 		determineExPrefix(ExType.error, (6,13)) + "Argument for function call 'thatOtherFunction' did not match the signature ('float' required, 'int' given, argument #2).",
-		determineExPrefix(ExType.error, (4,7)) + "Types for initialization don't match ('int' and 'void')."
+		determineExPrefix(ExType.error, (4,7)) + "Types for initialization don't match ('int' and 'void').",
+		determineExPrefix(ExType.error, (8,9)) + "Argument for function call 'aFunction' is not a valid reference argument ('int' reference required, argument #1)."
 	]
 	for i in range(len(errorFiles)):
 		try:

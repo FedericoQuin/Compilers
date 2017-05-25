@@ -171,4 +171,11 @@ class ErrorMsgHandler:
 			"Types for operation '" + str(operationNode.type.name) + "' don't match ('" + type1.getStrType() + "' and '" + type2.getStrType() + "').", \
 			node)
 
+	@staticmethod
+	def referenceArgumentInvalid(node, requiredType, index):
+		ErrorMsgHandler.throwErrorMessage(ExType.error, \
+			"Argument for function call '" + str(node.value) + "' is not a valid reference argument ('" \
+			+ requiredType.getStrType() + "' reference required, argument #" + str(index) + ").", \
+			node)
+
 

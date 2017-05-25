@@ -115,10 +115,15 @@ class TypeChecker:
 		
 		for argumentRequired, argumentGiven in zip(functionSignature.arguments, arguments):
 			# Check the types for every argument given
-			if argumentRequired != TypeDeductor.deductType(argumentGiven, self.symbolTable):
+			if type(argumentRequired) == ReferenceType and argumentGiven.type != ASTNodeType.RValueID:
+				ErrorMsgHandler.referenceArgumentInvalid(node, argumentRequired, arguments.index(argumentGiven) + 1)
+
+			elif argumentRequired != TypeDeductor.deductType(argumentGiven, self.symbolTable):
 				ErrorMsgHandler.functionArgWrong(node, argumentRequired, \
 					TypeDeductor.deductType(argumentGiven, self.symbolTable), \
-					arguments.index(argumentGiven)+1)
+					arguments.index(argumentGiven) + 1)
+				
+			
 
 		
 	
