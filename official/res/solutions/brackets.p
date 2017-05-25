@@ -1,9 +1,14 @@
+ssp 5
+ujp main
+main:
 mst 0
 cup 0 label_main
 hlt
 label_main:
 ssp 8
-sep 40
+sep 6
+ldc i 0
+str i 0 0
 ldc i 5
 ldc i 4
 add i

@@ -148,7 +148,7 @@ def test_function_calls():
 	parse("function_calls.c", "function_calls.dot", "function_calls.p", "function_calls.symboltable")
 
 def test_arrays():
-	parse("arrays.c", "arrays.dot", "arrays.p", "arrays.symboltable", translate=False)
+	parse("arrays.c", "arrays.dot", "arrays.p", "arrays.symboltable")
 
 def test_global_vars():
 	parse("global_vars.c", "global_vars.dot", "global_vars.p", "global_vars.symboltable")
@@ -166,7 +166,7 @@ def test_redefining_symbols():
 	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p", "redefining_symbols.symboltable")
 
 def test_return_types1():
-	parse("return_types1.c", "return_types1.dot", "return_types1.p", "return_types1.symboltable", translate=False)
+	parse("return_types1.c", "return_types1.dot", "return_types1.p", "return_types1.symboltable")
 
 def test_return_types2():
 	parse("return_types2.c", "return_types2.dot", "return_types2.p", "return_types2.symboltable")

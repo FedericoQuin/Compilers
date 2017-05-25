@@ -1,6 +1,6 @@
 
 
-void doSomething(char* test) {
+void doSomething(char test) {
 	return;
 }
 
@@ -10,7 +10,7 @@ int main() {
 		a[i] = i;
 	}
 
-	char* b[100];
+	char b[100];
 	doSomething(b[20]);
 
 	float pointerArray[5];
@@ -19,5 +19,5 @@ int main() {
 	}
 	int index = 10;
 
-	b[index * 2 + 10] = 10;
+	b[index * 2 + 10] = 'z';
 }

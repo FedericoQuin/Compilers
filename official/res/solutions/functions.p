@@ -1,18 +1,23 @@
+ssp 5
+ujp main
+main:
 mst 0
-ldc i 0
-ldc r 0.0
 ldc c 'a'
+ldc r 0.0
+ldc i 0
 cup 3 label_main
 hlt
 label_main:
 ssp 9
-sep 40
+sep 1
+ldc i 0
+str i 0 0
 ldc r 3.5
 str r 0 8
 retf
 label_getThePointOfLife:
 ssp 6
-sep 40
+sep 2
 lod i 0 5
 ldc i 100
 grt i

@@ -336,7 +336,7 @@ class PTranslator:
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueChar:
-            self.programText += "ldc c '" + str(node.value) + "'\n"
+            self.programText += "ldc c " + str(node.value) + "\n"
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueFloat:
@@ -653,7 +653,7 @@ class PTranslator:
             elif argument.type == ASTNodeType.RValueInt:
                 self.programText += "ldc i " + str(argument.value) + "\n"
             elif argument.type == ASTNodeType.RValueChar:
-                self.programText += "ldc c '" + str(argument.value) + "'\n"
+                self.programText += "ldc c " + str(argument.value) + "\n"
             elif argument.type == ASTNodeType.RValueID:
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
                 followLinkCount = self.getFollowLinkCount(argument.value)
