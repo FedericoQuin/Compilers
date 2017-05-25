@@ -15,7 +15,7 @@ def runCompiler(cFilename, pFilename):
     parser._listeners = [MyErrorListener(cFilename)]
     tree = parser.program()
 
-    ASTbuilder = ASTCreator()
+    ASTbuilder = ASTCreator(stream)
 
     walker = ParseTreeWalker()
     walker.walk(ASTbuilder, tree)
