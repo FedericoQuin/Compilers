@@ -7,6 +7,7 @@ from src.py.SA.ExistenceChecker import ExistenceChecker
 from src.py.UTIL.TypeDeductor import TypeDeductor
 from src.py.UTIL.VarTypes import *
 from src.py.SA.UselessDecorator import UselessDecorator
+from copy import deepcopy
 
 class PTranslator:
     def __init__(self):
@@ -26,6 +27,7 @@ class PTranslator:
 
         # For readability, include this in the label of while loops, for loops, ifelse,...
         self.currentFunction = ""
+        self.functionSSPMap = {}
 
     def translate(self, ast, symbolTableFileName="", printDescription=False, translate = True):
         self.AST = ast
@@ -75,10 +77,16 @@ class PTranslator:
         self.symbolTableBuilder.processNode(node, nodeLevel)
 
         if node.type == ASTNodeType.Program:
-            self.setGlobalDeclarations(node, nodeLevel)
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
             while (len(self.fringe) != 0):
-                self.parseExpression()
+                if not isinstance(self.fringe[0][0].type, pointerType) and self.fringe[0][0].type != ASTNodeType.ArrayDecl:
+                    self.parseExpression()
+                else:
+                    self.symbolTableBuilder.processNode(self.fringe[0][0], nodeLevel + 1)
+                    del self.fringe[0]
+
+
+            self.setGlobalDeclarations(node, nodeLevel)
 
         #################################
         # Functions                     #
@@ -90,8 +98,6 @@ class PTranslator:
             # Process the arguments
             self.processFunctionArgs(node.children[1], nodeLevel + 2)
 
-            print(self.calculateEP(node))
-
             # calculate the amout of space needed
             declarations, declarationsWithArrays = self.getAmoutOfDeclarations(node)
 
@@ -102,8 +108,26 @@ class PTranslator:
             # We know that according to the slides, this only includes the static part, but we saw no other way to do this with arrays
             self.programText += "ssp " + str(declarationsWithArrays + 5) + "\n"
 
+            self.functionSSPMap[node.value] = declarationsWithArrays + 5
+
             self.programText += "sep " + str(max(self.calculateEP(node), 1)) + "\n"
             # Local procedure declarations are not possible in C so some things can be skipped
+
+            # Set default return value
+            returnType = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value).type.returnType
+            if isinstance(returnType, PointerType):
+                if isinstance(returnType.type, CharType) and returnType.ptrCount == 0:
+                    self.programText += "ldc c 'a'\n"
+                    self.programText += "str c 0 0\n"
+                elif isinstance(returnType.type, IntType) and returnType.ptrCount == 0:
+                    self.programText += "ldc i 0\n"
+                    self.programText += "str i 0 0\n"
+                elif isinstance(returnType.type, FloatType) and returnType.ptrCount == 0:
+                    self.programText += "ldc r 0.0\n"
+                    self.programText += "str r 0 0\n"
+                elif returnType.ptrCount != 0:
+                    self.programText += "ldc a 0\n"
+                    self.programText += "str a 0 0\n"
 
             self.nextArrayAddress = declarations + 5
 
@@ -572,6 +596,11 @@ class PTranslator:
         else:
             del self.fringe[0]
 
+        if node.useless:
+            #TODO remove
+            print("DID USELESS THING! ", self.currentFunction, " ", node.value)
+            self.programText += "ssp " + str(self.functionSSPMap[self.currentFunction]) + "\n"
+
     def addChildrenToFringe(self, node, nodeLevel, deleteFront=False):
         childAmount = len(node.children)
         for child in reversed(node.children):
@@ -636,7 +665,7 @@ class PTranslator:
 
                 self.parseChildrenFirst(argument, nodeLevel + 1, deleteFirst=False)
 
-                self.programText += "add i\n"
+                self.programText += "ixa 1\n"
                 self.programText += "ind " + mapping.type.type.getPString() + "\n"
 
     def processFunctionArgs(self, functionNode, nodeLevel):
@@ -670,6 +699,8 @@ class PTranslator:
         # Get applied occurrence
         appliedOccurrence = self.symbolTableBuilder.symbolTable.getAppOcc()
 
+        self.programText += "main:\n"
+
         self.programText += "mst 0\n"
 
         # Set the arguments:
@@ -697,7 +728,11 @@ class PTranslator:
                 globalDataSize += child.children[1].value
                 globalDataSize += 1
 
-        self.programText += "ssp " + str(5 + globalDataSize) + "\n"
+        text = "ssp " + str(5 + globalDataSize) + "\n"
+
+        # Dirty things here
+        programText = deepcopy(self.programText)
+        self.programText = ""
 
         # initialize them
         offset = 5
@@ -707,13 +742,15 @@ class PTranslator:
                     # Set the rhs
                     self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
                     self.parseExpression()
+                    text += self.programText
+                    self.programText = ""
 
-                    self.programText += "str i 0 " + str(offset) + "\n"
+                    text += "str i 0 " + str(offset) + "\n"
 
                     offset += 1
                 else:
-                    self.programText += "ldc i 0\n"
-                    self.programText += "str i 0 " + str(offset) + "\n"
+                    text += "ldc i 0\n"
+                    text += "str i 0 " + str(offset) + "\n"
                     offset += 1
 
 
@@ -722,37 +759,45 @@ class PTranslator:
                     # Set the rhs
                     self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
                     self.parseExpression()
+                    text += self.programText
+                    self.programText = ""
 
-                    self.programText += "str c 0 " + str(offset) + "\n"
+                    text += "str c 0 " + str(offset) + "\n"
 
                     offset += 1
                 else:
-                    self.programText += "ldc c 'a\n"
-                    self.programText += "str c 0 " + str(offset) + "\n"
+                    text += "ldc c 'a\n"
+                    text += "str c 0 " + str(offset) + "\n"
                     offset += 1
             elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.FloatDecl:
                 if child.children != []:
                     # Set the rhs
                     self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
                     self.parseExpression()
+                    text += self.programText
+                    self.programText = ""
 
-                    self.programText += "str r 0 " + str(offset) + "\n"
+                    text += "str r 0 " + str(offset) + "\n"
 
                     offset += 1
                 else:
-                    self.programText += "ldc r 0.0\n"
-                    self.programText += "str r 0 " + str(offset) + "\n"
+                    text += "ldc r 0.0\n"
+                    text += "str r 0 " + str(offset) + "\n"
                     offset += 1
             elif child.type == ASTNodeType.ArrayDecl:
                 # TODO
                 pass
 
+        text += "ujp main\n"
+        self.programText = text + programText
+
     def calculateEP(self, node, level = 0):
         maximum = 0
+
         if node.type == ASTNodeType.ArrayDecl:
             maximum = 3
 
-        elif node.type == ASTNodeType.RValueArrayElement or node.type == ASTNodeType.LValueArrayElement:
+        elif node.type == ASTNodeType.RValueArrayElement or node.type == ASTNodeType.LValueArrayElement or node.type == ASTNodeType.FunctionCall:
             maximum = 1
             for child in node.children:
                 maximum += self.calculateEP(child, level + 1)
@@ -766,7 +811,7 @@ class PTranslator:
             maximum = max(1, maximum)
 
         elif self.isRelationalOperator(node.type) or self.isMathematicalOperator(node.type) or node.type == ASTNodeType.Assignment or \
-            node.type == ASTNodeType.Initialization or node.type == ASTNodeType.Condition or node.type == ASTNodeType.FunctionCall:
+            node.type == ASTNodeType.Initialization or node.type == ASTNodeType.Condition or node.type == ASTNodeType.Brackets:
 
             for child in node.children:
                 maximum += self.calculateEP(child, level + 1)
@@ -803,6 +848,8 @@ class PTranslator:
     def isSimpleDeclaration(self, nodeType):
         # TODO ptr?
         if nodeType == ASTNodeType.IntDecl or nodeType == ASTNodeType.FloatDecl or nodeType == ASTNodeType.CharDecl:
+            return True
+        elif isinstance(nodeType, pointerType) and (nodeType.type == ASTNodeType.IntDecl or nodeType.type == ASTNodeType.FloatDecl or nodeType.type == ASTNodeType.CharDecl):
             return True
         else:
             return False
