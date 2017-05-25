@@ -1,3 +1,4 @@
+
 from src.py.AST.ASTWalker import ASTWalker
 from src.py.AST.ASTNode import ASTNodeType, ASTNode, pointerType
 from src.py.ST.SymbolTableBuilder import SymbolTableBuilder
@@ -7,6 +8,8 @@ from src.py.SA.ExistenceChecker import ExistenceChecker
 from src.py.UTIL.TypeDeductor import TypeDeductor
 from src.py.UTIL.VarTypes import *
 from src.py.SA.UselessDecorator import UselessDecorator
+
+import re
 
 class PTranslator:
     def __init__(self):
@@ -525,6 +528,68 @@ class PTranslator:
         #################################
         # Other                         #
         #################################
+
+        # Printf
+        elif node.type == ASTNodeType.Printf:
+            sequenceList = self.getPrintSequence(node)
+            argumentIndex = 1
+            for item in sequenceList:
+                if type(item) is ScanPrintArgument:
+                    self.fringe = [(node.children[argumentIndex], nodeLevel+1)] + self.fringe
+                    argumentIndex += 1
+                    self.parseExpression()
+                    self.programText += "out " + item.type + "\n"
+                else:
+                    # Little hack for escaped characters --> python escapes the backslash parsed from the program
+                    listIndex = 0
+                    characterList = list(filter(lambda a: a != '',re.split('(.)', item)))
+                    while listIndex < len(characterList):
+                        if characterList[listIndex] == '\\':
+                            listIndex += 1
+                            self.programText += "ldc c '\\" + characterList[listIndex] + "'\n"
+                        else:
+                            self.programText += "ldc c '" + characterList[listIndex] + "'\n"
+                        self.programText += "out c\n"
+                        listIndex += 1
+
+            del self.fringe[0]
+
+        # Scanf
+        elif node.type == ASTNodeType.Scanf:
+            sequenceList = self.getScanSequence(node)
+            listIndex = 1
+
+            for item in sequenceList:
+                argument = node.children[listIndex]
+
+                if argument.type == ASTNodeType.LValueArrayElement:
+                    self.fringe = [(node.children[listIndex], nodeLevel+1)] + self.fringe
+                    self.parseExpression()
+
+                    self.programText += "in " + item.type + "\n"
+                    self.programText += "sto " + item.type + "\n"
+
+                elif argument.type == ASTNodeType.Dereference:
+                    self.fringe = [(node.children[listIndex].children[0], nodeLevel+1)] + self.fringe
+                    self.parseExpression()
+
+                    for i in range(len(argument.value) - 1):
+                        self.programText += "ind a\n"
+
+                    self.programText += "in " + item.type + "\n"
+                    self.programText += "sto " + item.type + "\n"
+
+                elif argument.type != ASTNodeType.Dereference:
+                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
+                    followLinkCount = self.getFollowLinkCount(argument.value)
+                    
+                    self.programText += "in " + item.type + "\n"
+                    self.programText += "str " + item.type + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                
+                listIndex += 1
+            
+            del self.fringe[0]
+
         elif node.type == ASTNodeType.Brackets:
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
@@ -600,6 +665,28 @@ class PTranslator:
                 self.programText += "add i\n"
                 self.programText += "ind " + mapping.type.type.getPString() + "\n"
 
+
+    def getPrintSequence(self, node):
+        formatString = str(node.children[0].value)
+        sequenceList = list(filter(lambda a: a != '', re.split('(%.)', formatString)))
+
+        for entry in sequenceList:
+            if len(entry) == 2 and entry[0] == '%':
+                sequenceList[sequenceList.index(entry)] = ScanPrintArgument(entry[1])
+
+        return sequenceList
+
+    def getScanSequence(self, node):
+        formatString = str(node.children[0].value)
+        sequenceList = list(filter(lambda a: a != '', re.split('(%.)', formatString)))
+        returnList = []
+
+        for entry in sequenceList:
+            if len(entry) == 2 and entry[0] == '%':
+                returnList.append(ScanPrintArgument(entry[1]))
+        return returnList
+
+
     def processFunctionArgs(self, functionNode, nodeLevel):
         for arg in functionNode.children:
             if arg.type == ASTNodeType.ByReference:
@@ -653,3 +740,17 @@ class PTranslator:
         programFile = open(filename, 'w')
         programFile.write(self.programText)
         programFile.close()
+
+
+
+
+class ScanPrintArgument:
+    def __init__(self, Type):
+        self.type = Type
+
+    def __str__(self):
+        return str(self.type)
+        
+    def __repr__(self):
+        return str(self)
+
