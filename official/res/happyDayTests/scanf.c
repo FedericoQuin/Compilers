@@ -6,11 +6,11 @@ int main() {
 
 	scanf("%d", a);
 	scanf("%i", b);
-	scanf("%i%d", b, a);
+	scanf("%i%i", b, a);
 
 	char charval;
 	scanf("%c", charval);
 
-	char stringthing[20];
-	scanf("%s", stringthing);
+	float yes;
+	scanf("%f", yes);
 }

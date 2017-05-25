@@ -958,6 +958,10 @@ class PTranslator:
 
 class ScanPrintArgument:
     def __init__(self, Type):
+        if Type == "d":
+            Type = "i"
+        elif Type == "f":
+            Type = "r"
         self.type = Type
 
     def __str__(self):
