@@ -184,7 +184,7 @@ third_stmt_for :
 // Scanf and Printf										//
 //////////////////////////////////////////////////////////
 
-scanf : 'scanf' '(' format_string call_arguments ')';
+scanf : 'scanf' '(' format_string scanf_call_arguments ')';
 printf : 'printf' '(' format_string call_arguments ')';
 
 // Not sure how to go about this in a decent manner
@@ -209,6 +209,9 @@ call_arguments :
 call_argument :
 	expression;
 
+scanf_call_arguments :
+	',' lvalue scanf_call_arguments
+	|;
 
 
 //////////////////////////////////////////////////////////
