@@ -147,6 +147,9 @@ def test_pointer():
 def test_function_calls():
 	parse("function_calls.c", "function_calls.dot", "function_calls.p", "function_calls.symboltable")
 
+def test_advanced_function_calls():
+	parse("advanced_function_calls.c", "advanced_function_calls.dot", "advanced_function_calls.p", "advanced_function_calls.symboltable")
+
 def test_arrays():
 	parse("arrays.c", "arrays.dot", "arrays.p", "arrays.symboltable")
 

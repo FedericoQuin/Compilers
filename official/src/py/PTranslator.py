@@ -312,7 +312,7 @@ class PTranslator:
                 # Set address of the reference on the stack
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
                 followLinkCount = self.getFollowLinkCount(node.value)
-                self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                self.programText += "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
                 # evaluate the lhs
                 self.parseExpression()
@@ -344,10 +344,24 @@ class PTranslator:
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueID:
+            myType = TypeDeductor.deductType(node, self.symbolTableBuilder.symbolTable)
             mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
             followLinkCount = self.getFollowLinkCount(node.value)
-            self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-            del self.fringe[0]
+
+            if isinstance(myType, ReferenceType):
+                # delete the reference node, we don't need to evaluate it
+                del self.fringe[0]
+
+                # Set address of the reference on the stack
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                followLinkCount = self.getFollowLinkCount(node.value)
+                self.programText += "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+
+                # Get its value
+                self.programText += "ind " + myType.getPString() + "\n"
+            else:
+                self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueAddress:
             if node.children[0].type != ASTNodeType.LValueArrayElement:
@@ -368,7 +382,7 @@ class PTranslator:
 
 
         elif node.type == ASTNodeType.LValue:
-            # TODO remove?
+            # When here, we expect
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueArrayElement:
@@ -648,25 +662,9 @@ class PTranslator:
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
                 followLinkCount = self.getFollowLinkCount(argument.value)
                 self.programText += "lda " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-            elif argument.type == ASTNodeType.RValueFloat:
-                self.programText += "ldc r " + str(argument.value) + "\n"
-            elif argument.type == ASTNodeType.RValueInt:
-                self.programText += "ldc i " + str(argument.value) + "\n"
-            elif argument.type == ASTNodeType.RValueChar:
-                self.programText += "ldc c " + str(argument.value) + "\n"
-            elif argument.type == ASTNodeType.RValueID:
-                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
-                followLinkCount = self.getFollowLinkCount(argument.value)
-                self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-            elif argument.type == ASTNodeType.RValueArrayElement:
-                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
-                followLinkCount = self.getFollowLinkCount(argument.value)
-                self.programText += "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-
-                self.parseChildrenFirst(argument, nodeLevel + 1, deleteFirst=False)
-
-                self.programText += "ixa 1\n"
-                self.programText += "ind " + mapping.type.type.getPString() + "\n"
+            else:
+                self.fringe = [(argument, nodeLevel + 1)] +  self.fringe
+                self.parseExpression()
 
     def processFunctionArgs(self, functionNode, nodeLevel):
         for arg in functionNode.children:
