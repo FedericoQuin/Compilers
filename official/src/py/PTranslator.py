@@ -32,46 +32,53 @@ class PTranslator:
         self.currentFunction = ""
         self.functionSSPMap = {}
 
-    def translate(self, ast, symbolTableFileName="", printDescription=False, translate = True):
-        self.AST = ast
+
+    def doExistenceChecking(self, nodes):
         symbolTable = SymbolTable()
-        self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
+        symbolTableBuilder = SymbolTableBuilder(symbolTable)
         existenceChecker = ExistenceChecker(symbolTable)
 
-        astwalker = ASTWalker(self.AST)
-        nodes = astwalker.getNodesDepthFirst()
 
         # Existence checking (main, assignment of variables, ...)
         ExistenceChecker.checkMainExistence(nodes)
         for (node, nodeLevel) in nodes:
-            self.symbolTableBuilder.processNode(node, nodeLevel)
+            symbolTableBuilder.processNode(node, nodeLevel)
             existenceChecker.checkExistence(node)
 
+
+    def doTypeCheckingDecorating(self, nodes):
         symbolTable = SymbolTable()
-        self.symbolTableBuilder = SymbolTableBuilder(symbolTable, symbolTableFileName, printDescription)
+        symbolTableBuilder = SymbolTableBuilder(symbolTable)
         typeChecker = TypeChecker(symbolTable)
         uselessDecorator = UselessDecorator()
 
         # Type checking + decorating of useless statements
         for (node, nodeLevel) in nodes:
-            self.symbolTableBuilder.processNode(node, nodeLevel)
+            symbolTableBuilder.processNode(node, nodeLevel)
             typeChecker.checkType(node)
             # Decorate nodes for uselessness
             uselessDecorator.checkUselessness(node, nodeLevel)
 
 
+    def translate(self, ast, translate = True):
+        self.AST = ast
+        astwalker = ASTWalker(self.AST)
+        nodes = astwalker.getNodesDepthFirst()
+
+        # Syntax analysis
+        self.doExistenceChecking(nodes)
+        self.doTypeCheckingDecorating(nodes)
 
         # Actual translation
         symbolTable = SymbolTable()
         self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
-
         self.fringe.append(nodes[0])
 
         # TODO remove
         if translate:
             self.parseExpression()
 
-        self.saveProgram("test")
+
 
     def parseExpression(self):
         if len(self.fringe) == 0:

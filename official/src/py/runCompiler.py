@@ -24,7 +24,7 @@ def runCompiler(cFilename, pFilename):
     ASTbuilder.toDot("data/output.dot")
 
     translator = PTranslator()
-    translator.translate(ast, "data/symbolTable.txt", True)
+    translator.translate(ast, True)
 
     translator.saveProgram(pFilename)
 
