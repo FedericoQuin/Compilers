@@ -250,7 +250,7 @@ def test_errors():
 		# "error_ifelse.c",		// TODO
 		# "error_for.c",		// TODO
 		# "error_while.c"		// TODO
-		]
+	]
 	errorMessages = [
 		"3:0: Error while/after parsing statement\n\n^\nBraces don't match",
 		"2:36: Error while/after parsing expression\n\tint someDecl = (5 + 8) * 3 * (5 + 4;\n\t                                   ^\nBraces don't match",
@@ -283,8 +283,7 @@ def test_types():
 		"type_check9.c",
 		"type_check10.c",
 		"type_check11.c",
-		# "type_check10.c"
-		]
+	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (2,8)) + "Types for initialization don't match ('char' and 'int').",
 		determineExPrefix(ExType.error, (3,9)) + "Types for initialization don't match ('float' and 'int').",
@@ -315,7 +314,7 @@ def test_existences():
 		"existence3.c",
 		"existence4.c",
 		"existence5.c"
-		]
+	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (2,1)) + "Variable 'a' referenced before declaration.",
 		determineExPrefix(ExType.error, (4,1)) + "Function 'getCookies' called before declaration.",
@@ -335,7 +334,7 @@ def test_duplicate_declarations():
 	errorFiles = [
 		"dup_decl1.c",
 		"dup_decl2.c"
-		]
+	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (3,1)) + "Symbol 'a' has already been declared in this scope.",
 		determineExPrefix(ExType.error, (8,1)) + "Symbol 'testing' has already been declared in this scope."
@@ -353,7 +352,7 @@ def test_wrong_returns():
 	errorFiles = [
 		"wrong_return1.c",
 		"wrong_return2.c"
-		]
+	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (2,1)) + "Return type doesn't match 'testing' signature ('int' required, 'char' given).",
 		determineExPrefix(ExType.error, (2,1)) + "Return type doesn't match 'testing' signature ('void' required, 'int' given)."
@@ -371,7 +370,7 @@ def test_array_wrongAccess():
 	errorFiles = [
 		"array_wrong_access1.c",
 		"array_wrong_access2.c"
-		]
+	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (5,1)) + "Elements of array 'a' should be accessed with an integer.",
 		determineExPrefix(ExType.error, (6,1)) + "Elements of array 'myString' should be accessed with an integer."
@@ -392,7 +391,7 @@ def test_derefences():
 		"dereference3.c",
 		"dereference4.c",
 		"dereference5.c"
-		]
+	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (5,5)) + "Cannot dereference variable 'a' 4 times (only 3 times allowed).",
 		determineExPrefix(ExType.error, (8,1)) + "Types for assignment don't match ('int' and 'float').",
@@ -408,6 +407,23 @@ def test_derefences():
 			string = str(inst)
 			assert(string == errorMessages[i])
 
+
+def test_noIncludes():
+	errorFiles = [
+		"scanf_include.c",
+		"printf_include.c"
+	]
+	errorMessages = [
+		determineExPrefix(ExType.error, (5,1)) + "'scanf' was not declared in this scope (try including header 'stdio.h').",
+		determineExPrefix(ExType.error, (5,1)) + "'printf' was not declared in this scope (try including header 'stdio.h').",
+	]
+	for i in range(len(errorFiles)):
+		try:
+			ASTNode.ID = 0
+			parseNoCatch(errorFiles[i], "", "")
+		except Exception as inst:
+			string = str(inst)
+			assert(string == errorMessages[i])
 
 def test_noMain():
 	errorFile = "nomain.c"

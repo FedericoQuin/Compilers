@@ -85,6 +85,11 @@ class ErrorMsgHandler:
 	def mainDoesntExist():
 		ErrorMsgHandler.throwErrorMessage(ExType.error, "The program does not contain a 'main' function.")
 
+	@staticmethod
+	def undefinedFunction(node, functionName, hint=""):
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "'" + functionName + "' was not declared in this scope" + \
+			("" if hint == "" else " (try including header '" + hint + "')") + ".", node)
+
 
 	# ===================
 	# VarTypes exceptions
