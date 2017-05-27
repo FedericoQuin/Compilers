@@ -143,6 +143,14 @@ class ASTCreator(cGrammarListener):
 		if ctx.OPERATOR_MINUS() != None:
 			self.AST.climbTree()
 
+	def enterDereference_expr(self, ctx):
+		if ctx.OPERATOR_MUL() != None:
+			self.AST.addDereference(ctx)
+
+	def exitDereference_expr(self, ctx):
+		if ctx.OPERATOR_MUL() != None:
+			self.AST.climbTree()
+
 	def enterAssigment(self, ctx):
 		self.AST.enterAssignment(ctx)
 
@@ -393,10 +401,12 @@ class ASTCreator(cGrammarListener):
 		self.AST.climbTree()
 
 	def enterPointer_dereference(self, ctx:cGrammarParser.Pointer_dereferenceContext):
-		self.AST.addDereference(ctx)
+		# Don't add a node if this one is just adding brackets
+		if ctx.OPERATOR_MUL() != None:
+			self.AST.addDereference(ctx)
 
 	def exitPointer_dereference(self, ctx:cGrammarParser.Pointer_dereferenceContext):
-		if ctx.expression() != None:
+		if ctx.OPERATOR_MUL() != None:
 			self.AST.climbTree()
 
 

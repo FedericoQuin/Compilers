@@ -469,7 +469,7 @@ class PTranslator:
             for i in range(len(node.value) - 1):
                 self.programText += "ind a\n"
 
-            self.programText += "ind " + myType.type.getPString() + "\n"
+            self.programText += "ind " + myType.getPString() + "\n"
 
         elif node.type == ASTNodeType.ArrayDecl:
             del self.fringe[0]

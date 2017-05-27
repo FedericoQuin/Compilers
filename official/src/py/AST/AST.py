@@ -135,15 +135,10 @@ class AST:
 
 
 	def addDereference(self, ctx):
-		# Don't add a node if this one is just adding brackets
-		if ctx.dereference_bracket() != None:
-			return
-		
-		if self.currentPointer.type == ASTNodeType.Dereference:
-			self.currentPointer.value += "".join([ "*" for i in range(len(ctx.OPERATOR_MUL())) ])
-		else:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Dereference, self.getPosition(ctx),\
-				"".join(["*" for i in range(len(ctx.OPERATOR_MUL()))]))
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Dereference, self.getPosition(ctx), "*")
+		# if self.currentPointer.type == ASTNodeType.Dereference:
+		# 	self.currentPointer.value += "*"
+		# else:
 
 	#====================================================================
 	#= 					Assignments and Expressions						=
