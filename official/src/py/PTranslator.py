@@ -89,6 +89,8 @@ class PTranslator:
         self.symbolTableBuilder.processNode(node, nodeLevel)
 
         if node.type == ASTNodeType.Program:
+
+            self.setGlobalDeclarations(node, nodeLevel)
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
             while (len(self.fringe) != 0):
                 if not isinstance(self.fringe[0][0].type, pointerType) and self.fringe[0][0].type != ASTNodeType.ArrayDecl:
@@ -98,7 +100,6 @@ class PTranslator:
                     del self.fringe[0]
 
 
-            self.setGlobalDeclarations(node, nodeLevel)
 
         #################################
         # Functions                     #
@@ -180,7 +181,6 @@ class PTranslator:
                 self.programText += "retf\n"
 
         elif node.type == ASTNodeType.Return:
-            # TODO
             self.parseChildrenFirst(node, nodeLevel)
 
             if len(node.children) != 0:
@@ -720,8 +720,6 @@ class PTranslator:
             del self.fringe[0]
 
         if node.useless:
-            #TODO remove
-            print("DID USELESS THING! ", self.currentFunction, " ", node.value)
             self.programText += "ssp " + str(self.functionSSPMap[self.currentFunction]) + "\n"
 
     def addChildrenToFringe(self, node, nodeLevel, deleteFront=False):
@@ -834,7 +832,6 @@ class PTranslator:
 
         # Set the arguments:
         for arg in reversed(args):
-            # TODO, do not allow references and ptrs/arrays in main
             if isinstance(arg.type, FloatType):
                 self.programText += "ldc r 0.0\n"
             elif isinstance(arg.type, IntType):
@@ -849,12 +846,16 @@ class PTranslator:
         self.programText += "hlt\n"
 
     def setGlobalDeclarations(self, node, nodeLevel):
+        del self.fringe[0]
         globalDataSize = 0
+        dataSizeNoArray = 0
         for child in node.children:
             if isinstance(child.type, pointerType):
+                dataSizeNoArray += 1
                 globalDataSize += 1
             elif child.type == ASTNodeType.ArrayDecl:
                 globalDataSize += child.children[1].value
+                dataSizeNoArray += 1
                 globalDataSize += 1
 
         text = "ssp " + str(5 + globalDataSize) + "\n"
@@ -862,10 +863,14 @@ class PTranslator:
         # Dirty things here
         programText = deepcopy(self.programText)
         self.programText = ""
+        nextArrayAddress = 5 + dataSizeNoArray
+
+        self.symbolTableBuilder.processNode(node, nodeLevel)
 
         # initialize them
         offset = 5
         for child in node.children:
+            self.symbolTableBuilder.processNode(child, nodeLevel + 1)
             if isinstance(child.type, pointerType) and child.type.ptrCount != 0:
                 if child.children != []:
                     # Set the rhs
@@ -929,11 +934,38 @@ class PTranslator:
                     text += "str r 0 " + str(offset) + "\n"
                     offset += 1
             elif child.type == ASTNodeType.ArrayDecl:
-                # TODO
-                pass
+                text += "lda 0 " + str(nextArrayAddress) + "\n"
+                text += "str a 0 " + str(offset) + "\n"
+                offset += 1
+
+                line = ""
+                if isinstance(child.children[0].value, pointerType):
+                    if child.children[0].value.ptrCount != 0:
+                        # pointer
+                        line = "ldc a 0\nstr a 0 "
+                    elif child.children[0].value.type == ASTNodeType.IntDecl:
+                        # int
+                        line = "ldc i 0\nstr i 0 "
+                    elif child.children[0].value.type == ASTNodeType.FloatDecl:
+                        # float
+                        line = "ldc r 0.0\nstr r 0 "
+                    elif child.children[0].value.type == ASTNodeType.CharDecl:
+                        # char
+                        line = "ldc c 'a'\nstr c 0 "
+
+                    for i in range(int(child.children[1].value)):
+                        text += line + str(nextArrayAddress) + "\n"
+                        nextArrayAddress += 1
+                        self.programText = ""
 
         text += "ujp main\n"
         self.programText = text + programText
+
+        # Reset the symboltable
+        symbolTable = SymbolTable()
+        self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
+        self.symbolTableBuilder.processNode(node, 0)
+        self.fringe.append((node, 0))
 
     def calculateEP(self, node, level = 0):
         maximum = 0
