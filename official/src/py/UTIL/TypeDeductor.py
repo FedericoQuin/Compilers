@@ -92,7 +92,10 @@ class TypeDeductor:
 		rvalueIdType = symbolTable.lookupSymbol(derefNode.value).type
 		if type(rvalueIdType) is ArrayType:
 			rvalueIdType = rvalueIdType.addressOf()
-		
+		elif type(rvalueIdType) is ReferenceType:
+			rvalueIdType = rvalueIdType.referencedType
+
+			
 		if not(type(rvalueIdType) is PointerType):
 			ErrorMsgHandler.derefNonPointer(derefNode)
 		if derefCount > rvalueIdType.ptrCount:

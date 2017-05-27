@@ -243,6 +243,12 @@ class PTranslator:
 
             mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.parent.value)
             followLinkCount = self.getFollowLinkCount(node.parent.value)
+
+            # Conversion between int to address if necessary
+            typeRhs = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
+            if typeRhs.getPString() == 'i' and mapping.type.getPString() == 'a':
+                self.programText += "conv i a\n"
+
             self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
         elif node.type == ASTNodeType.Addition:
@@ -288,7 +294,6 @@ class PTranslator:
 
         elif node.type == ASTNodeType.Assignment:
             myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
-
             if node.children[0].type == ASTNodeType.LValueArrayElement:
                 self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
 
@@ -301,7 +306,13 @@ class PTranslator:
                 # Set the value of the rhs
                 self.parseExpression()
 
-                self.programText += "sto " + myType.type.getPString() + "\n"
+                # Conversion between int to address if necessary
+                typeRhs = TypeDeductor.deductType(node.children[1], self.symbolTableBuilder.symbolTable)
+                print(str(myType))
+                if typeRhs.getPString() == 'i' and myType.getPString() == 'a':
+                    self.programText += "conv i a\n"
+
+                self.programText += "sto " + myType.getPString() + "\n"
 
             elif node.children[0].type == ASTNodeType.Dereference:
                 derefNode = node.children[0]
@@ -320,6 +331,11 @@ class PTranslator:
                 # Set the value of the rhs
                 self.parseExpression()
 
+                # Conversion between int to address if necessary
+                typeRhs = TypeDeductor.deductType(node.children[1], self.symbolTableBuilder.symbolTable)
+                if typeRhs.getPString() == 'i' and myType.type.getPString() == 'a':
+                    self.programText += "conv i a\n"
+
                 self.programText += "sto " + myType.type.getPString() + "\n"
 
             elif isinstance(myType, ReferenceType):
@@ -335,13 +351,23 @@ class PTranslator:
                 # evaluate the lhs
                 self.parseExpression()
 
+                # Conversion between int to address if necessary
+                typeRhs = TypeDeductor.deductType(node.children[1], self.symbolTableBuilder.symbolTable)
+                if typeRhs.getPString() == 'i' and myType.getPString() == 'a':
+                    self.programText += "conv i a\n"
+
                 self.programText += "sto " + myType.getPString() + "\n"
 
             elif node.children[0].type != ASTNodeType.Dereference and not isinstance(myType, ReferenceType):
                 self.parseChildrenFirst(node, nodeLevel)
-
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[0].value)
                 followLinkCount = self.getFollowLinkCount(node.children[0].value)
+
+                # Conversion between int to address if necessary
+                typeRhs = TypeDeductor.deductType(node.children[1], self.symbolTableBuilder.symbolTable)
+                if typeRhs.getPString() == 'i' and mapping.type.getPString() == 'a':
+                    self.programText += "conv i a\n"
+
                 self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
 
