@@ -1,4 +1,7 @@
 
+#include <stdio.h>
+
+
 void doSomething(int*& a) {
 	*a = 100;
 }
