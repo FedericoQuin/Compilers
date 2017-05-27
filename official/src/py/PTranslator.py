@@ -1053,9 +1053,9 @@ class PTranslator:
 
 class ScanPrintArgument:
     def __init__(self, Type):
-        if Type == "d":
+        if Type == "d" or Type == "u":
             Type = "i"
-        elif Type == "f":
+        elif Type == "f" or Type == "e" or Type == "g" or Type == "a":
             Type = "r"
         self.type = Type
 
