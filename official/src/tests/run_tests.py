@@ -202,6 +202,16 @@ def test_advanced_global_var():
 def test_global_vars():
 	parse("global_vars.c", "global_vars.dot", "global_vars.p")
 
+# ===============================
+# 		 Negative values
+# ===============================
+
+def test_minus_values():
+	parse("minus_values.c", "minus_values.dot", "minus_values.p")
+
+def test_negativeExpressions():
+	parse("negativeExpressions.c", "negativeExpressions.dot", "negativeExpressions.p")
+
 
 # ===============================
 # 		  Miscellaneous
@@ -215,9 +225,6 @@ def test_includes():
 
 def test_mainFunction():
 	parse("mainFunction.c", "mainFunction.dot", "mainFunction.p")
-
-def test_minus_values():
-	parse("minus_values.c", "minus_values.dot", "minus_values.p")
 
 def test_redefining_symbols():
 	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p")
