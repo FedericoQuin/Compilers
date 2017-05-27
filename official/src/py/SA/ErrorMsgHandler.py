@@ -39,8 +39,8 @@ class ExType(Enum):
 
 def determineExPrefix(exType, position):
 	return exType.getColor() + \
-		("" if position == None else "(" + ",".join([str(i) for i in position]) + ")") + \
-		" " + str(exType) + str(AnsiEscapeCodes.Clean)
+		("" if position == None else "(" + ",".join([str(i) for i in position]) + ") ") + \
+		str(exType) + str(AnsiEscapeCodes.Clean)
 
 
 
@@ -80,6 +80,10 @@ class ErrorMsgHandler:
 	@staticmethod
 	def functionBeforeInit(node):
 		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' called before initialisation.", node)
+
+	@staticmethod
+	def mainDoesntExist():
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "The program does not contain a 'main' function.")
 
 
 	# ===================

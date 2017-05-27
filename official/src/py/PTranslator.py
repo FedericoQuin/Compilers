@@ -41,7 +41,8 @@ class PTranslator:
         astwalker = ASTWalker(self.AST)
         nodes = astwalker.getNodesDepthFirst()
 
-        # Existence checking
+        # Existence checking (main, assignment of variables, ...)
+        ExistenceChecker.checkMainExistence(nodes)
         for (node, nodeLevel) in nodes:
             self.symbolTableBuilder.processNode(node, nodeLevel)
             existenceChecker.checkExistence(node)
@@ -51,15 +52,16 @@ class PTranslator:
         typeChecker = TypeChecker(symbolTable)
         uselessDecorator = UselessDecorator()
 
-        # Type checking and actual translation
+        # Type checking + decorating of useless statements
         for (node, nodeLevel) in nodes:
             self.symbolTableBuilder.processNode(node, nodeLevel)
             typeChecker.checkType(node)
             # Decorate nodes for uselessness
             uselessDecorator.checkUselessness(node, nodeLevel)
 
-        self.symbolTableBuilder.saveSymbolTable("a")
 
+
+        # Actual translation
         symbolTable = SymbolTable()
         self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
 

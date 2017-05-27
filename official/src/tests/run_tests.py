@@ -353,5 +353,15 @@ def test_derefences():
 			string = str(inst)
 			assert(string == errorMessages[i])
 
+			
+def test_noMain():
+	errorFile = "nomain.c"
+	errorMessage = determineExPrefix(ExType.error, None) + "The program does not contain a 'main' function."
 
+	try:
+		ASTNode.ID = 0
+		parseNoCatch(errorFile, "", "")
+	except Exception as inst:
+		string = str(inst)
+		assert(string == errorMessage)
 
