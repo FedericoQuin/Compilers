@@ -83,12 +83,17 @@ class TypeDeductor:
 				if derefNode != None:
 					ErrorMsgHandler.derefMultipleVars(node)
 				derefNode = currentNode
+			elif currentNode.type == ASTNodeType.RValueArrayElement:
+				if derefNode != None:
+					ErrorMsgHandler.derefMultipleVars(node)
+				derefNode = currentNode
 			else:
 				# All other nodes are part of an expression
 				rType = type(TypeDeductor.deductType(currentNode, symbolTable))
 				if not(rType is IntType) and not(rType is PointerType):
 					ErrorMsgHandler.derefInvalidExpression(node)
 		
+
 		rvalueIdType = symbolTable.lookupSymbol(derefNode.value).type
 		if type(rvalueIdType) is ArrayType:
 			rvalueIdType = rvalueIdType.addressOf()

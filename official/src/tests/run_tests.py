@@ -89,31 +89,67 @@ def parseNoCatch(inputFile, dotSolution, pSolution):
 	assert(False)
 
 
+
+# ===============================
+# 			Pointers
+# ===============================
+
+def test_address_assignment():
+	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p")
+
+def test_advanced_pointers1():
+	parse("advanced_pointers1.c", "advanced_pointers1.dot", "advanced_pointers1.p")
+	
+def test_advanced_pointers2():
+	parse("advanced_pointers2.c", "advanced_pointers2.dot", "advanced_pointers2.p")
+
+def test_advanced_pointers3():
+	parse("advanced_pointers3.c", "advanced_pointers3.dot", "advanced_pointers3.p")
+
+def test_dereference1():
+	parse("dereference1.c", "dereference1.dot", "dereference1.p")
+
+def test_pointer():
+	parse("pointer.c", "pointer.dot", "pointer.p")
+
+	
+# ===============================
+# 			Assignments
+# ===============================
+
 def test_assignments1bis():
 	parse("assignments1bis.c", "assignments1bis.dot", "assignments1bis.p")
 
 def test_assignments1():
 	parse("assignments1.c", "assignments1.dot", "assignments1.p")
 
-
 def test_assignments2():
 	parse("assignments2.c", "assignments2.dot", "assignments2.p")
+	
 
-
-def test_mainFunction():
-	parse("mainFunction.c", "mainFunction.dot", "mainFunction.p")
-
+# ===============================
+# 			Comments
+# ===============================
 
 def test_mixedComments():	
 	parse("mixedComments.c", "mixedComments.dot", "mixedComments.p")
 
-
 def test_multiLineComment():	
 	parse("multiLineComment.c", "multiLineComment.dot", "multiLineComment.p")
 
-
 def test_singleLineComment():	
 	parse("singleLineComment.c", "singleLineComment.dot", "singleLineComment.p")
+
+
+# ===============================
+# 		Ifelse, while, ...
+# ===============================
+
+def test_break_continue():
+	parse("break_continue.c", "break_continue.dot", "break_continue.p")
+
+def test_for():
+	parse("for.c", "for.dot", "for.p")
 
 def test_ifelse():
 	parse("ifelse.c", "ifelse.dot", "ifelse.p")
@@ -121,47 +157,22 @@ def test_ifelse():
 def test_while():
 	parse("while.c", "while.dot", "while.p")
 
-def test_for():
-	parse("for.c", "for.dot", "for.p")
-
-def test_brackets():
-	parse("brackets.c", "brackets.dot", "brackets.p")
-
-def test_break_continue():
-	parse("break_continue.c", "break_continue.dot", "break_continue.p")
-
-def test_functions():
-	parse("functions.c", "functions.dot", "functions.p")
-
-def test_pointer():
-	parse("pointer.c", "pointer.dot", "pointer.p")
-
-def test_function_calls():
-	parse("function_calls.c", "function_calls.dot", "function_calls.p")
+		
+# ===============================
+# 			Functions
+# ===============================
 
 def test_advanced_function_calls():
 	parse("advanced_function_calls.c", "advanced_function_calls.dot", "advanced_function_calls.p")
 
-def test_arrays():
-	parse("arrays.c", "arrays.dot", "arrays.p")
+def test_functions():
+	parse("functions.c", "functions.dot", "functions.p")
 
-def test_global_vars():
-	parse("global_vars.c", "global_vars.dot", "global_vars.p")
-
-def test_advanced_global_var():
-	parse("advanced_global_var.c", "advanced_global_var.dot", "advanced_global_var.p")
-
-def test_includes():
-	parse("includes.c", "includes.dot", "includes.p", translate=False)
-
-def test_scanf():
-	parse("scanf.c", "scanf.dot", "scanf.p", translate=False)
+def test_function_calls():
+	parse("function_calls.c", "function_calls.dot", "function_calls.p")
 
 def test_printf():
 	parse("printf.c", "printf.dot", "printf.p", translate=False)
-
-def test_redefining_symbols():
-	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p")
 
 def test_return_types1():
 	parse("return_types1.c", "return_types1.dot", "return_types1.p")
@@ -169,15 +180,51 @@ def test_return_types1():
 def test_return_types2():
 	parse("return_types2.c", "return_types2.dot", "return_types2.p")
 
+def test_scanf():
+	parse("scanf.c", "scanf.dot", "scanf.p", translate=False)
+
+
+# ===============================
+# 			Arrays
+# ===============================
+	
+def test_arrays():
+	parse("arrays.c", "arrays.dot", "arrays.p")
+
+	
+# ===============================
+# 		  Global vars
+# ===============================
+
+def test_advanced_global_var():
+	parse("advanced_global_var.c", "advanced_global_var.dot", "advanced_global_var.p")
+
+def test_global_vars():
+	parse("global_vars.c", "global_vars.dot", "global_vars.p")
+
+
+# ===============================
+# 		  Miscellaneous
+# ===============================
+
+def test_brackets():
+	parse("brackets.c", "brackets.dot", "brackets.p")
+
+def test_includes():
+	parse("includes.c", "includes.dot", "includes.p", translate=False)
+
+def test_mainFunction():
+	parse("mainFunction.c", "mainFunction.dot", "mainFunction.p")
+
 def test_minus_values():
 	parse("minus_values.c", "minus_values.dot", "minus_values.p")
 
-def test_address_assignment():
-	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p")
+def test_redefining_symbols():
+	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p")
 
-def test_dereference1():
-	parse("dereference1.c", "dereference1.dot", "dereference1.p")
-
+	
+	
+	
 # TODO unlock this task when 'advanced' dereferencing is finished
 # def test_dereference2():
 # 	parse("dereference2.c", "dereference2.dot", "dereference2.p")
