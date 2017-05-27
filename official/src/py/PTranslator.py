@@ -197,7 +197,13 @@ class PTranslator:
                 self.parseExpression()
             else:
                 # Give a default value
-                if node.type.type == ASTNodeType.FloatDecl:
+                if node.type.ptrCount != 0:
+                    self.programText += "ldc a 0\n"
+
+                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                    followLinkCount = self.getFollowLinkCount(node.value)
+                    self.programText += "str a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                elif node.type.type == ASTNodeType.FloatDecl:
                     self.programText += "ldc r 0.0\n"
 
                     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
@@ -362,6 +368,9 @@ class PTranslator:
 
                 # Get its value
                 self.programText += "ind " + myType.getPString() + "\n"
+            elif isinstance(myType, ArrayType) or (isinstance(myType, PointerType) and myType.ptrCount != 0):
+                self.programText += "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                del self.fringe[0]
             else:
                 self.programText += "lod " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
                 del self.fringe[0]
@@ -822,7 +831,22 @@ class PTranslator:
         # initialize them
         offset = 5
         for child in node.children:
-            if isinstance(child.type, pointerType) and child.type.type == ASTNodeType.IntDecl:
+            if isinstance(child.type, pointerType) and child.type.ptrCount != 0:
+                if child.children != []:
+                    # Set the rhs
+                    self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
+                    self.parseExpression()
+                    text += self.programText
+                    self.programText = ""
+
+                    text += "str a 0 " + str(offset) + "\n"
+
+                    offset += 1
+                else:
+                    text += "ldc a 0\n"
+                    text += "str a 0 " + str(offset) + "\n"
+                    offset += 1
+            elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.IntDecl:
                 if child.children != []:
                     # Set the rhs
                     self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)

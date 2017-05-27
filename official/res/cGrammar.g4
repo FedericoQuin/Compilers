@@ -56,10 +56,6 @@ return_stmt : RETURN expression?;
 expression :	// TODO add brackets
 	lvalue OPERATOR_AS add_sub
 	| add_sub
-	| ID postfix_inc
-	| ID postfix_dec
-	| prefix_inc ID		// NOTE: the prefix operators don't work for some mysterious reason
-	| prefix_dec ID
 	| condition
 	| rvalue;
 
@@ -307,17 +303,6 @@ dec_type :
 	| INT ptr;
 
 
-prefix_inc:
-	OPERATOR_INCR;
-postfix_inc:
-	OPERATOR_INCR;
-prefix_dec:
-	OPERATOR_DECR;
-postfix_dec:
-	OPERATOR_DECR;
-
-
-
 //////////////////////////////////////////////////////////
 // Lexer Rules											//
 //////////////////////////////////////////////////////////
@@ -338,8 +323,6 @@ RETURN : 'return';
 
 
 OPERATOR_AS : '=';
-OPERATOR_INCR : '++';
-OPERATOR_DECR : '--';
 OPERATOR_PLUS : '+';
 OPERATOR_MINUS : '-';
 OPERATOR_DIV : '/';

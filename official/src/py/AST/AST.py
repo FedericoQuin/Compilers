@@ -152,14 +152,6 @@ class AST:
 	def enterExpression(self, ctx):
 		if ctx.OPERATOR_AS() != None:
 			self.addAssignment(ctx)
-		elif ctx.postfix_inc() != None:
-			self.currentPointer.addChild(ASTNodeType.PostfixIncr, self.getPosition(ctx), str(ctx.ID()))
-		elif ctx.prefix_inc() != None:
-			self.currentPointer.addChild(ASTNodeType.PrefixIncr, self.getPosition(ctx), str(ctx.ID()))
-		elif ctx.postfix_dec() != None:
-			self.currentPointer.addChild(ASTNodeType.PostfixDecr, self.getPosition(ctx), str(ctx.ID()))
-		elif ctx.prefix_dec() != None:
-			self.currentPointer.addChild(ASTNodeType.PrefixDecr, self.getPosition(ctx), str(ctx.ID()))
 
 	def enterAddSub(self, ctx):
 		if ctx.OPERATOR_PLUS() != None:

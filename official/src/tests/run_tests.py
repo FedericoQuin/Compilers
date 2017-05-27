@@ -117,12 +117,6 @@ def test_multiLineComment():
 def test_singleLineComment():	
 	parse("singleLineComment.c", "singleLineComment.dot", "singleLineComment.p", "singleLineComment.symboltable")
 
-def test_increment():
-	parse("increment.c", "increment.dot", "increment.p", "increment.symboltable", translate=False)
-
-def test_prefixIncDec():
-	parse("prefixIncDec.c", "prefixIncDec.dot", "prefixIncDec.p", "prefixIncDec.symboltable", translate=False)
-
 def test_ifelse():
 	parse("ifelse.c", "ifelse.dot", "ifelse.p", "ifelse.symboltable")
 
@@ -142,7 +136,7 @@ def test_functions():
 	parse("functions.c", "functions.dot", "functions.p", "functions.symboltable")
 
 def test_pointer():
-	parse("pointer.c", "pointer.dot", "pointer.p", "pointer.symboltable", translate=False)
+	parse("pointer.c", "pointer.dot", "pointer.p", "pointer.symboltable")
 
 def test_function_calls():
 	parse("function_calls.c", "function_calls.dot", "function_calls.p", "function_calls.symboltable")
@@ -181,14 +175,14 @@ def test_address_assignment():
 	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p", "address_assignment.symboltable")
 
 def test_dereference1():
-	parse("dereference1.c", "dereference1.dot", "dereference1.p", "dereference1.symboltable", translate=False)
+	parse("dereference1.c", "dereference1.dot", "dereference1.p", "dereference1.symboltable")
 
 # TODO unlock this task when 'advanced' dereferencing is finished
 # def test_dereference2():
 # 	parse("dereference2.c", "dereference2.dot", "dereference2.p", "dereference2.symboltable")
 
 def test_by_reference():
-	parse("by_reference.c", "by_reference.dot", "by_reference.p", "by_reference.symboltable", translate=False)
+	parse("by_reference.c", "by_reference.dot", "by_reference.p", "by_reference.symboltable")
 
 
 def test_errors():

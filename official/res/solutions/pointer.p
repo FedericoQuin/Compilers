@@ -1,19 +1,18 @@
+ssp 5
+ujp main
+main:
+mst 0
+ldc c 'a'
+ldc i 0
+cup 2 label_main
+hlt
 label_main:
-ssp 9
-sep wat? hoe moet ik dit nu weten?
-ldc i 5
-str i 0 7
-lod a 0 8
-ind a
-ind a
-ind a
-lda i 0 7
-sto i
+ssp 8
+sep 1
+ldc i 0
+str i 0 0
+ldc a 0
+str a 0 7
+lda 0 5
+str a 0 7
 retf
-lod a 0 8
-ind a
-ind a
-ind a
-ind a
-ldc i 6
-sto i
