@@ -14,16 +14,17 @@ Main structure:
 Output:
 	Currently, there are 3 output files which are generated: output.dot, program.p and symbolTable.txt.
 	output.dot contains the decorated AST of the compiled c program.
-	program.p is currently empty, in the future it will contain the translation of the c code to p code.
 	symbolTable.txt contains the symbol table of the c program. More info can be founf in the file itself.
 
 Test structure:
 	To run the tests, you must use the following command: make test.
-	The tests that are currently being can be found in src/tests.
-	The files these tests manipulate are found in res/test and res/solutions.
-	Which functionality is being tested should be clear by the name of the c files in res/test.
+	The tests that are currently being run can be found in src/tests.
+	The files these tests use as validation are found in res/solutions.
+	The input file that corresponds to this solution can be found in res/happyDayTests.
+	Which functionality is being tested should be clear by the name of the provided c files.
+	There are also death tests input files which can be found in res/deathTests. They require no solution files compared to the files in res/happyDayTests.
 
 Extra features:
-	Currently, we have added the following extra features:
+	We have added the following extra features:
 		- for loops
 		- break and continue statement
