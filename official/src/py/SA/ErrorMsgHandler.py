@@ -79,7 +79,7 @@ class ErrorMsgHandler:
 
 	@staticmethod
 	def functionBeforeInit(node):
-		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' called before initialisation.", node)
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' called before initialization.", node)
 
 	@staticmethod
 	def mainDoesntExist():

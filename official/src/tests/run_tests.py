@@ -263,7 +263,7 @@ def test_existences():
 		determineExPrefix(ExType.error, (2,1)) + "Variable 'a' referenced before declaration.",
 		determineExPrefix(ExType.error, (4,1)) + "Function 'getCookies' called before declaration.",
 		determineExPrefix(ExType.error, (11,25)) + "Variable 'tedt' referenced before declaration.",
-		determineExPrefix(ExType.error, (4,9)) + "Function 'test' called before initialisation.",
+		determineExPrefix(ExType.error, (4,9)) + "Function 'test' called before initialization.",
 		determineExPrefix(ExType.error, (9,0)) + "Function 'testing' has already been initialized."
 	]
 	for i in range(len(errorFiles)):
