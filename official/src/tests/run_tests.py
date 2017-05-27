@@ -172,7 +172,7 @@ def test_function_calls():
 	parse("function_calls.c", "function_calls.dot", "function_calls.p")
 
 def test_printf():
-	parse("printf.c", "printf.dot", "printf.p", translate=False)
+	parse("printf.c", "printf.dot", "printf.p")
 
 def test_return_types1():
 	parse("return_types1.c", "return_types1.dot", "return_types1.p")
@@ -181,7 +181,7 @@ def test_return_types2():
 	parse("return_types2.c", "return_types2.dot", "return_types2.p")
 
 def test_scanf():
-	parse("scanf.c", "scanf.dot", "scanf.p", translate=False)
+	parse("scanf.c", "scanf.dot", "scanf.p")
 
 
 # ===============================
@@ -221,7 +221,7 @@ def test_brackets():
 	parse("brackets.c", "brackets.dot", "brackets.p")
 
 def test_includes():
-	parse("includes.c", "includes.dot", "includes.p", translate=False)
+	parse("includes.c", "includes.dot", "includes.p")
 
 def test_mainFunction():
 	parse("mainFunction.c", "mainFunction.dot", "mainFunction.p")
