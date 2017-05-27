@@ -174,7 +174,6 @@ class PTranslator:
 
         elif node.type == ASTNodeType.FunctionBody:
             self.parseChildrenFirst(node, nodeLevel)
-
             if node.parent.children[0].value.type == ASTNodeType.Void:
                 self.programText += "retp\n"
             else:
@@ -308,7 +307,6 @@ class PTranslator:
 
                 # Conversion between int to address if necessary
                 typeRhs = TypeDeductor.deductType(node.children[1], self.symbolTableBuilder.symbolTable)
-                print(str(myType))
                 if typeRhs.getPString() == 'i' and myType.getPString() == 'a':
                     self.programText += "conv i a\n"
 
@@ -371,6 +369,12 @@ class PTranslator:
                 self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
 
+
+        elif node.type == ASTNodeType.Negate:
+            myType = TypeDeductor.deductType(node.children[0], self.symbolTableBuilder.symbolTable)
+            self.addChildrenToFringe(node, nodeLevel, True)
+            self.parseMultipleExpressions(len(node.children))
+            self.programText += "neg " + myType.getPString() + "\n"
 
         #################################
         # Values                        #

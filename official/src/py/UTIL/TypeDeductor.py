@@ -59,6 +59,11 @@ class TypeDeductor:
 			node.type == ASTNodeType.Brackets or \
 			node.type == ASTNodeType.NegateBrackets:
 			return TypeDeductor.deductType(node.children[0], symbolTable)
+		elif node.type == ASTNodeType.Negate:
+			childType = TypeDeductor.deductType(node.children[0], symbolTable)
+			if not(childType == IntType() or childType == FloatType()):
+				ErrorMsgHandler.negateInvalid(node, childType)
+			return childType
 		else:
 			raise Exception("Could not deduct type of node '" + str(node.type.name) + "'.")
 

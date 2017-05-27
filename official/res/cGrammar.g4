@@ -39,6 +39,7 @@ statements :
 statement
 	: expression ';'
 	| declaration ';'
+	| assignment ';'
 	| ifelse
 	| while_loop
 	| for_loop
@@ -49,13 +50,13 @@ statement
 	| printf ';'
 	;
 
+
 break_stmt : 'break';
 continue_stmt : 'continue';
 return_stmt : RETURN expression?;
 
 expression :	// TODO add brackets
-	lvalue OPERATOR_AS add_sub
-	| add_sub
+	add_sub
 	| condition
 	| rvalue;
 
@@ -168,12 +169,10 @@ first_stmt_for :
 
 second_stmt_for :
 	expression
-	| declaration
 	| ;
 
 third_stmt_for :
-	expression
-	| declaration
+	assignment
 	| ;
 
 //////////////////////////////////////////////////////////
@@ -253,7 +252,10 @@ rvalue
 	| functioncall
 	| arrayelement_rvalue
 	| address_value
-	| pointer_dereference;
+	| rvalue_identifier
+	| pointer_dereference
+	| OPERATOR_MINUS rvalue
+	| LBRACKET rvalue RBRACKET;
 
 
 arrayelement_rvalue : arrayelement;
@@ -267,8 +269,8 @@ arrayelement :
 charvalue : CHARVALUE;
 numericalvalue : floatvalue | intvalue;
 
-intvalue : OPERATOR_MINUS? DIGIT DIGIT*;
-floatvalue : OPERATOR_MINUS? digits? '.' digits;
+intvalue : DIGIT DIGIT*;
+floatvalue : digits? '.' digits;
 
 
 //////////////////////////////////////////////////////////

@@ -182,4 +182,8 @@ class ErrorMsgHandler:
 			+ requiredType.getStrType() + "' reference required, argument #" + str(index) + ").", \
 			node)
 
+	@staticmethod
+	def negateInvalid(node, givenType):
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "Cannot negate '" + givenType.getStrType() + "' (only 'int' and 'float' allowed).", node)
+
 
