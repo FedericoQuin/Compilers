@@ -148,6 +148,9 @@ def test_arrays():
 def test_global_vars():
 	parse("global_vars.c", "global_vars.dot", "global_vars.p")
 
+def test_advanced_global_var():
+	parse("advanced_global_var.c", "advanced_global_var.dot", "advanced_global_var.p")
+
 def test_includes():
 	parse("includes.c", "includes.dot", "includes.p", translate=False)
 
