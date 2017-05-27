@@ -116,11 +116,9 @@ class ASTCreator(cGrammarListener):
 	def enterRvalue(self, ctx):
 		if ctx.OPERATOR_MINUS() != None:
 			self.AST.addNegate(ctx)
-		elif ctx.LBRACKET() != None:
-			self.AST.makeBrackets(ctx)
 
 	def exitRvalue(self, ctx):
-		if ctx.OPERATOR_MINUS() != None or ctx.LBRACKET() != None:
+		if ctx.OPERATOR_MINUS() != None:
 			self.AST.climbTree()
 
 	# TODO were these really necessary?
@@ -136,6 +134,14 @@ class ASTCreator(cGrammarListener):
 	# Operator stuff								#
 	#################################################
 
+
+	def enterMinus_expr(self, ctx):
+		if ctx.OPERATOR_MINUS() != None:
+			self.AST.addNegate(ctx)
+		
+	def exitMinus_expr(self, ctx):
+		if ctx.OPERATOR_MINUS() != None:
+			self.AST.climbTree()
 
 	def enterAssigment(self, ctx):
 		self.AST.enterAssignment(ctx)

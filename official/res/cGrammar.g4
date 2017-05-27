@@ -72,6 +72,10 @@ mul_div :
 	| mul_div OPERATOR_DIV mul_div
 	| rvalue_identifier
 	| rvalue
+	| minus_expr;
+
+minus_expr:
+	OPERATOR_MINUS expression
 	| bracket_expression;
 
 bracket_expression :
@@ -254,8 +258,7 @@ rvalue
 	| address_value
 	| rvalue_identifier
 	| pointer_dereference
-	| OPERATOR_MINUS rvalue
-	| LBRACKET rvalue RBRACKET;
+	| OPERATOR_MINUS rvalue; // Here in order to give priority to rvalue with a minus operator, instead of whole expressions
 
 
 arrayelement_rvalue : arrayelement;
