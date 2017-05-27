@@ -23,3 +23,11 @@ class ExistenceChecker:
 			# Is the function initialized yet?
 			elif self.symbolTable.lookupSymbol(node.value).type.initialized == False:
 				ErrorMsgHandler.functionBeforeInit(node)
+
+
+	@staticmethod
+	def checkMainExistence(nodeList):
+		for (node, nodeLevel) in nodeList:
+			if node.type == ASTNodeType.Function and node.value == "main":
+				return
+		ErrorMsgHandler.mainDoesntExist()

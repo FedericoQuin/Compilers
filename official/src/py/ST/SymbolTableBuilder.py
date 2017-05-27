@@ -4,27 +4,11 @@ from src.py.UTIL.VarTypes import *
 from src.py.SA.ErrorMsgHandler import ErrorMsgHandler
 
 class SymbolTableBuilder:
-	def __init__(self, symbolTable, filename="", printDescription=False):
+	def __init__(self, symbolTable):
 		self.currentLevel = 0
 		self.levelList = []
-		self.filename = filename
 		self.symbolTable = symbolTable
 
-		if (self.filename != ""):
-			symbolTableFile = open(self.filename, 'w')
-			symbolTableFile.write("\n")
-			# Add a general description of the output to the filename
-			if (printDescription == True):
-				symbolTableFile.write("The output of the SymbolTable is as follows:\n")
-				symbolTableFile.write(""""Scope_of_SymbolTable {entry, entry, ...}" with\n""")
-				symbolTableFile.write("\t* Scope_of_SymbolTable = The scope that is shown at that line (either GLOBAL or some LOCAL scope).\n")
-				symbolTableFile.write("\t* entry = A mapping of a symbol to a tuple consisting of the type and the starting address of the symbol in question.\n")
-				symbolTableFile.write("\t\tFor example: 'someInt' -> ('int', 0)\n")
-				symbolTableFile.write("\tNote: Functions don't have a starting address in memory, so their address is None.\n\n")
-				symbolTableFile.write("The SymbolTable is saved at the initial construction (when still empty), at every point just before some local tables are deleted, and at the end of the AST walkthrough.\n")
-				symbolTableFile.write("\n\n")
-			symbolTableFile.write(str(self.symbolTable) + "\n\n")
-			symbolTableFile.close()
 
 	def processNode(self, node, nodeLevel):
 		# If the node we are visiting now is on the same/higher level than the current working scope -> leave the scope/multiple scopes
@@ -64,13 +48,9 @@ class SymbolTableBuilder:
 
 
 	def buildSymbolTable(self, nodes):
-		self.saveSymbolTable('a')
-
 		for (node, nodeLevel) in nodes:
 			self.processNode(node, nodeLevel)
 			
-
-		self.saveSymbolTable('a')
 		return self.symbolTable
 
 	
@@ -172,7 +152,6 @@ class SymbolTableBuilder:
 		"""
 			Leaves one or more scopes according the the depth level of the current node.
 		"""
-		self.saveSymbolTable('a')
 		currentDepth = len(self.levelList)
 		indexToSlice = self.getLevelSliceIndex(nodeLevel)
 
@@ -226,16 +205,6 @@ class SymbolTableBuilder:
 			if possibleDecl != None:
 				functionType.addDeclaredVariable(possibleDecl)
 		
-
-	def saveSymbolTable(self, mode):
-		"""
-			Saves the symbol tables (if a filename was given with the constructor).
-		"""
-		if (self.filename == ""):
-			return
-		symbolTableFile = open(self.filename, mode)
-		symbolTableFile.write(str(self.symbolTable) + "\n\n")
-		symbolTableFile.close()
 
 
 def mapToPrimitiveType(node):
