@@ -135,10 +135,11 @@ class AST:
 
 
 	def addDereference(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Dereference, self.getPosition(ctx), "*")
-		# if self.currentPointer.type == ASTNodeType.Dereference:
-		# 	self.currentPointer.value += "*"
-		# else:
+		value = "*"
+		if type(ctx.OPERATOR_MUL()) is list:
+			value = "".join(["*" for i in range(len(ctx.OPERATOR_MUL()))])
+
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Dereference, self.getPosition(ctx), value)
 
 	#====================================================================
 	#= 					Assignments and Expressions						=
@@ -449,4 +450,3 @@ class AST:
 	def getPosition(self, ctx):
 		firstToken = self.tokenStream.get(ctx.getSourceInterval()[0])
 		return (firstToken.line, firstToken.column)
-		# print("Testing: " + str(tmp.line) + ", " + str(tmp.column))

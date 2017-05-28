@@ -144,11 +144,11 @@ class ASTCreator(cGrammarListener):
 			self.AST.climbTree()
 
 	def enterDereference_expr(self, ctx):
-		if ctx.OPERATOR_MUL() != None:
+		if len(ctx.OPERATOR_MUL()) != 0:
 			self.AST.addDereference(ctx)
 
 	def exitDereference_expr(self, ctx):
-		if ctx.OPERATOR_MUL() != None:
+		if len(ctx.OPERATOR_MUL()) != 0:
 			self.AST.climbTree()
 
 	def enterAssigment(self, ctx):
@@ -174,10 +174,12 @@ class ASTCreator(cGrammarListener):
 			self.AST.climbTree()
 
 	def enterBracket_expression(self, ctx:cGrammarParser.Bracket_expressionContext):
-		self.AST.makeBrackets(ctx)
+		if ctx.LBRACKET() != None:
+			self.AST.makeBrackets(ctx)
 
 	def exitBracket_expression(self, ctx:cGrammarParser.Bracket_expressionContext):
-		self.AST.climbTree()
+		if ctx.LBRACKET() != None:
+			self.AST.climbTree()
 
 
 
@@ -402,21 +404,13 @@ class ASTCreator(cGrammarListener):
 
 	def enterPointer_dereference(self, ctx:cGrammarParser.Pointer_dereferenceContext):
 		# Don't add a node if this one is just adding brackets
-		if ctx.OPERATOR_MUL() != None:
+		if len(ctx.OPERATOR_MUL()) != 0:
 			self.AST.addDereference(ctx)
 
 	def exitPointer_dereference(self, ctx:cGrammarParser.Pointer_dereferenceContext):
-		if ctx.OPERATOR_MUL() != None:
+		if len(ctx.OPERATOR_MUL()) != 0:
 			self.AST.climbTree()
 
-
-	# def enterDereference_bracket(self, ctx:cGrammarParser.Dereference_bracketContext):
-	# 	# TODO might not be necessary, since those brackets don't really add priority (only the one from the expression itself)
-	# 	# 	 	--> would also simplify the deref (keep in one node instead of serveral)
-	# 	self.AST.makeBrackets(ctx)
-
-	# def exitDereference_bracket(self, ctx:cGrammarParser.Dereference_bracketContext):
-	# 	self.AST.climbTree()
 
 
 
