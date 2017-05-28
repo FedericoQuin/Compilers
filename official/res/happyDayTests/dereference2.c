@@ -5,17 +5,19 @@ int main() {
 
 	int**** b = a;
 
-	*(**(b) + 1) = 5;
-
-	int* var1;
-	int* var2;
+	int var1 = 10;
+	int var2 = 5;
+	int* var1_p = &var1;
+	int* var2_p = &var2;
 
 	float array[20];
-	*var1 = 5;
-	*var2 = 10;
+	*var1_p = 5;
+	*var2_p = 10;
 
 	float* arrayPtr = array;
 
-	*(arrayPtr + *(var1) + *(var2)) = 2.00;
-
+	int temp = 5;
+	*(arrayPtr + temp) = 2.73;
+	*(arrayPtr + *(var1_p) + *(var2_p)) = 2.001;
+	return *var2_p;
 }

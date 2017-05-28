@@ -13,10 +13,10 @@ Main structure:
 	The output (AST in dot format, p program if not provided as argument) of a (correct) c-file will appear in the ./data folder.
 
 Output:
-	Currently, there are 2 output files which are generated: output.dot, program.p.
+	Currently, there are 2 output files which are generated: 'output.dot' and 'program.p'.
 	
-	output.dot contains the decorated AST of the compiled c program.
-	program.p contains the translated c program to p code.
+	> output.dot contains the decorated AST of the compiled c program.
+	> program.p contains the translated c program to p code.
 
 Test structure:
 	NOTE: in order to run the tests, 'pytest' needs to be installed.

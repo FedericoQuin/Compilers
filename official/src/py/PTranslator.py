@@ -304,7 +304,6 @@ class PTranslator:
 
                 # Set the value of the rhs
                 self.parseExpression()
-
                 # Conversion between int to address if necessary
                 typeRhs = TypeDeductor.deductType(node.children[1], self.symbolTableBuilder.symbolTable)
                 if typeRhs.getPString() == 'i' and myType.getPString() == 'a':

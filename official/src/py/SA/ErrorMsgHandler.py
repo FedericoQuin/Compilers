@@ -95,7 +95,7 @@ class ErrorMsgHandler:
 	# VarTypes exceptions
 	# ===================
 	@staticmethod
-	def extensiveDerefencing():
+	def extensiveDereferencing():
 		# TODO this has been one of the worst method namings... ever... in like... the history of all method namings.
 		ErrorMsgHandler.throwErrorMessage(ExType.error, "Cannot dereference variable more times than its pointer count.")
 

@@ -81,6 +81,7 @@ minus_expr:
 
 dereference_expr:
 	OPERATOR_MUL+ dereference_expr
+	| OPERATOR_MUL+ rvalue
 	| bracket_expression;
 
 bracket_expression :

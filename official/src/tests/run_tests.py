@@ -109,6 +109,9 @@ def test_advanced_pointers3():
 def test_dereference1():
 	parse("dereference1.c", "dereference1.dot", "dereference1.p")
 
+def test_dereference2():
+	parse("dereference2.c", "dereference2.dot", "dereference2.p")
+
 def test_pointer():
 	parse("pointer.c", "pointer.dot", "pointer.p")
 
@@ -232,9 +235,6 @@ def test_redefining_symbols():
 	
 	
 	
-# TODO unlock this task when 'advanced' dereferencing is finished
-# def test_dereference2():
-# 	parse("dereference2.c", "dereference2.dot", "dereference2.p")
 
 def test_by_reference():
 	parse("by_reference.c", "by_reference.dot", "by_reference.p")
@@ -390,12 +390,10 @@ def test_derefences():
 		"dereference2.c",
 		"dereference3.c",
 		"dereference4.c",
-		"dereference5.c"
 	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (5,5)) + "Cannot dereference variable 'a' 4 times (only 3 times allowed).",
 		determineExPrefix(ExType.error, (8,1)) + "Types for assignment don't match ('int' and 'float').",
-		determineExPrefix(ExType.error, (5,1)) + "Cannot dereference more than 1 variable.",
 		determineExPrefix(ExType.error, (5,3)) + "Types for operation 'Addition' don't match ('int*' and 'char').",
 		determineExPrefix(ExType.error, (4,2)) + "Cannot dereference non-pointer variable 'a'."
 	]
