@@ -74,46 +74,71 @@ class TypeDeductor:
 			Checks the validity of dereferencing.
 			Returns the type after dereferencing.
 		"""
+
+		def getPtrCount(node, originalNode, stopAtExpressionOperator = False):
+			operations = [ASTNodeType.Negate, ASTNodeType.Addition, ASTNodeType.Subtraction, \
+				ASTNodeType.Mul, ASTNodeType.Div, ASTNodeType.Or, ASTNodeType.And, ASTNodeType.Not, \
+				ASTNodeType.Equals, ASTNodeType.NotEquals, ASTNodeType.Greater, ASTNodeType.GreaterOrEqual, \
+				ASTNodeType.Less, ASTNodeType.LessOrEqual]
+			count = 0
+			while node != originalNode:
+				node = node.parent
+				if node.type == ASTNodeType.Dereference:
+					count += node.value.count("*")
+				elif node.type in operations and stopAtExpressionOperator == True:
+					return count
+			return count
+
 		queue = [node]
-		derefNode = None
-		derefCount = 0
+		derefType = None
+		typeDerefCount = 0
+
 
 		while len(queue) != 0:
 			currentNode = queue.pop()
 			[queue.append(i) for i in currentNode.children]
 
 			if currentNode.type == ASTNodeType.Dereference:
-				derefCount += len(currentNode.value)
-			elif currentNode.type == ASTNodeType.RValueID:
-				if derefNode != None:
-					ErrorMsgHandler.derefMultipleVars(node)
-				derefNode = currentNode
-			elif currentNode.type == ASTNodeType.RValueArrayElement:
-				if derefNode != None:
-					ErrorMsgHandler.derefMultipleVars(node)
-				derefNode = currentNode
+				pass
+			elif currentNode.type == ASTNodeType.RValueID or currentNode.type == ASTNodeType.RValueArrayElement:
+				newType = TypeDeductor.deductType(currentNode, symbolTable)
+				if type(newType) is ArrayType:
+					newType = newType.addressOf()
+				elif type(newType) is ReferenceType:
+					newType = newType.referencedType
+
+				totalCount = getPtrCount(currentNode, node)
+				partialCount = getPtrCount(currentNode, node, True)
+
+				if partialCount == 0:
+					# TODO add check for int values
+					pass
+				elif type(newType) != PointerType:
+					ErrorMsgHandler.derefNonPointer(currentNode)
+				elif newType.ptrCount == 0:
+					ErrorMsgHandler.derefNonPointer(currentNode)
+				elif newType.ptrCount < partialCount:
+					ErrorMsgHandler.overDereferencing(currentNode, newType.ptrCount, partialCount)
+				
+				if typeDerefCount < totalCount and newType.ptrCount >= totalCount:
+					typeDerefCount = totalCount
+					derefType = newType.dereference(totalCount)
+				elif typeDerefCount < partialCount and newType.ptrCount >= partialCount:
+					typeDerefCount = partialCount
+					derefType = newType.dereference(partialCount)					
+				elif derefType != None and newType.ptrCount > derefType.ptrCount:
+					derefType = newType.dereference(typeDerefCount)
+
 			else:
 				# All other nodes are part of an expression
 				rType = type(TypeDeductor.deductType(currentNode, symbolTable))
 				if not(rType is IntType) and not(rType is PointerType):
 					ErrorMsgHandler.derefInvalidExpression(node)
+
 		
-
-		rvalueIdType = symbolTable.lookupSymbol(derefNode.value).type
-		if type(rvalueIdType) is ArrayType:
-			rvalueIdType = rvalueIdType.addressOf()
-		elif type(rvalueIdType) is ReferenceType:
-			rvalueIdType = rvalueIdType.referencedType
-
-			
-		if not(type(rvalueIdType) is PointerType):
-			ErrorMsgHandler.derefNonPointer(derefNode)
-		if derefCount > rvalueIdType.ptrCount:
-			if rvalueIdType.ptrCount == 0:
-				ErrorMsgHandler.derefNonPointer(derefNode)
-			ErrorMsgHandler.overDereferencing(derefNode, rvalueIdType.ptrCount, derefCount)
-
-		return rvalueIdType.dereference(derefCount)
+		if derefType == None:
+			print("whyyyyyy")
+		return derefType
 
 
 	@staticmethod

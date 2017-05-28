@@ -135,15 +135,11 @@ class AST:
 
 
 	def addDereference(self, ctx):
-		# Don't add a node if this one is just adding brackets
-		if ctx.dereference_bracket() != None:
-			return
-		
-		if self.currentPointer.type == ASTNodeType.Dereference:
-			self.currentPointer.value += "".join([ "*" for i in range(len(ctx.OPERATOR_MUL())) ])
-		else:
-			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Dereference, self.getPosition(ctx),\
-				"".join(["*" for i in range(len(ctx.OPERATOR_MUL()))]))
+		value = "*"
+		if type(ctx.OPERATOR_MUL()) is list:
+			value = "".join(["*" for i in range(len(ctx.OPERATOR_MUL()))])
+
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Dereference, self.getPosition(ctx), value)
 
 	#====================================================================
 	#= 					Assignments and Expressions						=
@@ -454,4 +450,3 @@ class AST:
 	def getPosition(self, ctx):
 		firstToken = self.tokenStream.get(ctx.getSourceInterval()[0])
 		return (firstToken.line, firstToken.column)
-		# print("Testing: " + str(tmp.line) + ", " + str(tmp.column))

@@ -304,7 +304,6 @@ class PTranslator:
 
                 # Set the value of the rhs
                 self.parseExpression()
-
                 # Conversion between int to address if necessary
                 typeRhs = TypeDeductor.deductType(node.children[1], self.symbolTableBuilder.symbolTable)
                 if typeRhs.getPString() == 'i' and myType.getPString() == 'a':
@@ -469,7 +468,7 @@ class PTranslator:
             for i in range(len(node.value) - 1):
                 self.programText += "ind a\n"
 
-            self.programText += "ind " + myType.type.getPString() + "\n"
+            self.programText += "ind " + myType.getPString() + "\n"
 
         elif node.type == ASTNodeType.ArrayDecl:
             del self.fringe[0]

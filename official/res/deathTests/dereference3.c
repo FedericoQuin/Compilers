@@ -1,6 +1,6 @@
 
 int main() {
-	int* a;
-	int* b;
-	*(a+1+b) = 1;
+	int* a = 0;
+
+	*(a + 'a') = 2;
 }

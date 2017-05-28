@@ -60,6 +60,7 @@ expression :	// TODO add brackets
 	| condition
 	| rvalue;
 
+
 add_sub :
 	add_sub OPERATOR_PLUS add_sub
 	| add_sub OPERATOR_MINUS add_sub
@@ -75,7 +76,12 @@ mul_div :
 	| minus_expr;
 
 minus_expr:
-	OPERATOR_MINUS expression
+	OPERATOR_MINUS minus_expr
+	| dereference_expr;
+
+dereference_expr:
+	OPERATOR_MUL+ dereference_expr
+	| OPERATOR_MUL+ rvalue
 	| bracket_expression;
 
 bracket_expression :
@@ -257,7 +263,6 @@ rvalue
 	| arrayelement_rvalue
 	| address_value
 	| rvalue_identifier
-	| pointer_dereference
 	| OPERATOR_MINUS rvalue; // Here in order to give priority to rvalue with a minus operator, instead of whole expressions
 
 
@@ -285,7 +290,6 @@ address_value :
 
 pointer_dereference : 
 	dereference_bracket
-	| OPERATOR_MUL+ pointer_dereference
 	| OPERATOR_MUL+ expression;
 
 
