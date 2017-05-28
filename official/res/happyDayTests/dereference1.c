@@ -6,11 +6,14 @@ int main() {
 
 	*(b+1) = 20;
 
-	int*** c = 0;
+	int* p1 = b + 1;
+	int**p2 = &p1;
+	int*** p3 = &p2;
+
 	// Who would even write code like this
-	(*(*((*c)))) = 5;
+	(*(*((*p3)))) = 6;
 
-	**(*c) = 39;
+	int d = ***p3;
 
-	int d = ***c;
+	return d;
 }

@@ -7,23 +7,30 @@ Main structure:
 	To build the project, use the following command: make build.
 	This will provide a file named c2p.py.
 
-	To compile a c-file, use the following command: python3 c2p.py <cfile>
+	To compile a c-file, use the following command: python3 c2p.py <cfile> <pfile>
 	Where <cfile> is the relative path to the c-file you wish to compile.
-	The output of a (correct) c-file will appear in the ./data folder.
+		  <pfile> is the relative path to where you want the translated program (uses 'data/program.p' by default if not provided).
+	The output (AST in dot format, p program if not provided as argument) of a (correct) c-file will appear in the ./data folder.
 
 Output:
-	Currently, there are 3 output files which are generated: output.dot, program.p and symbolTable.txt.
+	Currently, there are 2 output files which are generated: output.dot, program.p.
+	
 	output.dot contains the decorated AST of the compiled c program.
-	program.p is currently empty, in the future it will contain the translation of the c code to p code.
-	symbolTable.txt contains the symbol table of the c program. More info can be founf in the file itself.
+	program.p contains the translated c program to p code.
 
 Test structure:
+	NOTE: in order to run the tests, 'pytest' needs to be installed.
+
 	To run the tests, you must use the following command: make test.
-	The tests that are currently being can be found in src/tests.
-	The files these tests manipulate are found in res/test and res/solutions.
-	Which functionality is being tested should be clear by the name of the c files in res/test.
+	The tests that are currently being run can be found in 'src/tests/run_tests.py'.
+	The files these tests use as validation are found in 'res/solutions'.
+	The input file that corresponds to the solution can be found in 'res/happyDayTests'.
+	Which functionality is being tested should be clear by the name of the provided c files.
+
+	Running all the tests will run succesful tests, as well as death tests. 
+	The death tests can be found in 'res/deathTests'. They require no solution files compared to the files in 'res/happyDayTests'.
 
 Extra features:
-	Currently, we have added the following extra features:
+	We have added the following extra features:
 		- for loops
 		- break and continue statement

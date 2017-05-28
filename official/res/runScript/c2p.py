@@ -15,7 +15,10 @@ def translateProgram(argv):
 	
 	cFilename = argv[1]
 
-	runCompiler(cFilename, pFilename)
-
+	try:
+		runCompiler(cFilename, pFilename)
+	except Exception as inst:
+		print(inst)
+		
 if __name__ == "__main__":
 	translateProgram(sys.argv)

@@ -104,14 +104,14 @@ class AST:
 		self.currentPointer.addChild(ASTNodeType.RValueChar, self.getPosition(ctx), ctx.CHARVALUE())
 
 	def setIntValueNode(self, ctx):
-		self.currentPointer.value = int(("" if ctx.OPERATOR_MINUS() == None else "-") + getStringOfArray(ctx.DIGIT()))
+		self.currentPointer.value = int(getStringOfArray(ctx.DIGIT()))
 
 	def setFloatValueNode(self, ctx):
 		floatString = ""
 		if len(ctx.digits()) == 1:
-			floatString = ("" if ctx.OPERATOR_MINUS() == None else "-") + "0." + getStringOfArray(ctx.digits(0).DIGIT())
+			floatString = "0." + getStringOfArray(ctx.digits(0).DIGIT())
 		elif len(ctx.digits()) == 2:
-			floatString = ("" if ctx.OPERATOR_MINUS() == None else "-") + \
+			floatString = \
 				getStringOfArray(ctx.digits(0).DIGIT()) + \
 				"." + \
 				getStringOfArray(ctx.digits(1).DIGIT())
@@ -120,6 +120,9 @@ class AST:
 
 	def addFunctionCall(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.FunctionCall, self.getPosition(ctx), str(ctx.ID()))
+
+	def addNegate(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Negate, self.getPosition(ctx))
 
 
 
@@ -148,18 +151,6 @@ class AST:
 
 	def addAssignment(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Assignment, self.getPosition(ctx))
-
-	def enterExpression(self, ctx):
-		if ctx.OPERATOR_AS() != None:
-			self.addAssignment(ctx)
-		elif ctx.postfix_inc() != None:
-			self.currentPointer.addChild(ASTNodeType.PostfixIncr, self.getPosition(ctx), str(ctx.ID()))
-		elif ctx.prefix_inc() != None:
-			self.currentPointer.addChild(ASTNodeType.PrefixIncr, self.getPosition(ctx), str(ctx.ID()))
-		elif ctx.postfix_dec() != None:
-			self.currentPointer.addChild(ASTNodeType.PostfixDecr, self.getPosition(ctx), str(ctx.ID()))
-		elif ctx.prefix_dec() != None:
-			self.currentPointer.addChild(ASTNodeType.PrefixDecr, self.getPosition(ctx), str(ctx.ID()))
 
 	def enterAddSub(self, ctx):
 		if ctx.OPERATOR_PLUS() != None:

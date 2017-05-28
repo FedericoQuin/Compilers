@@ -39,6 +39,7 @@ statements :
 statement
 	: expression ';'
 	| declaration ';'
+	| assignment ';'
 	| ifelse
 	| while_loop
 	| for_loop
@@ -49,17 +50,13 @@ statement
 	| printf ';'
 	;
 
+
 break_stmt : 'break';
 continue_stmt : 'continue';
 return_stmt : RETURN expression?;
 
 expression :	// TODO add brackets
-	lvalue OPERATOR_AS add_sub
-	| add_sub
-	| ID postfix_inc
-	| ID postfix_dec
-	| prefix_inc ID		// NOTE: the prefix operators don't work for some mysterious reason
-	| prefix_dec ID
+	add_sub
 	| condition
 	| rvalue;
 
@@ -75,6 +72,10 @@ mul_div :
 	| mul_div OPERATOR_DIV mul_div
 	| rvalue_identifier
 	| rvalue
+	| minus_expr;
+
+minus_expr:
+	OPERATOR_MINUS expression
 	| bracket_expression;
 
 bracket_expression :
@@ -172,19 +173,17 @@ first_stmt_for :
 
 second_stmt_for :
 	expression
-	| declaration
 	| ;
 
 third_stmt_for :
-	expression
-	| declaration
+	assignment
 	| ;
 
 //////////////////////////////////////////////////////////
 // Scanf and Printf										//
 //////////////////////////////////////////////////////////
 
-scanf : 'scanf' '(' format_string call_arguments ')';
+scanf : 'scanf' '(' format_string scanf_call_arguments ')';
 printf : 'printf' '(' format_string call_arguments ')';
 
 // Not sure how to go about this in a decent manner
@@ -209,6 +208,9 @@ call_arguments :
 call_argument :
 	expression;
 
+scanf_call_arguments :
+	',' lvalue scanf_call_arguments
+	|;
 
 
 //////////////////////////////////////////////////////////
@@ -254,7 +256,9 @@ rvalue
 	| functioncall
 	| arrayelement_rvalue
 	| address_value
-	| pointer_dereference;
+	| rvalue_identifier
+	| pointer_dereference
+	| OPERATOR_MINUS rvalue; // Here in order to give priority to rvalue with a minus operator, instead of whole expressions
 
 
 arrayelement_rvalue : arrayelement;
@@ -268,8 +272,8 @@ arrayelement :
 charvalue : CHARVALUE;
 numericalvalue : floatvalue | intvalue;
 
-intvalue : OPERATOR_MINUS? DIGIT DIGIT*;
-floatvalue : OPERATOR_MINUS? digits? '.' digits;
+intvalue : DIGIT DIGIT*;
+floatvalue : digits? '.' digits;
 
 
 //////////////////////////////////////////////////////////
@@ -304,17 +308,6 @@ dec_type :
 	| INT ptr;
 
 
-prefix_inc:
-	OPERATOR_INCR;
-postfix_inc:
-	OPERATOR_INCR;
-prefix_dec:
-	OPERATOR_DECR;
-postfix_dec:
-	OPERATOR_DECR;
-
-
-
 //////////////////////////////////////////////////////////
 // Lexer Rules											//
 //////////////////////////////////////////////////////////
@@ -335,8 +328,6 @@ RETURN : 'return';
 
 
 OPERATOR_AS : '=';
-OPERATOR_INCR : '++';
-OPERATOR_DECR : '--';
 OPERATOR_PLUS : '+';
 OPERATOR_MINUS : '-';
 OPERATOR_DIV : '/';

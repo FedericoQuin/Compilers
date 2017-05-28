@@ -39,8 +39,8 @@ class ExType(Enum):
 
 def determineExPrefix(exType, position):
 	return exType.getColor() + \
-		("" if position == None else "(" + ",".join([str(i) for i in position]) + ")") + \
-		" " + str(exType) + str(AnsiEscapeCodes.Clean)
+		("" if position == None else "(" + ",".join([str(i) for i in position]) + ") ") + \
+		str(exType) + str(AnsiEscapeCodes.Clean)
 
 
 
@@ -79,7 +79,16 @@ class ErrorMsgHandler:
 
 	@staticmethod
 	def functionBeforeInit(node):
-		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' called before initialisation.", node)
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "Function '" + str(node.value) + "' called before initialization.", node)
+
+	@staticmethod
+	def mainDoesntExist():
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "The program does not contain a 'main' function.")
+
+	@staticmethod
+	def undefinedFunction(node, functionName, hint=""):
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "'" + functionName + "' was not declared in this scope" + \
+			("" if hint == "" else " (try including header '" + hint + "')") + ".", node)
 
 
 	# ===================
@@ -177,5 +186,9 @@ class ErrorMsgHandler:
 			"Argument for function call '" + str(node.value) + "' is not a valid reference argument ('" \
 			+ requiredType.getStrType() + "' reference required, argument #" + str(index) + ").", \
 			node)
+
+	@staticmethod
+	def negateInvalid(node, givenType):
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "Cannot negate '" + givenType.getStrType() + "' (only 'int' and 'float' allowed).", node)
 
 

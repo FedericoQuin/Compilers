@@ -11,21 +11,32 @@
    \vspace*{\stretch{2.0}}
 \end{titlepage}
 
-\section{Progress}
-So far, we have allowed all mandatory C constructions in our grammar and we are able to create the AST and the symbol table. We have also implemented some extras, e.g. continue and break statement and for loops. \\
-There is also a basic form of error checking. The symbol table is currently not yet fully operational though: when an identifier is encountered, it does not check whether it exists.
+\section{Result}
+We have allowed all mandatory C constructions in our grammar and we are able to create the AST and the symbol table. We have also implemented some extras, e.g. continue and break statement and for loops. \\
+There is error checking. The symbol table has been adjusted to provide the reqired functionality for the translation unit. The translation unit is also fully operational.
 
 \section{Grammar}
-Currently, the grammar we wrote supports all mandatory C constructions, and of course also the optional constructions we mentioned above. The grammar can be found in the ./res directory. We have provided some comments and we tried to make the names of nonterminals as clear as possible.
+Currently, the grammar we wrote supports all mandatory C constructions, and of course also the optional constructions we mentioned above. The grammar can be found in the \texttt{`res`} directory. We have provided some comments and we tried to make the names of nonterminals/terminals as clear as possible.
 
 \section{Sources}
-Our compiler currently consists of 5 big parts: The AST class, the ASTCreator class, the SymbolTable class, the SymbolTableBuilder class and the TypeChecker class.
-First, the AST related classes make the decorated AST. Then, the symbol table related classes make the symbol table based on this AST. Finally, the TypeChecker checks whether the types of the operands match. If anything fails, it will yield an error.
+Our compiler currently consists of 4 big parts: the processing and creation of the Abstract Syntax Tree (\texttt{ASTCreator.py}, \texttt{ASTBuilder.py}, ...), the construction of the Symbol Table (\texttt{SymbolTable.py}, \texttt{SymbolTableBuilder.py}), Syntax Analysis (\texttt{TypeChecking.py}, \texttt{ExistenceChecker.py}, ...) and the actual translation to P code (\texttt{PTranslation.py}).
+\\
+The code for the different big parts (except for p translation) is located in different subdirectories. \\
+\begin{itemize}
+	\item AST - all files related to the Abstract Syntax Tree structure, creation, etc.
+	\item ST - all files related to the Symbol Table.
+	\item SA - all files related to Syntax Analysis.
+	\item UTIL - general files such as the TypeDeductor which is used in different parts of the compiler.
+\end{itemize}
+
+\hfill \break
+Firstly, the AST related classes make the decorated AST. \\ \\
+Secondly, the symbol table related classes make the symbol table based on this AST. The symbol table is a tree like structure. It provides a seperate level for the global scope, and different sublevels for all the local scopes. \\ \\
+Thirdly, syntax analysis does its part. This involves type checking of variables (for example assignments, return types, ...) and existence checking (checking if a variable/function is referenced before assignment). If anything fails, it will yield an error with an appropriate error message and on which line plus column number the error is located. \\ \\
+\hfill \break
+Compared to the first evaluation, we now added an extra part: the translation unit. Using the resulting AST and the symbol table, the C program is translated into a P program.
 
 \section{Testing}
-For testing our compiler, we chose for pytest. We have 26 test programs, where each program tests one functionality. 
-
-\section{What we'll have to do}
-Our compiler will have to be more specific about its errors. We must also translate the AST and the symbol table to a real P program. 
+For testing our compiler, we chose for pytest. We have 42 test programs, where each program tests one encapsulated part of functionality. These tests also include several death tests.
 
 \end{document}

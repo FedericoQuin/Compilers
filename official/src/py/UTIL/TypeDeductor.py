@@ -39,9 +39,9 @@ class TypeDeductor:
 		elif node.type == ASTNodeType.FunctionCall:
 			return symbolTable.lookupSymbol(node.value).type
 		elif node.type == ASTNodeType.RValueArrayElement:
-			return symbolTable.lookupSymbol(node.value).type
+			return symbolTable.lookupSymbol(node.value).type.type
 		elif node.type == ASTNodeType.LValueArrayElement:
-			return symbolTable.lookupSymbol(node.value).type
+			return symbolTable.lookupSymbol(node.value).type.type
 		elif node.type == ASTNodeType.RValueAddress:
 			return symbolTable.lookupSymbol(node.children[0].value).type.addressOf()
 		elif node.type == ASTNodeType.Dereference:
@@ -59,6 +59,11 @@ class TypeDeductor:
 			node.type == ASTNodeType.Brackets or \
 			node.type == ASTNodeType.NegateBrackets:
 			return TypeDeductor.deductType(node.children[0], symbolTable)
+		elif node.type == ASTNodeType.Negate:
+			childType = TypeDeductor.deductType(node.children[0], symbolTable)
+			if not(childType == IntType() or childType == FloatType()):
+				ErrorMsgHandler.negateInvalid(node, childType)
+			return childType
 		else:
 			raise Exception("Could not deduct type of node '" + str(node.type.name) + "'.")
 
@@ -83,16 +88,24 @@ class TypeDeductor:
 				if derefNode != None:
 					ErrorMsgHandler.derefMultipleVars(node)
 				derefNode = currentNode
+			elif currentNode.type == ASTNodeType.RValueArrayElement:
+				if derefNode != None:
+					ErrorMsgHandler.derefMultipleVars(node)
+				derefNode = currentNode
 			else:
 				# All other nodes are part of an expression
 				rType = type(TypeDeductor.deductType(currentNode, symbolTable))
 				if not(rType is IntType) and not(rType is PointerType):
 					ErrorMsgHandler.derefInvalidExpression(node)
 		
+
 		rvalueIdType = symbolTable.lookupSymbol(derefNode.value).type
 		if type(rvalueIdType) is ArrayType:
 			rvalueIdType = rvalueIdType.addressOf()
-		
+		elif type(rvalueIdType) is ReferenceType:
+			rvalueIdType = rvalueIdType.referencedType
+
+			
 		if not(type(rvalueIdType) is PointerType):
 			ErrorMsgHandler.derefNonPointer(derefNode)
 		if derefCount > rvalueIdType.ptrCount:

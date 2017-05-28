@@ -113,6 +113,13 @@ class ASTCreator(cGrammarListener):
 	def exitFunctioncall(self, ctx:cGrammarParser.FunctioncallContext):
 		self.AST.climbTree()
 
+	def enterRvalue(self, ctx):
+		if ctx.OPERATOR_MINUS() != None:
+			self.AST.addNegate(ctx)
+
+	def exitRvalue(self, ctx):
+		if ctx.OPERATOR_MINUS() != None:
+			self.AST.climbTree()
 
 	# TODO were these really necessary?
 	# def enterLvalue_brackets(self, ctx:cGrammarParser.Lvalue_bracketsContext):
@@ -127,13 +134,20 @@ class ASTCreator(cGrammarListener):
 	# Operator stuff								#
 	#################################################
 
-	def enterExpression(self, ctx:cGrammarParser.ExpressionContext):
-		self.AST.enterExpression(ctx)
 
-	def exitExpression(self, ctx:cGrammarParser.ExpressionContext):
-		if ctx.OPERATOR_AS() != None:
+	def enterMinus_expr(self, ctx):
+		if ctx.OPERATOR_MINUS() != None:
+			self.AST.addNegate(ctx)
+		
+	def exitMinus_expr(self, ctx):
+		if ctx.OPERATOR_MINUS() != None:
 			self.AST.climbTree()
 
+	def enterAssigment(self, ctx):
+		self.AST.enterAssignment(ctx)
+
+	def exitAssignment(self, ctx):
+		self.AST.climbTree()
 
 
 	def enterAdd_sub(self, ctx:cGrammarParser.Add_subContext):
