@@ -118,7 +118,8 @@ first_false_statements : statements;
 condition :
 	condition OPERATOR_OR condition
 	| condition_and
-	| comparison;
+	| comparison
+	| rvalue;
 
 condition_and :
 	condition_and OPERATOR_AND condition_and
@@ -263,6 +264,8 @@ rvalue
 	| arrayelement_rvalue
 	| address_value
 	| rvalue_identifier
+	| true
+	| false
 	| OPERATOR_MINUS rvalue; // Here in order to give priority to rvalue with a minus operator, instead of whole expressions
 
 
@@ -309,8 +312,11 @@ returntype : dec_type | VOID;
 dec_type : 
 	CHAR ptr
 	| FLOAT ptr
-	| INT ptr;
+	| INT ptr
+	| BOOL ptr;
 
+true : TRUE;
+false : FALSE;
 
 //////////////////////////////////////////////////////////
 // Lexer Rules											//
@@ -361,6 +367,10 @@ VOID : 'void';
 CHAR : 'char';
 FLOAT : 'float';
 INT : 'int';
+BOOL: 'bool';
+
+TRUE : 'true';
+FALSE : 'false';
 
 DIGIT : [0-9];
 NOTZERODIGIT : [1-9];

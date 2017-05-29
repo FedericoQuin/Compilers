@@ -121,6 +121,19 @@ class ASTCreator(cGrammarListener):
 		if ctx.OPERATOR_MINUS() != None:
 			self.AST.climbTree()
 
+	def enterTrue(self, ctx):
+		self.AST.addTrue(ctx)
+
+	def exitTrue(self, ctx):
+		self.AST.climbTree()
+
+	def enterFalse(self, ctx):
+		self.AST.addFalse(ctx)
+
+	def exitFalse(self, ctx):
+		self.AST.climbTree()
+
+
 	# TODO were these really necessary?
 	# def enterLvalue_brackets(self, ctx:cGrammarParser.Lvalue_bracketsContext):
 	# 	self.AST.makeBrackets(ctx)

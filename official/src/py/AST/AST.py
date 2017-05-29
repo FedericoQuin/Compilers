@@ -33,6 +33,8 @@ class AST:
 			_type = ASTNodeType.FloatDecl
 		elif (ctx.dec_type().CHAR() != None):
 			_type = ASTNodeType.CharDecl
+		elif (ctx.dec_type().BOOL() != None):
+			_type = ASTNodeType.BoolDecl
 
 		ptrCount = 0
 		nextPtr = ctx.dec_type().ptr()
@@ -61,6 +63,8 @@ class AST:
 			_type = ASTNodeType.FloatDecl
 		elif (ctx.dec_type().CHAR() != None):
 			_type = ASTNodeType.CharDecl
+		elif (ctx.dec_type().BOOL() != None):
+			_type = ASTNodeType.BoolDecl
 
 		ptrCount = 0
 		nextPtr = ctx.dec_type().ptr()
@@ -124,6 +128,11 @@ class AST:
 	def addNegate(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Negate, self.getPosition(ctx))
 
+	def addTrue(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueBool, self.getPosition(ctx), True)
+
+	def addFalse(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.RValueBool, self.getPosition(ctx), False)
 
 
 	#====================================================================
@@ -345,6 +354,8 @@ class AST:
 				_type = ASTNodeType.FloatDecl
 			elif (ctx.returntype().dec_type().CHAR() != None):
 				_type = ASTNodeType.CharDecl
+			elif (ctx.returntype().dec_type().Bool() != None):
+				_type = ASTNodeType.BoolDecl
 
 			nextPtr = ctx.returntype().dec_type().ptr()
 			if nextPtr != None:
@@ -373,6 +384,8 @@ class AST:
 				_type = ASTNodeType.FloatDecl
 			elif (ctx.dec_type().CHAR() != None):
 				_type = ASTNodeType.CharDecl
+			elif (ctx.dec_type().BOOL() != None):
+				_type = ASTNodeType.BoolDecl
 
 			ptrCount = 0
 			nextPtr = ctx.dec_type().ptr()
@@ -398,6 +411,8 @@ class AST:
 			_type = ASTNodeType.FloatSignature
 		elif (ctx.dec_type().CHAR() != None):
 			_type = ASTNodeType.CharSignature
+		elif (ctx.dec_type().BOOL() != None):
+			_type = ASTNodeType.BoolSignature
 
 		ptrCount = 0
 		nextPtr = ctx.dec_type().ptr()
