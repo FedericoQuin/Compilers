@@ -134,14 +134,14 @@ def test_assignments2():
 # 			Comments
 # ===============================
 
-def test_mixedComments():	
-	parse("mixedComments.c", "mixedComments.dot", "mixedComments.p")
+def test_mixed_comments():	
+	parse("mixed_comments.c", "mixed_comments.dot", "mixed_comments.p")
 
-def test_multiLineComment():	
-	parse("multiLineComment.c", "multiLineComment.dot", "multiLineComment.p")
+def test_multiline_comment():	
+	parse("multiline_comment.c", "multiline_comment.dot", "multiline_comment.p")
 
-def test_singleLineComment():	
-	parse("singleLineComment.c", "singleLineComment.dot", "singleLineComment.p")
+def test_singleline_comment():	
+	parse("singleline_comment.c", "singleline_comment.dot", "singleline_comment.p")
 
 
 # ===============================
@@ -212,8 +212,8 @@ def test_global_vars():
 def test_minus_values():
 	parse("minus_values.c", "minus_values.dot", "minus_values.p")
 
-def test_negativeExpressions():
-	parse("negativeExpressions.c", "negativeExpressions.dot", "negativeExpressions.p")
+def test_negative_expressions():
+	parse("negative_expressions.c", "negative_expressions.dot", "negative_expressions.p")
 
 
 # ===============================
@@ -226,8 +226,8 @@ def test_brackets():
 def test_includes():
 	parse("includes.c", "includes.dot", "includes.p")
 
-def test_mainFunction():
-	parse("mainFunction.c", "mainFunction.dot", "mainFunction.p")
+def test_main_function():
+	parse("main_function.c", "main_function.dot", "main_function.p")
 
 def test_redefining_symbols():
 	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p")
