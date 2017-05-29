@@ -224,6 +224,15 @@ def test_negative_expressions():
 def test_booleans1():
 	parse("booleans1.c", "booleans1.dot", "booleans1.p")
 
+def test_booleans2():
+	parse("booleans2.c", "booleans2.dot", "booleans2.p")
+
+def test_booleans3():
+	parse("booleans3.c", "booleans3.dot", "booleans3.p")
+
+def test_booleans4():
+	parse("booleans4.c", "booleans4.dot", "booleans4.p")
+
 
 # ===============================
 # 		  Miscellaneous

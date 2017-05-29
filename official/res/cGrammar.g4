@@ -121,8 +121,8 @@ condition :
 condition_or :
 	condition_or OPERATOR_OR condition_or
 	| condition_and
-	| comparison
-	| rvalue;
+	| rvalue
+	| comparison;
 
 condition_and :
 	condition_and OPERATOR_AND condition_and
@@ -139,11 +139,9 @@ bracket_condition :
 	LBRACKET condition_or RBRACKET
 	| OPERATOR_NOT LBRACKET condition_or RBRACKET;
 
+// TODO verify this
 comparison : 
-	rvalue comparator rvalue
-	| rvalue comparator rvalue_identifier
-	| rvalue_identifier comparator rvalue
-	| rvalue_identifier comparator rvalue_identifier;
+	add_sub comparator add_sub;
 
 comparator :
 	OPERATOR_EQ

@@ -140,7 +140,7 @@ class PTranslator:
                     self.programText += "str r 0 0\n"
                 elif isinstance(returnType.type, BoolType) and returnType.ptrCount == 0:
                     self.programText += "ldc b f\n"
-                    self.programText += "str b f\n"
+                    self.programText += "str b 0 0\n"
                 elif returnType.ptrCount != 0:
                     self.programText += "ldc a 0\n"
                     self.programText += "str a 0 0\n"
@@ -209,44 +209,10 @@ class PTranslator:
                 self.parseExpression()
             else:
                 # Give a default value
-
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
                 followLinkCount = self.getFollowLinkCount(node.value)
                 self.programText += "ldc " + mapping.type.getPString() + " " + mapping.type.getDefaultValue() + "\n"
                 self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-
-
-                # if node.type.ptrCount != 0:
-                #     self.programText += "ldc a 0\n"
-
-                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
-                #     followLinkCount = self.getFollowLinkCount(node.value)
-                #     self.programText += "str a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-                # elif node.type.type == ASTNodeType.FloatDecl:
-                #     self.programText += "ldc r 0.0\n"
-
-                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
-                #     followLinkCount = self.getFollowLinkCount(node.value)
-                #     self.programText += "str r " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-                # elif node.type.type == ASTNodeType.CharDecl:
-                #     self.programText += "ldc c 'a'\n"
-
-                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
-                #     followLinkCount = self.getFollowLinkCount(node.value)
-                #     self.programText += "str c " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-                # elif node.type.type == ASTNodeType.IntDecl:
-                #     self.programText += "ldc i 0\n"
-
-                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
-                #     followLinkCount = self.getFollowLinkCount(node.value)
-                #     self.programText += "str i " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-                # elif node.type.type == ASTNodeType.IntDecl:
-                #     self.programText += "ldc i 0\n"
-
-                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
-                #     followLinkCount = self.getFollowLinkCount(node.value)
-                #     self.programText += "str i " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-
 
 
         #################################
@@ -369,7 +335,6 @@ class PTranslator:
                 typeRhs = TypeDeductor.deductType(node.children[1], self.symbolTableBuilder.symbolTable)
                 if typeRhs.getPString() == 'i' and myType.getPString() == 'a':
                     self.programText += "conv i a\n"
-
                 self.programText += "sto " + myType.getPString() + "\n"
 
             elif node.children[0].type != ASTNodeType.Dereference and not isinstance(myType, ReferenceType):
@@ -405,6 +370,10 @@ class PTranslator:
 
         elif node.type == ASTNodeType.RValueFloat:
             self.programText += "ldc r " + str(node.value) + "\n"
+            del self.fringe[0]
+
+        elif node.type == ASTNodeType.RValueBool:
+            self.programText += "ldc b " + ("t" if node.value == True else "f") + "\n"
             del self.fringe[0]
 
         elif node.type == ASTNodeType.RValueID:
@@ -1074,13 +1043,6 @@ class PTranslator:
 
         return nodeToCheck in simpleDecls
 
-        # if nodeType == ASTNodeType.IntDecl or nodeType == ASTNodeType.FloatDecl or nodeType == ASTNodeType.CharDecl or nodeType == ASTNodeType.BoolDecl:
-        #     return True
-        # elif isinstance(nodeType, pointerType) and \
-        #     (nodeType.type == ASTNodeType.IntDecl or nodeType.type == ASTNodeType.FloatDecl or nodeType.type == ASTNodeType.CharDecl or nodeType.type == ASTNodeType.BoolDecl):
-        #     return True
-        # else:
-        #     return False
 
     def isSimpleRValue(self, nodeType):
         # TODO ptr?

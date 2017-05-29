@@ -344,7 +344,7 @@ class AST:
 				_type = ASTNodeType.FloatDecl
 			elif (ctx.returntype().dec_type().CHAR() != None):
 				_type = ASTNodeType.CharDecl
-			elif (ctx.returntype().dec_type().Bool() != None):
+			elif (ctx.returntype().dec_type().BOOL() != None):
 				_type = ASTNodeType.BoolDecl
 
 			nextPtr = ctx.returntype().dec_type().ptr()

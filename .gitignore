@@ -55,8 +55,10 @@ official/c2p.py
 symbolTable.txt
 
 # Don't exclude test solutions
-!/solutions/*
-!/solutions/
+!official/res/solutions/*.dot
+!official/res/solutions/*.p
+!official/res/solutions/*
+!official/res/solutions/
 
 # ignore latex aux and log output
 

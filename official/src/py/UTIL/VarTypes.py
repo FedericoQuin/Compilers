@@ -55,6 +55,8 @@ class IntType(VarType):
 			return object == self
 		elif type(object) is ReferenceType:
 			return object == self
+		elif type(object) is FunctionType:
+			return object == self
 		if type(object) == type(self):
 			return True
 		return False
@@ -82,6 +84,8 @@ class FloatType(VarType):
 		elif type(object) is ArrayType:
 			return object == self
 		elif type(object) is ReferenceType:
+			return object == self
+		elif type(object) is FunctionType:
 			return object == self
 		if type(object) == type(self):
 			return True
@@ -111,6 +115,8 @@ class CharType(VarType):
 			return object == self
 		elif type(object) is ReferenceType:
 			return object == self
+		elif type(object) is FunctionType:
+			return object == self
 		if type(object) == type(self):
 			return True
 		return False
@@ -132,14 +138,17 @@ class BoolType(VarType):
 		return "bool"
 
 	def __eq__(self, object):
+		if type(object) is BoolType:
+			return True
+
 		if type(object) is PointerType:
 			return object == self
 		elif type(object) is ArrayType:
 			return object == self
 		elif type(object) is ReferenceType:
 			return object == self
-		if type(object) == type(self):
-			return True
+		elif type(object) is FunctionType:
+			return object == self
 		return False
 
 	def addressOf(self):
@@ -257,7 +266,6 @@ class FunctionType(VarType):
 	def __eq__(self, object):
 		if type(object) is FunctionType:
 			return self.returnType == object.returnType
-		
 		return self.returnType == object
 
 	def addDeclaredVariable(self, varType):
@@ -266,8 +274,14 @@ class FunctionType(VarType):
 	def getStrType(self):
 		return str(self.returnType)
 
+	def getDefaultValue(self):
+		return self.returnType.getDefaultValue()
+
 	def addressOf(self):
 		ErrorMsgHandler.addrOfFunction
+
+	def getPString(self):
+		return self.returnType.getPString()
 
 
 
