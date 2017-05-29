@@ -97,11 +97,11 @@ lvalue_identifier : ID;
 rvalue_identifier : ID;
 
 ifelse : 
-	'if' '(' firstcondition ')' '{' first_true_statements '}'
-	| 'if' '(' firstcondition ')' first_true_statement else_statement
-	| 'if' '(' firstcondition ')' '{' first_true_statements '}' else_statement
-	| 'if' '(' firstcondition ')' '{' first_true_statements '}' else_statement
-	| 'if' '(' firstcondition ')' first_true_statement else_statement;
+	'if' '(' condition ')' '{' first_true_statements '}'
+	| 'if' '(' condition ')' first_true_statement else_statement
+	| 'if' '(' condition ')' '{' first_true_statements '}' else_statement
+	| 'if' '(' condition ')' '{' first_true_statements '}' else_statement
+	| 'if' '(' condition ')' first_true_statement else_statement;
 
 else_statement :
 	 
@@ -116,7 +116,10 @@ first_false_statement : statement;
 first_false_statements : statements;
 
 condition :
-	condition OPERATOR_OR condition
+	condition_or;
+
+condition_or :
+	condition_or OPERATOR_OR condition_or
 	| condition_and
 	| comparison
 	| rvalue;
@@ -124,15 +127,17 @@ condition :
 condition_and :
 	condition_and OPERATOR_AND condition_and
 	| condition_not
-	| comparison;
+	| comparison
+	| rvalue;
 
 condition_not :
 	OPERATOR_NOT comparison
+	| OPERATOR_NOT rvalue
 	| bracket_condition;
 
 bracket_condition :
-	LBRACKET condition RBRACKET
-	| OPERATOR_NOT LBRACKET condition RBRACKET;
+	LBRACKET condition_or RBRACKET
+	| OPERATOR_NOT LBRACKET condition_or RBRACKET;
 
 comparison : 
 	rvalue comparator rvalue

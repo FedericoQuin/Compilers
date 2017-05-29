@@ -184,48 +184,38 @@ class AST:
 	def addIfElse(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfElse, self.getPosition(ctx))
 
-	def enterFirstcondition(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Condition, self.getPosition(ctx))
 
-	def exitFirstcondition(self, ctx):
-		pass
-
-	def enterFirst_true_statements(self, ctx):
-		self.climbTree()
+	def addIfTrue(self, ctx):
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfTrue, self.getPosition(ctx))
 
-	def exitFirst_true_statements(self, ctx):
-		pass
+	def addIfFalse(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfFalse, self.getPosition(ctx))
+
+	def enterFirst_true_statements(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfTrue, self.getPosition(ctx))
+
 
 
 	def enterFirst_true_statement(self, ctx):
-		self.climbTree()
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfTrue, self.getPosition(ctx))
-
-	def exitFirst_true_statement(self, ctx):
-		pass
 
 
 	def enterFirst_false_statement(self, ctx):
-		self.climbTree()
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfFalse, self.getPosition(ctx))
-
-	def exitFirst_false_statement(self, ctx):
-		pass
 
 
 	def enterFirst_false_statements(self, ctx):
-		self.climbTree()
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.IfFalse, self.getPosition(ctx))
 
 	def enterCondition(self, ctx):
+		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Condition, self.getPosition(ctx))
+
+
+
+	def enterCondition_or(self, ctx):
 		if ctx.OPERATOR_OR() != None:
 			self.currentPointer = self.currentPointer.addChild(ASTNodeType.Or, self.getPosition(ctx))
-
-	def exitCondition(self, ctx):
-		if ctx.OPERATOR_OR() != None:
-			self.climbTree()
-
+			
 
 	def enterCondition_and(self, ctx):
 		if ctx.OPERATOR_AND() != None:
@@ -290,7 +280,7 @@ class AST:
 		self.currentPointer = self.currentPointer.addChild(ASTNodeType.WhileBody, self.getPosition(ctx))
 
 	def enterFirst_while_condition(self, ctx):
-		self.currentPointer = self.currentPointer.addChild(ASTNodeType.Condition, self.getPosition(ctx))
+		pass
 
 	
 	#====================================================================
