@@ -138,6 +138,9 @@ class PTranslator:
                 elif isinstance(returnType.type, FloatType) and returnType.ptrCount == 0:
                     self.programText += "ldc r 0.0\n"
                     self.programText += "str r 0 0\n"
+                elif isinstance(returnType.type, BoolType) and returnType.ptrCount == 0:
+                    self.programText += "ldc b f\n"
+                    self.programText += "str b f\n"
                 elif returnType.ptrCount != 0:
                     self.programText += "ldc a 0\n"
                     self.programText += "str a 0 0\n"
@@ -197,7 +200,8 @@ class PTranslator:
         # Declarations                  #
         #################################
         elif isinstance(node.type, pointerType) and \
-            (node.type.type == ASTNodeType.FloatDecl or node.type.type == ASTNodeType.IntDecl or node.type.type == ASTNodeType.CharDecl):
+            (node.type.type == ASTNodeType.FloatDecl or node.type.type == ASTNodeType.IntDecl or \
+             node.type.type == ASTNodeType.CharDecl or node.type.type == ASTNodeType.BoolDecl):
             child_amount = len(node.children)
             self.addChildrenToFringe(node, nodeLevel, deleteFront=True)
 
@@ -205,30 +209,43 @@ class PTranslator:
                 self.parseExpression()
             else:
                 # Give a default value
-                if node.type.ptrCount != 0:
-                    self.programText += "ldc a 0\n"
 
-                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
-                    followLinkCount = self.getFollowLinkCount(node.value)
-                    self.programText += "str a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-                elif node.type.type == ASTNodeType.FloatDecl:
-                    self.programText += "ldc r 0.0\n"
+                mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                followLinkCount = self.getFollowLinkCount(node.value)
+                self.programText += "ldc " + mapping.type.getPString() + " " + mapping.type.getDefaultValue() + "\n"
+                self.programText += "str " + mapping.type.getPString() + " " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
-                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
-                    followLinkCount = self.getFollowLinkCount(node.value)
-                    self.programText += "str r " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-                elif node.type.type == ASTNodeType.CharDecl:
-                    self.programText += "ldc c 'a'\n"
 
-                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
-                    followLinkCount = self.getFollowLinkCount(node.value)
-                    self.programText += "str c " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
-                elif node.type.type == ASTNodeType.IntDecl:
-                    self.programText += "ldc i 0\n"
+                # if node.type.ptrCount != 0:
+                #     self.programText += "ldc a 0\n"
 
-                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
-                    followLinkCount = self.getFollowLinkCount(node.value)
-                    self.programText += "str i " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                #     followLinkCount = self.getFollowLinkCount(node.value)
+                #     self.programText += "str a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                # elif node.type.type == ASTNodeType.FloatDecl:
+                #     self.programText += "ldc r 0.0\n"
+
+                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                #     followLinkCount = self.getFollowLinkCount(node.value)
+                #     self.programText += "str r " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                # elif node.type.type == ASTNodeType.CharDecl:
+                #     self.programText += "ldc c 'a'\n"
+
+                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                #     followLinkCount = self.getFollowLinkCount(node.value)
+                #     self.programText += "str c " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                # elif node.type.type == ASTNodeType.IntDecl:
+                #     self.programText += "ldc i 0\n"
+
+                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                #     followLinkCount = self.getFollowLinkCount(node.value)
+                #     self.programText += "str i " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
+                # elif node.type.type == ASTNodeType.IntDecl:
+                #     self.programText += "ldc i 0\n"
+
+                #     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value)
+                #     followLinkCount = self.getFollowLinkCount(node.value)
+                #     self.programText += "str i " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
 
 
@@ -492,6 +509,9 @@ class PTranslator:
                 elif node.children[0].value.type == ASTNodeType.CharDecl:
                     # char
                     line = "ldc c 'a'\nstr c " + str(followLinkCount) + " "
+                elif node.children[0].value.type == ASTNodeType.BoolDecl:
+                    # bool
+                    line = "ldc b f\nstr b " + str(followLinkCount) + " "
 
                 for i in range(int(node.children[1].value)):
                     self.programText += line + str(self.nextArrayAddress) + "\n"
@@ -747,7 +767,7 @@ class PTranslator:
         declarationsWithArrays = 0
         for node in functionNode.children:
             if isinstance(node.type, pointerType) and \
-                (node.type.type == ASTNodeType.FloatDecl or node.type.type == ASTNodeType.IntDecl or node.type.type == ASTNodeType.CharDecl):
+                (node.type.type == ASTNodeType.FloatDecl or node.type.type == ASTNodeType.IntDecl or node.type.type == ASTNodeType.CharDecl or node.type.type == ASTNodeType.BoolDecl):
                 declarations += 1
                 declarationsWithArrays += 1
             elif node.type == ASTNodeType.ArrayDecl:
@@ -841,6 +861,8 @@ class PTranslator:
                 self.programText += "ldc i 0\n"
             elif isinstance(arg.type, CharType):
                 self.programText += "ldc c 'a'\n"
+            elif isinstance(arg.type, BoolType):
+                self.programText += "ldc b f\n"
 
         # Jump to the function
         self.programText += "cup " + str(arguments) + " label_main\n"
@@ -918,7 +940,7 @@ class PTranslator:
 
                     offset += 1
                 else:
-                    text += "ldc c 'a\n"
+                    text += "ldc c 'a'\n"
                     text += "str c 0 " + str(offset) + "\n"
                     offset += 1
             elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.FloatDecl:
@@ -936,6 +958,22 @@ class PTranslator:
                     text += "ldc r 0.0\n"
                     text += "str r 0 " + str(offset) + "\n"
                     offset += 1
+            elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.BoolDecl:
+                if child.children != []:
+                    # Set the rhs
+                    self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
+                    self.parseExpression()
+                    text += self.programText
+                    self.programText = ""
+
+                    text += "str b 0 " + str(offset) + "\n"
+
+                    offset += 1
+                else:
+                    text += "ldc b f\n"
+                    text += "str b 0 " + str(offset) + "\n"
+                    offset += 1
+
             elif child.type == ASTNodeType.ArrayDecl:
                 text += "lda 0 " + str(nextArrayAddress) + "\n"
                 text += "str a 0 " + str(offset) + "\n"
@@ -955,6 +993,9 @@ class PTranslator:
                     elif child.children[0].value.type == ASTNodeType.CharDecl:
                         # char
                         line = "ldc c 'a'\nstr c 0 "
+                    elif child.children[0].value.type == ASTNodeType.BoolDecl:
+                        # bool
+                        line = "ldc b f\nstr b 0 "
 
                     for i in range(int(child.children[1].value)):
                         text += line + str(nextArrayAddress) + "\n"
@@ -1026,12 +1067,20 @@ class PTranslator:
 
     def isSimpleDeclaration(self, nodeType):
         # TODO ptr?
-        if nodeType == ASTNodeType.IntDecl or nodeType == ASTNodeType.FloatDecl or nodeType == ASTNodeType.CharDecl:
-            return True
-        elif isinstance(nodeType, pointerType) and (nodeType.type == ASTNodeType.IntDecl or nodeType.type == ASTNodeType.FloatDecl or nodeType.type == ASTNodeType.CharDecl):
-            return True
-        else:
-            return False
+        simpleDecls = [ASTNodeType.IntDecl or ASTNodeType.FloatDecl or ASTNodeType.CharDecl or ASTNodeType.BoolDecl]
+        nodeToCheck = nodeType
+        if type(nodeToCheck) is pointerType:
+            nodeToCheck = nodeType.type
+
+        return nodeToCheck in simpleDecls
+
+        # if nodeType == ASTNodeType.IntDecl or nodeType == ASTNodeType.FloatDecl or nodeType == ASTNodeType.CharDecl or nodeType == ASTNodeType.BoolDecl:
+        #     return True
+        # elif isinstance(nodeType, pointerType) and \
+        #     (nodeType.type == ASTNodeType.IntDecl or nodeType.type == ASTNodeType.FloatDecl or nodeType.type == ASTNodeType.CharDecl or nodeType.type == ASTNodeType.BoolDecl):
+        #     return True
+        # else:
+        #     return False
 
     def isSimpleRValue(self, nodeType):
         # TODO ptr?

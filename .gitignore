@@ -57,3 +57,8 @@ symbolTable.txt
 # Don't exclude test solutions
 !/solutions/*
 !/solutions/
+
+# ignore latex aux and log output
+
+*.aux
+*.log
