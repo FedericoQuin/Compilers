@@ -647,11 +647,27 @@ class PTranslator:
             sequenceList = self.getPrintSequence(node)
             argumentIndex = 1
             for item in sequenceList:
+                # Is the parsed item an argument provided, or just a normal char from the string?
+
+                # In case it it an argument provided that needs to be printed
                 if type(item) is ScanPrintArgument:
-                    self.fringe = [(node.children[argumentIndex], nodeLevel+1)] + self.fringe
+                    # Special case for strings -> char array
+                    if item.type == "s":
+                        mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[argumentIndex].value)
+                        followLinkCount = self.getFollowLinkCount(node.children[argumentIndex].value)
+
+                        self.programText += "\n".join([ \
+                            "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\nldc i " + str(i) + "\nixa 1\nind c\nout c" \
+                            for i in range(mapping.type.size)])
+                        self.programText += "\n"
+
+                    else:
+                        self.fringe = [(node.children[argumentIndex], nodeLevel+1)] + self.fringe
+                        self.parseExpression()
+                        self.programText += "out " + item.type + "\n"
+
                     argumentIndex += 1
-                    self.parseExpression()
-                    self.programText += "out " + item.type + "\n"
+                # In case it is the normal char from the string
                 else:
                     # Little hack for escaped characters --> python escapes the backslash parsed from the program
                     listIndex = 0
@@ -675,7 +691,16 @@ class PTranslator:
             for item in sequenceList:
                 argument = node.children[listIndex]
 
-                if argument.type == ASTNodeType.LValueArrayElement:
+                if item.type == "s":
+                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
+                    followLinkCount = self.getFollowLinkCount(argument.value)
+
+                    self.programText += "\n".join([ \
+                        "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\nldc i " + str(i) + "\nixa 1\nin c\nsto c" \
+                        for i in range(mapping.type.size)])
+                    self.programText += "\n"
+
+                elif argument.type == ASTNodeType.LValueArrayElement:
                     self.fringe = [(node.children[listIndex], nodeLevel+1)] + self.fringe
                     self.parseExpression()
 

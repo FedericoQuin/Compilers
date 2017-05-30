@@ -1,0 +1,25 @@
+digraph AST {
+2 [label="Program"];
+3 [label="Include \nstdio.h"];
+4 [label="Function \nmain"];
+5 [label="ReturnType \nIntDecl"];
+6 [label="FunctionArgs"];
+7 [label="FunctionBody"];
+8 [label="ArrayDecl \nword"];
+9 [label="ArrayType \nCharDecl"];
+10 [label="ArraySize \n5"];
+8 -> 9;
+8 -> 10;
+11 [label="Scanf"];
+12 [label="FormatString \n%s"];
+13 [label="LValue \nword"];
+11 -> 12;
+11 -> 13;
+7 -> 8;
+7 -> 11;
+4 -> 5;
+4 -> 6;
+4 -> 7;
+2 -> 3;
+2 -> 4;
+}
