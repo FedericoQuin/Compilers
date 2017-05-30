@@ -702,7 +702,16 @@ class PTranslator:
             for item in sequenceList:
                 argument = node.children[listIndex]
 
-                if argument.type == ASTNodeType.LValueArrayElement:
+                if item.type == "s":
+                    mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
+                    followLinkCount = self.getFollowLinkCount(argument.value)
+
+                    self.programText += "\n".join([ \
+                        "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\nldc i " + str(i) + "\nixa 1\nin c\nsto c" \
+                        for i in range(mapping.type.size)])
+                    self.programText += "\n"
+
+                elif argument.type == ASTNodeType.LValueArrayElement:
                     self.fringe = [(node.children[listIndex], nodeLevel+1)] + self.fringe
                     self.parseExpression()
 

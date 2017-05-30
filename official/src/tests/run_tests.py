@@ -186,8 +186,11 @@ def test_return_types1():
 def test_return_types2():
 	parse("return_types2.c", "return_types2.dot", "return_types2.p")
 
-def test_scanf():
-	parse("scanf.c", "scanf.dot", "scanf.p")
+def test_scanf1():
+	parse("scanf1.c", "scanf1.dot", "scanf1.p")
+
+def test_scanf2():
+	parse("scanf2.c", "scanf2.dot", "scanf2.p")
 
 
 # ===============================
