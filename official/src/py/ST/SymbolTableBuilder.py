@@ -1,6 +1,7 @@
 from src.py.ST.SymbolTable import *
 from src.py.AST.ASTNode import ASTNodeType, ASTNode, pointerType
 from src.py.UTIL.VarTypes import *
+from src.py.UTIL.MapToVarType import *
 from src.py.SA.ErrorMsgHandler import ErrorMsgHandler
 
 class SymbolTableBuilder:
@@ -57,7 +58,7 @@ class SymbolTableBuilder:
 	def addFunctionSignature(self, node, initialized = False):
 		children = node.children
 		# TODO Func is a placeholder until subclassed
-		returnType = PointerType(mapToPrimitiveType(children[0].value), children[0].value.ptrCount)
+		returnType = PointerType(mapNodeToVarType(children[0].value), children[0].value.ptrCount)
 		
 		# Iterate over the function arguments and add their types to the signature
 		# NOTE: The type attribute of the function arguments nodes are objects of the class PointerType.
@@ -65,9 +66,9 @@ class SymbolTableBuilder:
 		functionSignature = []
 		for i in children[1].children:
 			if i.type == ASTNodeType.ByReference:
-				functionSignature.append(ReferenceType(PointerType(mapToPrimitiveType(i.children[0].type), i.children[0].type.ptrCount)))
+				functionSignature.append(ReferenceType(PointerType(mapNodeToVarType(i.children[0].type), i.children[0].type.ptrCount)))
 			else:
-				functionSignature.append(PointerType(mapToPrimitiveType(i.type), i.type.ptrCount))
+				functionSignature.append(PointerType(mapNodeToVarType(i.type), i.type.ptrCount))
 
 		self.symbolTable.insertEntry(str(node.value), FunctionType(returnType, functionSignature, initialized) , Scope.GLOBAL)
 
@@ -103,7 +104,7 @@ class SymbolTableBuilder:
 			self.addFunctionSignature(node)
 		elif node.type == ASTNodeType.ArrayDecl:
 			self.checkDuplicateDeclaration(node)
-			arrayType = PointerType(mapToPrimitiveType(node.children[0].value), node.children[0].value.ptrCount)
+			arrayType = PointerType(mapNodeToVarType(node.children[0].value), node.children[0].value.ptrCount)
 			size = node.children[1].value
 			self.symbolTable.insertEntry(str(node.value), ArrayType(arrayType, size), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 		elif type(node.type) is pointerType:
@@ -113,7 +114,7 @@ class SymbolTableBuilder:
 			
 			self.checkDuplicateDeclaration(node)			
 			# Type consists of the primitive type + optionally pointer operators
-			symbolType = PointerType(mapToPrimitiveType(node.type), node.type.ptrCount)
+			symbolType = PointerType(mapNodeToVarType(node.type), node.type.ptrCount)
 			if isReferenceDecl:
 				symbolType = ReferenceType(symbolType)
 
@@ -130,11 +131,11 @@ class SymbolTableBuilder:
 		elif node.type == ASTNodeType.BoolDecl:
 			return BoolType()
 		elif node.type == ASTNodeType.ArrayDecl:
-			arrayType = PointerType(mapToPrimitiveType(node.children[0].value), node.children[0].value.ptrCount)
+			arrayType = PointerType(mapNodeToVarType(node.children[0].value), node.children[0].value.ptrCount)
 			size = node.children[1].value
 			return ArrayType(arrayType, size)
 		elif type(node.type) is pointerType:
-			return PointerType(mapToPrimitiveType(node.type), node.type.ptrCount)
+			return PointerType(mapNodeToVarType(node.type), node.type.ptrCount)
 
 		return None
 
@@ -213,27 +214,12 @@ class SymbolTableBuilder:
 		
 
 
-def mapToPrimitiveType(node):
-	nodeType = node.type
-	if nodeType == ASTNodeType.IntDecl:
-		return IntType()
-	elif nodeType == ASTNodeType.FloatDecl:
-		return FloatType()
-	elif nodeType == ASTNodeType.CharDecl:
-		return CharType()
-	elif nodeType == ASTNodeType.BoolDecl:
-		return BoolType()
-	elif nodeType == ASTNodeType.IntSignature:
-		return IntType()
-	elif nodeType == ASTNodeType.FloatSignature:
-		return FloatType()
-	elif nodeType == ASTNodeType.CharSignature:
-		return CharType()
-	elif nodeType == ASTNodeType.Void:
-		return VoidType()
-	# Special case for dereference -> check child node
-	elif nodeType == ASTNodeType.ByReference:
-		return mapToPrimitiveType(node.children[0])
-		
-	return None
+def mapNodeToVarType(node):
+	if node.type == ASTNodeType.ByReference:
+		return mapNodeToVarType(node.children[0])
+
+	return mapTypeToVarType(node.type)
+
+
+
 
