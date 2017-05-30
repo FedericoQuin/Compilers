@@ -121,6 +121,19 @@ class ASTCreator(cGrammarListener):
 		if ctx.OPERATOR_MINUS() != None:
 			self.AST.climbTree()
 
+	def enterTrue(self, ctx):
+		self.AST.addTrue(ctx)
+
+	def exitTrue(self, ctx):
+		self.AST.climbTree()
+
+	def enterFalse(self, ctx):
+		self.AST.addFalse(ctx)
+
+	def exitFalse(self, ctx):
+		self.AST.climbTree()
+
+
 	# TODO were these really necessary?
 	# def enterLvalue_brackets(self, ctx:cGrammarParser.Lvalue_bracketsContext):
 	# 	self.AST.makeBrackets(ctx)
@@ -201,26 +214,33 @@ class ASTCreator(cGrammarListener):
 	def exitIfelse(self, ctx:cGrammarParser.IfelseContext):
 		# twice because you have to return from the self-made node but also from the IfTrue-IfFalse nodes
 		# because one of them has to jump back as well, but they can't know whether the other one already jumped back or not
-		self.AST.climbTree(2)
+		self.AST.climbTree()
 
-	def enterFirstcondition(self, ctx:cGrammarParser.FirstconditionContext):
-		self.AST.enterFirstcondition(ctx)
 
 	def enterFirst_true_statements(self, ctx:cGrammarParser.First_true_statementsContext):
-		self.AST.enterFirst_true_statements(ctx)
+		self.AST.addIfTrue(ctx)
 
-
+	def exitFirst_true_statements(self, ctx):
+		self.AST.climbTree()
 
 	def enterFirst_true_statement(self, ctx:cGrammarParser.First_true_statementContext):
-		self.AST.enterFirst_true_statement(ctx)
+		self.AST.addIfTrue(ctx)
+
+	def exitFirst_true_statement(self, ctx):
+		self.AST.climbTree()
 
 
 	def enterFirst_false_statement(self, ctx:cGrammarParser.First_false_statementContext):
-		self.AST.enterFirst_false_statement(ctx)
+		self.AST.addIfFalse(ctx)
 
+	def exitFirst_false_statement(self, ctx:cGrammarParser.First_false_statementContext):
+		self.AST.climbTree()
 
 	def enterFirst_false_statements(self, ctx:cGrammarParser.First_false_statementsContext):
-		self.AST.enterFirst_false_statements(ctx)
+		self.AST.addIfFalse(ctx)
+
+	def exitFirst_false_statements(self, ctx:cGrammarParser.First_false_statementsContext):
+		self.AST.climbTree()
 
 
 
@@ -233,8 +253,14 @@ class ASTCreator(cGrammarListener):
 		self.AST.enterCondition(ctx)
 
 	def exitCondition(self, ctx:cGrammarParser.ConditionContext):
-		self.AST.exitCondition(ctx)
+		self.AST.climbTree()
 
+	def enterCondition_or(self, ctx):
+		self.AST.enterCondition_or(ctx)
+
+	def exitCondition_or(self, ctx):
+		if ctx.OPERATOR_OR() != None:
+			self.AST.climbTree()
 
 	def enterCondition_and(self, ctx:cGrammarParser.Condition_andContext):
 		self.AST.enterCondition_and(ctx)
@@ -296,7 +322,7 @@ class ASTCreator(cGrammarListener):
 		self.AST.enterFirst_while_condition(ctx)
 
 	def exitFirst_while_condition(self, ctx:cGrammarParser.First_while_conditionContext):
-		self.AST.climbTree()
+		pass
 
 	def enterBreak_stmt(self, ctx:cGrammarParser.Break_stmtContext):
 		self.AST.enterBreak_stmt(ctx)

@@ -19,13 +19,17 @@ class TypeDeductor:
 			return IntType()
 		elif node.type == ASTNodeType.RValueFloat:
 			return FloatType()
+		elif node.type == ASTNodeType.RValueBool:
+			return BoolType()
 		elif node.type == ASTNodeType.RValueID:
 			nodeType = symbolTable.lookupSymbol(node.value).type
 			# Return the type, except if the ID references an array (without element access)
 			return nodeType if not(type(nodeType) is ArrayType) else nodeType.addressOf()
+
 		elif node.type == ASTNodeType.LValue:
 			nodeType = symbolTable.lookupSymbol(node.value).type
 			return nodeType if not(type(nodeType) is ArrayType) else nodeType.addressOf()
+
 		elif node.type == ASTNodeType.Addition:
 			return TypeDeductor.checkTypeChildrenExpression(node.children, symbolTable)
 		elif node.type == ASTNodeType.Subtraction:
@@ -34,10 +38,12 @@ class TypeDeductor:
 			return TypeDeductor.checkTypeChildrenExpression(node.children, symbolTable)
 		elif node.type == ASTNodeType.Div:
 			return TypeDeductor.checkTypeChildrenExpression(node.children, symbolTable)
+
 		elif node.type == ASTNodeType.Brackets:
 			return TypeDeductor.deductType(node.children[0], symbolTable)
 		elif node.type == ASTNodeType.FunctionCall:
 			return symbolTable.lookupSymbol(node.value).type
+
 		elif node.type == ASTNodeType.RValueArrayElement:
 			return symbolTable.lookupSymbol(node.value).type.type
 		elif node.type == ASTNodeType.LValueArrayElement:
@@ -46,6 +52,7 @@ class TypeDeductor:
 			return symbolTable.lookupSymbol(node.children[0].value).type.addressOf()
 		elif node.type == ASTNodeType.Dereference:
 			return TypeDeductor.checkDereferenceValidity(node, symbolTable)
+
 		elif node.type == ASTNodeType.Greater or \
 			node.type == ASTNodeType.GreaterOrEqual or \
 			node.type == ASTNodeType.Or or \
@@ -54,6 +61,7 @@ class TypeDeductor:
 			node.type == ASTNodeType.NotEquals or \
 			node.type == ASTNodeType.Less or \
 			node.type == ASTNodeType.LessOrEqual:
+			# Check to see if the children are of equal type
 			return TypeDeductor.checkTypeChildrenExpression(node.children, symbolTable)
 		elif node.type == ASTNodeType.Not or \
 			node.type == ASTNodeType.Brackets or \
@@ -64,6 +72,9 @@ class TypeDeductor:
 			if not(childType == IntType() or childType == FloatType()):
 				ErrorMsgHandler.negateInvalid(node, childType)
 			return childType
+		elif node.type == ASTNodeType.Condition:
+			# Don't need to typecheck further, handled later
+			return BoolType()
 		else:
 			raise Exception("Could not deduct type of node '" + str(node.type.name) + "'.")
 

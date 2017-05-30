@@ -211,6 +211,7 @@ def test_advanced_global_var():
 def test_global_vars():
 	parse("global_vars.c", "global_vars.dot", "global_vars.p")
 
+
 # ===============================
 # 		 Negative values
 # ===============================
@@ -223,11 +224,31 @@ def test_negative_expressions():
 
 
 # ===============================
+# 		  	Booleans
+# ===============================
+
+def test_booleans1():
+	parse("booleans1.c", "booleans1.dot", "booleans1.p")
+
+def test_booleans2():
+	parse("booleans2.c", "booleans2.dot", "booleans2.p")
+
+def test_booleans3():
+	parse("booleans3.c", "booleans3.dot", "booleans3.p")
+
+def test_booleans4():
+	parse("booleans4.c", "booleans4.dot", "booleans4.p")
+
+
+# ===============================
 # 		  Miscellaneous
 # ===============================
 
 def test_brackets():
 	parse("brackets.c", "brackets.dot", "brackets.p")
+
+def test_factorial():
+	parse("factorial.c", "factorial.dot", "factorial.p")
 
 def test_includes():
 	parse("includes.c", "includes.dot", "includes.p")

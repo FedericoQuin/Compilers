@@ -90,21 +90,23 @@ class SymbolTableBuilder:
 			isReferenceDecl = True
 
 
-		if (node.type == ASTNodeType.FloatDecl):
+		if node.type == ASTNodeType.FloatDecl:
 			self.addPrimitiveType(node, FloatType(), isReferenceDecl)
-		elif (node.type == ASTNodeType.IntDecl):
+		elif node.type == ASTNodeType.IntDecl:
 			self.addPrimitiveType(node, IntType(), isReferenceDecl)
-		elif (node.type == ASTNodeType.CharDecl):
+		elif node.type == ASTNodeType.CharDecl:
 			self.addPrimitiveType(node, CharType(), isReferenceDecl)
-		elif (node.type == ASTNodeType.FunctionDecl):
+		elif node.type == ASTNodeType.BoolDecl:
+			self.addPrimitiveType(node, BoolType(), isReferenceDecl)			
+		elif node.type == ASTNodeType.FunctionDecl:
 			self.checkDuplicateDeclaration(node)
 			self.addFunctionSignature(node)
-		elif (node.type == ASTNodeType.ArrayDecl):
+		elif node.type == ASTNodeType.ArrayDecl:
 			self.checkDuplicateDeclaration(node)
 			arrayType = PointerType(mapToPrimitiveType(node.children[0].value), node.children[0].value.ptrCount)
 			size = node.children[1].value
 			self.symbolTable.insertEntry(str(node.value), ArrayType(arrayType, size), Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
-		elif (type(node.type) is pointerType):
+		elif type(node.type) is pointerType:
 			# Exception for functionDecls -> do not add the 'declared' symbols to the table
 			if self.isSignatureType(node.type.type):
 				return
@@ -125,6 +127,8 @@ class SymbolTableBuilder:
 			return IntType()
 		elif node.type == ASTNodeType.CharDecl:
 			return CharType()
+		elif node.type == ASTNodeType.BoolDecl:
+			return BoolType()
 		elif node.type == ASTNodeType.ArrayDecl:
 			arrayType = PointerType(mapToPrimitiveType(node.children[0].value), node.children[0].value.ptrCount)
 			size = node.children[1].value
@@ -145,6 +149,8 @@ class SymbolTableBuilder:
 		elif _type == ASTNodeType.CharSignature: 
 			return True
 		elif _type == ASTNodeType.ArraySignature:
+			return True
+		elif _type == ASTNodeType.BoolSignature:
 			return True
 		return False
 
@@ -215,6 +221,8 @@ def mapToPrimitiveType(node):
 		return FloatType()
 	elif nodeType == ASTNodeType.CharDecl:
 		return CharType()
+	elif nodeType == ASTNodeType.BoolDecl:
+		return BoolType()
 	elif nodeType == ASTNodeType.IntSignature:
 		return IntType()
 	elif nodeType == ASTNodeType.FloatSignature:

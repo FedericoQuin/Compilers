@@ -97,11 +97,11 @@ lvalue_identifier : ID;
 rvalue_identifier : ID;
 
 ifelse : 
-	'if' '(' firstcondition ')' '{' first_true_statements '}'
-	| 'if' '(' firstcondition ')' first_true_statement else_statement
-	| 'if' '(' firstcondition ')' '{' first_true_statements '}' else_statement
-	| 'if' '(' firstcondition ')' '{' first_true_statements '}' else_statement
-	| 'if' '(' firstcondition ')' first_true_statement else_statement;
+	'if' '(' condition ')' '{' first_true_statements '}'
+	| 'if' '(' condition ')' first_true_statement else_statement
+	| 'if' '(' condition ')' '{' first_true_statements '}' else_statement
+	| 'if' '(' condition ')' '{' first_true_statements '}' else_statement
+	| 'if' '(' condition ')' first_true_statement else_statement;
 
 else_statement :
 	 
@@ -116,28 +116,32 @@ first_false_statement : statement;
 first_false_statements : statements;
 
 condition :
-	condition OPERATOR_OR condition
+	condition_or;
+
+condition_or :
+	condition_or OPERATOR_OR condition_or
 	| condition_and
+	| rvalue
 	| comparison;
 
 condition_and :
 	condition_and OPERATOR_AND condition_and
 	| condition_not
-	| comparison;
+	| comparison
+	| rvalue;
 
 condition_not :
 	OPERATOR_NOT comparison
+	| OPERATOR_NOT rvalue
 	| bracket_condition;
 
 bracket_condition :
-	LBRACKET condition RBRACKET
-	| OPERATOR_NOT LBRACKET condition RBRACKET;
+	LBRACKET condition_or RBRACKET
+	| OPERATOR_NOT LBRACKET condition_or RBRACKET;
 
+// TODO verify this
 comparison : 
-	rvalue comparator rvalue
-	| rvalue comparator rvalue_identifier
-	| rvalue_identifier comparator rvalue
-	| rvalue_identifier comparator rvalue_identifier;
+	add_sub comparator add_sub;
 
 comparator :
 	OPERATOR_EQ
@@ -263,6 +267,8 @@ rvalue
 	| arrayelement_rvalue
 	| address_value
 	| rvalue_identifier
+	| true
+	| false
 	| OPERATOR_MINUS rvalue; // Here in order to give priority to rvalue with a minus operator, instead of whole expressions
 
 
@@ -309,8 +315,11 @@ returntype : dec_type | VOID;
 dec_type : 
 	CHAR ptr
 	| FLOAT ptr
-	| INT ptr;
+	| INT ptr
+	| BOOL ptr;
 
+true : TRUE;
+false : FALSE;
 
 //////////////////////////////////////////////////////////
 // Lexer Rules											//
@@ -361,6 +370,10 @@ VOID : 'void';
 CHAR : 'char';
 FLOAT : 'float';
 INT : 'int';
+BOOL: 'bool';
+
+TRUE : 'true';
+FALSE : 'false';
 
 DIGIT : [0-9];
 NOTZERODIGIT : [1-9];

@@ -55,12 +55,17 @@ class IntType(VarType):
 			return object == self
 		elif type(object) is ReferenceType:
 			return object == self
+		elif type(object) is FunctionType:
+			return object == self
 		if type(object) == type(self):
 			return True
 		return False
 
 	def addressOf(self):
 		return PointerType(self, 1)
+
+	def getDefaultValue(self):
+		return "0"
 
 	def getPString(self):
 		return "i"
@@ -80,12 +85,17 @@ class FloatType(VarType):
 			return object == self
 		elif type(object) is ReferenceType:
 			return object == self
+		elif type(object) is FunctionType:
+			return object == self
 		if type(object) == type(self):
 			return True
 		return False
 
 	def addressOf(self):
 		return PointerType(self, 1)
+
+	def getDefaultValue(self):
+		return "0.0"
 
 	def getPString(self):
 		return "r"
@@ -105,6 +115,8 @@ class CharType(VarType):
 			return object == self
 		elif type(object) is ReferenceType:
 			return object == self
+		elif type(object) is FunctionType:
+			return object == self
 		if type(object) == type(self):
 			return True
 		return False
@@ -112,8 +124,41 @@ class CharType(VarType):
 	def addressOf(self):
 		return PointerType(self, 1)
 
+	def getDefaultValue(self):
+		return "'a'"
+
 	def getPString(self):
 		return "c"
+
+class BoolType(VarType):
+	def __init__(self):
+		self.memorySize = 1
+
+	def __str__(self):
+		return "bool"
+
+	def __eq__(self, object):
+		if type(object) is BoolType:
+			return True
+
+		if type(object) is PointerType:
+			return object == self
+		elif type(object) is ArrayType:
+			return object == self
+		elif type(object) is ReferenceType:
+			return object == self
+		elif type(object) is FunctionType:
+			return object == self
+		return False
+
+	def addressOf(self):
+		return PointerType(self, 1)
+
+	def getDefaultValue(self):
+		return "f"
+
+	def getPString(self):
+		return "b"
 
 class ReferenceType(VarType):
 	def __init__(self, _type):
@@ -128,6 +173,9 @@ class ReferenceType(VarType):
 	def addressOf(self):
 		return self.referencedType.addressOf()
 	
+	def getDefaultValue(self):
+		return self.referencedType.getDefaultValue()
+
 	def getPString(self):
 		return self.referencedType.getPString()
 
@@ -162,6 +210,11 @@ class PointerType(VarType):
 			ErrorMsgHandler.extensiveDereferencing()
 		return PointerType(self.type, self.ptrCount - amt)
 
+	def getDefaultValue(self):
+		if self.ptrCount != 0:
+			return "0"
+		return self.type.getDefaultValue()
+
 	def getPString(self):
 		if self.ptrCount == 0:
 			return self.type.getPString()
@@ -192,6 +245,9 @@ class ArrayType(VarType):
 	def addressOf(self):
 		return self.type.addressOf()
 
+	def getDefaultValue(self):
+		return self.type.getDefaultValue()
+
 	def dereference(self, amt = 1):
 		return self.type.dereference(amt)
 
@@ -210,7 +266,6 @@ class FunctionType(VarType):
 	def __eq__(self, object):
 		if type(object) is FunctionType:
 			return self.returnType == object.returnType
-		
 		return self.returnType == object
 
 	def addDeclaredVariable(self, varType):
@@ -219,8 +274,14 @@ class FunctionType(VarType):
 	def getStrType(self):
 		return str(self.returnType)
 
+	def getDefaultValue(self):
+		return self.returnType.getDefaultValue()
+
 	def addressOf(self):
 		ErrorMsgHandler.addrOfFunction
+
+	def getPString(self):
+		return self.returnType.getPString()
 
 
 

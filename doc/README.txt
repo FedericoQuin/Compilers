@@ -34,3 +34,4 @@ Extra features:
 	We have added the following extra features:
 		- for loops
 		- break and continue statement
+		- boolean variables

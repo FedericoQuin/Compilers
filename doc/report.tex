@@ -12,7 +12,13 @@
 \end{titlepage}
 
 \section{Result}
-We have allowed all mandatory C constructions in our grammar and we are able to create the AST and the symbol table. We have also implemented some extras, e.g. continue and break statement and for loops. \\
+We have allowed all mandatory C constructions in our grammar and we are able to create the AST and the symbol table. We have also implemented some extras:
+\begin{itemize}
+   \item continue and break statements
+   \item for loops
+   \item boolean variables
+\end{itemize}
+\hfill \break
 There is error checking. The symbol table has been adjusted to provide the reqired functionality for the translation unit. The translation unit is also fully operational.
 
 \section{Grammar}
@@ -29,6 +35,7 @@ The code for the different big parts (except for p translation) is located in di
 	\item UTIL - general files such as the TypeDeductor which is used in different parts of the compiler.
 \end{itemize}
 
+\newpage
 \hfill \break
 Firstly, the AST related classes make the decorated AST. \\ \\
 Secondly, the symbol table related classes make the symbol table based on this AST. The symbol table is a tree like structure. It provides a seperate level for the global scope, and different sublevels for all the local scopes. \\ \\
@@ -37,6 +44,6 @@ Thirdly, syntax analysis does its part. This involves type checking of variables
 Compared to the first evaluation, we now added an extra part: the translation unit. Using the resulting AST and the symbol table, the C program is translated into a P program.
 
 \section{Testing}
-For testing our compiler, we chose for pytest. We have 43 test programs, where each program tests one encapsulated part of functionality. These tests also include several death tests.
+For testing our compiler, we chose for pytest. We have 50 test programs, where each program tests one encapsulated part of functionality. These tests also include several death tests.
 
 \end{document}
