@@ -130,21 +130,10 @@ class PTranslator:
             # Set default return value
             returnType = self.symbolTableBuilder.symbolTable.lookupSymbol(node.value).type.returnType
             if isinstance(returnType, PointerType):
-                if isinstance(returnType.type, CharType) and returnType.ptrCount == 0:
-                    self.programText += "ldc c 'a'\n"
-                    self.programText += "str c 0 0\n"
-                elif isinstance(returnType.type, IntType) and returnType.ptrCount == 0:
-                    self.programText += "ldc i 0\n"
-                    self.programText += "str i 0 0\n"
-                elif isinstance(returnType.type, FloatType) and returnType.ptrCount == 0:
-                    self.programText += "ldc r 0.0\n"
-                    self.programText += "str r 0 0\n"
-                elif isinstance(returnType.type, BoolType) and returnType.ptrCount == 0:
-                    self.programText += "ldc b f\n"
-                    self.programText += "str b 0 0\n"
-                elif returnType.ptrCount != 0:
-                    self.programText += "ldc a 0\n"
-                    self.programText += "str a 0 0\n"
+                # not necessary if the return type is void
+                if returnType != VoidType():
+                    self.programText += "ldc " + returnType.getPString() + " " + returnType.getDefaultValue() + "\n"
+                    self.programText += "str " + returnType.getPString() + " 0 0\n"
 
             self.nextArrayAddress = declarations + 5
 
@@ -465,13 +454,8 @@ class PTranslator:
             self.programText += "lda " + str(followLinkCount) + " " + str(self.nextArrayAddress) + "\n"
             self.programText += "str a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
 
-            line = ""
             if isinstance(node.children[0].value, pointerType):
-                Type = None
-                if node.children[0].value.ptrCount != 0:
-                    Type = PointerType(IntType(), 1) # Arguments don't matter here, not used
-                else:
-                    Type = mapTypeToVarType(node.children[0].value.type)
+                Type = PointerType(IntType(), 1) if node.children[0].value.ptrCount != 0 else mapTypeToVarType(node.children[0].value.type)
 
                 for i in range(int(node.children[1].value)):
                     self.programText += "ldc " + Type.getPString() + " " + Type.getDefaultValue() + "\n" + \
@@ -875,83 +859,25 @@ class PTranslator:
         offset = 5
         for child in node.children:
             self.symbolTableBuilder.processNode(child, nodeLevel + 1)
-            if isinstance(child.type, pointerType) and child.type.ptrCount != 0:
-                if child.children != []:
+
+            if isinstance(child.type, pointerType):
+                Type = PointerType(IntType(), 1) if child.type.ptrCount != 0 else mapTypeToVarType(child.type.type)
+
+                if len(child.children) != 0:
                     # Set the rhs
                     self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
                     self.parseExpression()
                     text += self.programText
                     self.programText = ""
 
-                    text += "str a 0 " + str(offset) + "\n"
-
+                    text += "str " + Type.getPString() + " 0 " + str(offset) + "\n"
                     offset += 1
+
                 else:
-                    text += "ldc a 0\n"
-                    text += "str a 0 " + str(offset) + "\n"
-                    offset += 1
-            elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.IntDecl:
-                if child.children != []:
-                    # Set the rhs
-                    self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
-                    self.parseExpression()
-                    text += self.programText
-                    self.programText = ""
-
-                    text += "str i 0 " + str(offset) + "\n"
-
-                    offset += 1
-                else:
-                    text += "ldc i 0\n"
-                    text += "str i 0 " + str(offset) + "\n"
+                    text += "ldc " + Type.getPString() + " " + Type.getDefaultValue() + "\n"
+                    text += "str " + Type.getPString() + " 0 " + str(offset) + "\n"
                     offset += 1
 
-
-            elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.CharDecl:
-                if child.children != []:
-                    # Set the rhs
-                    self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
-                    self.parseExpression()
-                    text += self.programText
-                    self.programText = ""
-
-                    text += "str c 0 " + str(offset) + "\n"
-
-                    offset += 1
-                else:
-                    text += "ldc c 'a'\n"
-                    text += "str c 0 " + str(offset) + "\n"
-                    offset += 1
-            elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.FloatDecl:
-                if child.children != []:
-                    # Set the rhs
-                    self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
-                    self.parseExpression()
-                    text += self.programText
-                    self.programText = ""
-
-                    text += "str r 0 " + str(offset) + "\n"
-
-                    offset += 1
-                else:
-                    text += "ldc r 0.0\n"
-                    text += "str r 0 " + str(offset) + "\n"
-                    offset += 1
-            elif isinstance(child.type, pointerType) and child.type.type == ASTNodeType.BoolDecl:
-                if child.children != []:
-                    # Set the rhs
-                    self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
-                    self.parseExpression()
-                    text += self.programText
-                    self.programText = ""
-
-                    text += "str b 0 " + str(offset) + "\n"
-
-                    offset += 1
-                else:
-                    text += "ldc b f\n"
-                    text += "str b 0 " + str(offset) + "\n"
-                    offset += 1
 
             elif child.type == ASTNodeType.ArrayDecl:
                 text += "lda 0 " + str(nextArrayAddress) + "\n"
@@ -960,24 +886,11 @@ class PTranslator:
 
                 line = ""
                 if isinstance(child.children[0].value, pointerType):
-                    if child.children[0].value.ptrCount != 0:
-                        # pointer
-                        line = "ldc a 0\nstr a 0 "
-                    elif child.children[0].value.type == ASTNodeType.IntDecl:
-                        # int
-                        line = "ldc i 0\nstr i 0 "
-                    elif child.children[0].value.type == ASTNodeType.FloatDecl:
-                        # float
-                        line = "ldc r 0.0\nstr r 0 "
-                    elif child.children[0].value.type == ASTNodeType.CharDecl:
-                        # char
-                        line = "ldc c 'a'\nstr c 0 "
-                    elif child.children[0].value.type == ASTNodeType.BoolDecl:
-                        # bool
-                        line = "ldc b f\nstr b 0 "
+                    Type = PointerType(IntType(), 1) if child.children[0].value.ptrCount != 0 else mapTypeToVarType(child.children[0].value.type)
 
                     for i in range(int(child.children[1].value)):
-                        text += line + str(nextArrayAddress) + "\n"
+                        text += "ldc " + Type.getPString() + " " + Type.getDefaultValue() + "\n" + \
+                            "str " + Type.getPString() + " 0 " + str(nextArrayAddress) + "\n"
                         nextArrayAddress += 1
                         self.programText = ""
 
