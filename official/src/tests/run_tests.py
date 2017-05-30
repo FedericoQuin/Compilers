@@ -241,6 +241,9 @@ def test_booleans4():
 def test_brackets():
 	parse("brackets.c", "brackets.dot", "brackets.p")
 
+def test_factorial():
+	parse("factorial.c", "factorial.dot", "factorial.p")
+
 def test_includes():
 	parse("includes.c", "includes.dot", "includes.p")
 
