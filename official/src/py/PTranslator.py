@@ -7,6 +7,7 @@ from src.py.SA.TypeChecker import TypeChecker
 from src.py.SA.ExistenceChecker import ExistenceChecker
 from src.py.UTIL.TypeDeductor import TypeDeductor
 from src.py.UTIL.VarTypes import *
+from src.py.UTIL.MapToVarType import *
 from src.py.SA.UselessDecorator import UselessDecorator
 from copy import deepcopy
 
@@ -466,24 +467,15 @@ class PTranslator:
 
             line = ""
             if isinstance(node.children[0].value, pointerType):
+                Type = None
                 if node.children[0].value.ptrCount != 0:
-                    # pointer
-                    line = "ldc a 0\nstr a " + str(followLinkCount) + " "
-                elif node.children[0].value.type == ASTNodeType.IntDecl:
-                    # int
-                    line = "ldc i 0\nstr i " + str(followLinkCount) + " "
-                elif node.children[0].value.type == ASTNodeType.FloatDecl:
-                    # float
-                    line = "ldc r 0.0\nstr r " + str(followLinkCount) + " "
-                elif node.children[0].value.type == ASTNodeType.CharDecl:
-                    # char
-                    line = "ldc c 'a'\nstr c " + str(followLinkCount) + " "
-                elif node.children[0].value.type == ASTNodeType.BoolDecl:
-                    # bool
-                    line = "ldc b f\nstr b " + str(followLinkCount) + " "
+                    Type = PointerType(IntType(), 1) # Arguments don't matter here, not used
+                else:
+                    Type = mapTypeToVarType(node.children[0].value.type)
 
                 for i in range(int(node.children[1].value)):
-                    self.programText += line + str(self.nextArrayAddress) + "\n"
+                    self.programText += "ldc " + Type.getPString() + " " + Type.getDefaultValue() + "\n" + \
+                        "str " + Type.getPString() + " " + str(followLinkCount) + " " + str(self.nextArrayAddress) + "\n"
                     self.nextArrayAddress += 1
 
         #################################
@@ -849,14 +841,7 @@ class PTranslator:
 
         # Set the arguments:
         for arg in reversed(args):
-            if isinstance(arg.type, FloatType):
-                self.programText += "ldc r 0.0\n"
-            elif isinstance(arg.type, IntType):
-                self.programText += "ldc i 0\n"
-            elif isinstance(arg.type, CharType):
-                self.programText += "ldc c 'a'\n"
-            elif isinstance(arg.type, BoolType):
-                self.programText += "ldc b f\n"
+            self.programText += "ldc " + arg.getPString() + " " + arg.getDefaultValue() + "\n"
 
         # Jump to the function
         self.programText += "cup " + str(arguments) + " label_main\n"

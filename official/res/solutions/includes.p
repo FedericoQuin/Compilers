@@ -2,7 +2,7 @@ ssp 5
 ujp main
 main:
 mst 0
-ldc c 'a'
+ldc a 0
 ldc i 0
 cup 2 label_main
 hlt
