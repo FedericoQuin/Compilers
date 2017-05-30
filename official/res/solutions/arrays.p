@@ -56,205 +56,205 @@ ujp main_for_0
 main_for_0_false:
 lda 0 20
 str a 0 7
-ldc c 'a'
+ldc c ' '
 str c 0 20
-ldc c 'a'
+ldc c ' '
 str c 0 21
-ldc c 'a'
+ldc c ' '
 str c 0 22
-ldc c 'a'
+ldc c ' '
 str c 0 23
-ldc c 'a'
+ldc c ' '
 str c 0 24
-ldc c 'a'
+ldc c ' '
 str c 0 25
-ldc c 'a'
+ldc c ' '
 str c 0 26
-ldc c 'a'
+ldc c ' '
 str c 0 27
-ldc c 'a'
+ldc c ' '
 str c 0 28
-ldc c 'a'
+ldc c ' '
 str c 0 29
-ldc c 'a'
+ldc c ' '
 str c 0 30
-ldc c 'a'
+ldc c ' '
 str c 0 31
-ldc c 'a'
+ldc c ' '
 str c 0 32
-ldc c 'a'
+ldc c ' '
 str c 0 33
-ldc c 'a'
+ldc c ' '
 str c 0 34
-ldc c 'a'
+ldc c ' '
 str c 0 35
-ldc c 'a'
+ldc c ' '
 str c 0 36
-ldc c 'a'
+ldc c ' '
 str c 0 37
-ldc c 'a'
+ldc c ' '
 str c 0 38
-ldc c 'a'
+ldc c ' '
 str c 0 39
-ldc c 'a'
+ldc c ' '
 str c 0 40
-ldc c 'a'
+ldc c ' '
 str c 0 41
-ldc c 'a'
+ldc c ' '
 str c 0 42
-ldc c 'a'
+ldc c ' '
 str c 0 43
-ldc c 'a'
+ldc c ' '
 str c 0 44
-ldc c 'a'
+ldc c ' '
 str c 0 45
-ldc c 'a'
+ldc c ' '
 str c 0 46
-ldc c 'a'
+ldc c ' '
 str c 0 47
-ldc c 'a'
+ldc c ' '
 str c 0 48
-ldc c 'a'
+ldc c ' '
 str c 0 49
-ldc c 'a'
+ldc c ' '
 str c 0 50
-ldc c 'a'
+ldc c ' '
 str c 0 51
-ldc c 'a'
+ldc c ' '
 str c 0 52
-ldc c 'a'
+ldc c ' '
 str c 0 53
-ldc c 'a'
+ldc c ' '
 str c 0 54
-ldc c 'a'
+ldc c ' '
 str c 0 55
-ldc c 'a'
+ldc c ' '
 str c 0 56
-ldc c 'a'
+ldc c ' '
 str c 0 57
-ldc c 'a'
+ldc c ' '
 str c 0 58
-ldc c 'a'
+ldc c ' '
 str c 0 59
-ldc c 'a'
+ldc c ' '
 str c 0 60
-ldc c 'a'
+ldc c ' '
 str c 0 61
-ldc c 'a'
+ldc c ' '
 str c 0 62
-ldc c 'a'
+ldc c ' '
 str c 0 63
-ldc c 'a'
+ldc c ' '
 str c 0 64
-ldc c 'a'
+ldc c ' '
 str c 0 65
-ldc c 'a'
+ldc c ' '
 str c 0 66
-ldc c 'a'
+ldc c ' '
 str c 0 67
-ldc c 'a'
+ldc c ' '
 str c 0 68
-ldc c 'a'
+ldc c ' '
 str c 0 69
-ldc c 'a'
+ldc c ' '
 str c 0 70
-ldc c 'a'
+ldc c ' '
 str c 0 71
-ldc c 'a'
+ldc c ' '
 str c 0 72
-ldc c 'a'
+ldc c ' '
 str c 0 73
-ldc c 'a'
+ldc c ' '
 str c 0 74
-ldc c 'a'
+ldc c ' '
 str c 0 75
-ldc c 'a'
+ldc c ' '
 str c 0 76
-ldc c 'a'
+ldc c ' '
 str c 0 77
-ldc c 'a'
+ldc c ' '
 str c 0 78
-ldc c 'a'
+ldc c ' '
 str c 0 79
-ldc c 'a'
+ldc c ' '
 str c 0 80
-ldc c 'a'
+ldc c ' '
 str c 0 81
-ldc c 'a'
+ldc c ' '
 str c 0 82
-ldc c 'a'
+ldc c ' '
 str c 0 83
-ldc c 'a'
+ldc c ' '
 str c 0 84
-ldc c 'a'
+ldc c ' '
 str c 0 85
-ldc c 'a'
+ldc c ' '
 str c 0 86
-ldc c 'a'
+ldc c ' '
 str c 0 87
-ldc c 'a'
+ldc c ' '
 str c 0 88
-ldc c 'a'
+ldc c ' '
 str c 0 89
-ldc c 'a'
+ldc c ' '
 str c 0 90
-ldc c 'a'
+ldc c ' '
 str c 0 91
-ldc c 'a'
+ldc c ' '
 str c 0 92
-ldc c 'a'
+ldc c ' '
 str c 0 93
-ldc c 'a'
+ldc c ' '
 str c 0 94
-ldc c 'a'
+ldc c ' '
 str c 0 95
-ldc c 'a'
+ldc c ' '
 str c 0 96
-ldc c 'a'
+ldc c ' '
 str c 0 97
-ldc c 'a'
+ldc c ' '
 str c 0 98
-ldc c 'a'
+ldc c ' '
 str c 0 99
-ldc c 'a'
+ldc c ' '
 str c 0 100
-ldc c 'a'
+ldc c ' '
 str c 0 101
-ldc c 'a'
+ldc c ' '
 str c 0 102
-ldc c 'a'
+ldc c ' '
 str c 0 103
-ldc c 'a'
+ldc c ' '
 str c 0 104
-ldc c 'a'
+ldc c ' '
 str c 0 105
-ldc c 'a'
+ldc c ' '
 str c 0 106
-ldc c 'a'
+ldc c ' '
 str c 0 107
-ldc c 'a'
+ldc c ' '
 str c 0 108
-ldc c 'a'
+ldc c ' '
 str c 0 109
-ldc c 'a'
+ldc c ' '
 str c 0 110
-ldc c 'a'
+ldc c ' '
 str c 0 111
-ldc c 'a'
+ldc c ' '
 str c 0 112
-ldc c 'a'
+ldc c ' '
 str c 0 113
-ldc c 'a'
+ldc c ' '
 str c 0 114
-ldc c 'a'
+ldc c ' '
 str c 0 115
-ldc c 'a'
+ldc c ' '
 str c 0 116
-ldc c 'a'
+ldc c ' '
 str c 0 117
-ldc c 'a'
+ldc c ' '
 str c 0 118
-ldc c 'a'
+ldc c ' '
 str c 0 119
 mst 1
 lod a 0 7

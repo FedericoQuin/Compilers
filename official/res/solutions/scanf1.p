@@ -21,7 +21,7 @@ in i
 str i 0 6
 in i
 str i 0 5
-ldc c 'a'
+ldc c ' '
 str c 0 7
 in c
 str c 0 7

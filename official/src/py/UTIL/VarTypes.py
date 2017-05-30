@@ -125,7 +125,7 @@ class CharType(VarType):
 		return PointerType(self, 1)
 
 	def getDefaultValue(self):
-		return "'a'"
+		return "' '"
 
 	def getPString(self):
 		return "c"

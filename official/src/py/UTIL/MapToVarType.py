@@ -20,5 +20,5 @@ def mapTypeToVarType(nodeType):
 	elif nodeType == ASTNodeType.Void:
 		return VoidType()
 		
-	raise Exception("Could not map node '" + str(nodeType.name) + "' to primitive type.")
+	raise Exception("Could not map node '" + str(nodeType) + "' to primitive type.")
 

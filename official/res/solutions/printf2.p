@@ -11,15 +11,15 @@ ldc i 0
 str i 0 0
 lda 0 6
 str a 0 5
-ldc c 'a'
+ldc c ' '
 str c 0 6
-ldc c 'a'
+ldc c ' '
 str c 0 7
-ldc c 'a'
+ldc c ' '
 str c 0 8
-ldc c 'a'
+ldc c ' '
 str c 0 9
-ldc c 'a'
+ldc c ' '
 str c 0 10
 lod a 0 5
 ldc i 0

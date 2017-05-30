@@ -3,7 +3,7 @@ ujp main
 main:
 mst 0
 ldc r 0.0
-ldc c 'a'
+ldc c ' '
 ldc i 0
 cup 3 label_main
 hlt
