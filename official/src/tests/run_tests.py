@@ -271,12 +271,12 @@ def test_errors():
 	errorFiles = [
 		"error_braces1.c",
 		"error_braces2.c",
-		# "error_braces3.c"			// TODO
-		# "error_no_semicolon.c"	// TODO improve current error
-		# "error_rubbish.c",		// TODO
-		# "error_ifelse.c",		// TODO
-		# "error_for.c",		// TODO
-		# "error_while.c"		// TODO
+		# "error_braces3.c"			
+		# "error_no_semicolon.c"
+		# "error_rubbish.c",		
+		# "error_ifelse.c",		
+		# "error_for.c",		
+		# "error_while.c"		
 	]
 	errorMessages = [
 		"3:0: Error while/after parsing statement\n\n^\nBraces don't match",

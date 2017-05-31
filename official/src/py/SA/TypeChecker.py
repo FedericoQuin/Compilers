@@ -81,7 +81,6 @@ class TypeChecker:
 		# Type checking for array element index
 		#======================================
 		elif node.type == ASTNodeType.LValueArrayElement or node.type == ASTNodeType.RValueArrayElement:
-			# Make sure that the index is a (positive -> TODO at runtime?) int value
 			indexType = TypeDeductor.deductType(node.children[0], self.symbolTable)
 			if indexType != IntType():
 				ErrorMsgHandler.arrayElementWrongAccess(node)

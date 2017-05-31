@@ -101,10 +101,6 @@ class ASTCreator(cGrammarListener):
 	def enterCharvalue(self, ctx:cGrammarParser.CharvalueContext):
 		self.AST.addCharValue(ctx)
 
-	def exitCharvalue(self, ctx:cGrammarParser.CharvalueContext):
-		# no need to climb here, the new node doesn't need to be adjusted further
-		pass
-
 
 	# Function calls
 	def enterFunctioncall(self, ctx:cGrammarParser.FunctioncallContext):
@@ -132,15 +128,6 @@ class ASTCreator(cGrammarListener):
 
 	def exitFalse(self, ctx):
 		self.AST.climbTree()
-
-
-	# TODO were these really necessary?
-	# def enterLvalue_brackets(self, ctx:cGrammarParser.Lvalue_bracketsContext):
-	# 	self.AST.makeBrackets(ctx)
-
-	# def exitLvalue_brackets(self, ctx:cGrammarParser.Lvalue_bracketsContext):
-	# 	self.AST.climbTree()
-
 
 
 	#################################################
@@ -212,8 +199,6 @@ class ASTCreator(cGrammarListener):
 		self.AST.addIfElse(ctx)
 
 	def exitIfelse(self, ctx:cGrammarParser.IfelseContext):
-		# twice because you have to return from the self-made node but also from the IfTrue-IfFalse nodes
-		# because one of them has to jump back as well, but they can't know whether the other one already jumped back or not
 		self.AST.climbTree()
 
 

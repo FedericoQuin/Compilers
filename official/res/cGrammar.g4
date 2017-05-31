@@ -1,41 +1,35 @@
 
 grammar cGrammar;
 
-
-program :
-	program functiondecl
+program
+	: program functiondecl
 	| program function
 	| program global_declaration ';'
 	| program include_file  
 	|
 	;
 
-
-include_file : 
-	INCLUDE_FILE;
-
+include_file : INCLUDE_FILE;
 
 function : returntype ID '(' initialfunctionargument ')' '{' function_body '}';
 
 functiondecl : returntype ID '(' initialfunctionargument ')' ';';
 
-initialfunctionargument : 
-	type_argument type_arguments
-	|;
-type_arguments :	
-	',' type_argument type_arguments
-	|;
-type_argument : 
-	dec_type OPERATOR_ADDROF? ID;
-
+initialfunctionargument
+	: type_argument type_arguments
+	| ;
+type_arguments
+	: ',' type_argument type_arguments
+	| ;
+type_argument : dec_type OPERATOR_ADDROF? ID;
 
 
 function_body : statements;
 
 
-statements : 
-	statement statements
-	|;
+statements 
+	: statement statements
+	| ;
 statement
 	: expression ';'
 	| declaration ';'
@@ -55,37 +49,41 @@ break_stmt : 'break';
 continue_stmt : 'continue';
 return_stmt : RETURN expression?;
 
-expression :	// TODO add brackets
-	add_sub
+expression
+	: add_sub
 	| condition
-	| rvalue;
+	| rvalue
+	;
 
 
-add_sub :
-	add_sub OPERATOR_PLUS add_sub
+add_sub
+	: add_sub OPERATOR_PLUS add_sub
 	| add_sub OPERATOR_MINUS add_sub
 	| rvalue_identifier
 	| rvalue
-	| mul_div;
+	| mul_div
+	;
 
-mul_div :
-	mul_div OPERATOR_MUL mul_div
+mul_div
+	: mul_div OPERATOR_MUL mul_div
 	| mul_div OPERATOR_DIV mul_div
 	| rvalue_identifier
 	| rvalue
-	| minus_expr;
+	| minus_expr
+	;
 
-minus_expr:
-	OPERATOR_MINUS minus_expr
-	| dereference_expr;
+minus_expr
+	: OPERATOR_MINUS minus_expr
+	| dereference_expr
+	;
 
-dereference_expr:
-	OPERATOR_MUL+ dereference_expr
+dereference_expr
+	: OPERATOR_MUL+ dereference_expr
 	| OPERATOR_MUL+ rvalue
-	| bracket_expression;
+	| bracket_expression
+	;
 
-bracket_expression :
-	LBRACKET expression RBRACKET;
+bracket_expression : LBRACKET expression RBRACKET;
 
 
 //////////////////////////////////////////////////////////
@@ -96,17 +94,18 @@ bracket_expression :
 lvalue_identifier : ID;
 rvalue_identifier : ID;
 
-ifelse : 
-	'if' '(' condition ')' '{' first_true_statements '}'
+ifelse
+	: 'if' '(' condition ')' '{' first_true_statements '}'
 	| 'if' '(' condition ')' first_true_statement else_statement
 	| 'if' '(' condition ')' '{' first_true_statements '}' else_statement
 	| 'if' '(' condition ')' '{' first_true_statements '}' else_statement
-	| 'if' '(' condition ')' first_true_statement else_statement;
+	| 'if' '(' condition ')' first_true_statement else_statement
+	;
 
-else_statement :
-	 
-	| 'else' first_false_statement
-	| 'else' '{' first_false_statements '}';
+else_statement
+	: 'else' first_false_statement
+	| 'else' '{' first_false_statements '}'
+	| ;
 
 // Hacks to build the AST
 firstcondition : condition;
@@ -115,78 +114,82 @@ first_true_statement : statement;
 first_false_statement : statement;
 first_false_statements : statements;
 
-condition :
-	condition_or;
+condition : condition_or;
 
-condition_or :
-	condition_or OPERATOR_OR condition_or
+condition_or
+	: condition_or OPERATOR_OR condition_or
 	| condition_and
 	| rvalue
-	| comparison;
+	| comparison
+	;
 
-condition_and :
-	condition_and OPERATOR_AND condition_and
+condition_and
+	: condition_and OPERATOR_AND condition_and
 	| condition_not
 	| comparison
-	| rvalue;
+	| rvalue
+	;
 
-condition_not :
-	OPERATOR_NOT comparison
+condition_not
+	: OPERATOR_NOT comparison
 	| OPERATOR_NOT rvalue
-	| bracket_condition;
+	| bracket_condition
+	;
 
-bracket_condition :
-	LBRACKET condition_or RBRACKET
-	| OPERATOR_NOT LBRACKET condition_or RBRACKET;
+bracket_condition
+	: LBRACKET condition_or RBRACKET
+	| OPERATOR_NOT LBRACKET condition_or RBRACKET
+	;
 
-// TODO verify this
-comparison : 
-	add_sub comparator add_sub;
+comparison : add_sub comparator add_sub;
 
-comparator :
-	OPERATOR_EQ
+comparator
+	: OPERATOR_EQ
 	| OPERATOR_NE
 	| OPERATOR_GT
 	| OPERATOR_GE
 	| OPERATOR_LT
-	| OPERATOR_LE;
+	| OPERATOR_LE
+	;
 
 //////////////////////////////////////////////////////////
 // While loop stuff 									//
 //////////////////////////////////////////////////////////
 
-while_loop : 
-	'while' '(' first_while_condition ')' '{' first_while_statements '}'
-	| 'while' '(' first_while_condition ')' first_while_statement;
+while_loop
+	: 'while' '(' first_while_condition ')' '{' first_while_statements '}'
+	| 'while' '(' first_while_condition ')' first_while_statement
+	;
 
 // Hacks to build the AST
 first_while_statements : statements;
-first_while_statement : statement;
-first_while_condition : condition;
+first_while_statement  : statement;
+first_while_condition  : condition;
 
 
 //////////////////////////////////////////////////////////
 // For loop stuff 										//
 //////////////////////////////////////////////////////////
 
-for_loop : 
-	'for' '(' first_stmt_for ';' second_stmt_for ';' third_stmt_for ')' '{' first_for_statements '}'
-	| 'for' '(' first_stmt_for ';' second_stmt_for ';' third_stmt_for ')' first_for_statement;
+for_loop
+	: 'for' '(' first_stmt_for ';' second_stmt_for ';' third_stmt_for ')' '{' first_for_statements '}'
+	| 'for' '(' first_stmt_for ';' second_stmt_for ';' third_stmt_for ')' first_for_statement
+	;
 
 // Hacks to build the AST
 first_for_statements : statements;
-first_for_statement : statement;
-first_stmt_for :
-	expression
+first_for_statement  : statement;
+first_stmt_for
+	: expression
 	| declaration
 	| ;
 
-second_stmt_for :
-	expression
+second_stmt_for
+	: expression
 	| ;
 
-third_stmt_for :
-	assignment
+third_stmt_for
+	: assignment
 	| ;
 
 //////////////////////////////////////////////////////////
@@ -196,54 +199,49 @@ third_stmt_for :
 scanf : 'scanf' '(' format_string scanf_call_arguments ')';
 printf : 'printf' '(' format_string call_arguments ')';
 
-// Not sure how to go about this in a decent manner
 format_string : STRING;
 
+scanf_call_arguments
+	: ',' lvalue scanf_call_arguments 
+	| ;
 
 //////////////////////////////////////////////////////////
 // Function calls 										//
 //////////////////////////////////////////////////////////
-functioncall :
-	ID '(' call_argument_initial ')';
+functioncall : ID '(' call_argument_initial ')';
 
-call_argument_initial :
-	expression call_arguments
-	|;
+call_argument_initial
+	: expression call_arguments
+	| ;
 
-call_arguments :
-	',' call_argument call_arguments
-	|;
+call_arguments
+	: ',' call_argument call_arguments
+	| ;
 
-// TODO verify this
-call_argument :
-	expression;
+call_argument : expression;
 
-scanf_call_arguments :
-	',' lvalue scanf_call_arguments
-	|;
 
 
 //////////////////////////////////////////////////////////
 // Declarations and assignments							//
 //////////////////////////////////////////////////////////
 
-declaration : 
-	normal_declaration
-	| array_declaration;
+declaration 
+	: normal_declaration
+	| array_declaration
+	;
 
-normal_declaration :
-	dec_type ID initialization
-	| dec_type ID;
-array_declaration : 
-	dec_type ID LSQUAREBRACKET digits RSQUAREBRACKET;
+normal_declaration
+	: dec_type ID initialization
+	| dec_type ID
+	;
+array_declaration : dec_type ID LSQUAREBRACKET digits RSQUAREBRACKET;
 
 assignment : lvalue OPERATOR_AS expression; // lack of better words
 
-initialization :
-	OPERATOR_AS expression;
+initialization : OPERATOR_AS expression;
 
-global_declaration : 
-	declaration;
+global_declaration : declaration;
 
 
 
@@ -256,7 +254,8 @@ lvalue
 	: lvalue_identifier
 	| arrayelement_lvalue
 	| lvalue_brackets
-	| pointer_dereference;
+	| pointer_dereference
+	;
 
 lvalue_brackets : LBRACKET lvalue RBRACKET;
 
@@ -269,15 +268,14 @@ rvalue
 	| rvalue_identifier
 	| true
 	| false
-	| OPERATOR_MINUS rvalue; // Here in order to give priority to rvalue with a minus operator, instead of whole expressions
+	| OPERATOR_MINUS rvalue // Here in order to give priority to rvalue with a minus operator, instead of whole expressions
+	;
 
 
 arrayelement_rvalue : arrayelement;
 arrayelement_lvalue : arrayelement;
 
-arrayelement :
-	ID LSQUAREBRACKET expression RSQUAREBRACKET;
-
+arrayelement : ID LSQUAREBRACKET expression RSQUAREBRACKET;
 
 
 charvalue : CHARVALUE;
@@ -291,18 +289,17 @@ floatvalue : digits? '.' digits;
 // Pointers and addresses								//
 //////////////////////////////////////////////////////////
 
-address_value : 
-	OPERATOR_ADDROF lvalue;
+address_value : OPERATOR_ADDROF lvalue;
 
-pointer_dereference : 
-	dereference_bracket
-	| OPERATOR_MUL+ expression;
+pointer_dereference
+	: dereference_bracket
+	| OPERATOR_MUL+ expression
+	;
 
 
-dereference_bracket :
-	LBRACKET pointer_dereference RBRACKET; // TODO add to lvalue as a whole?
+dereference_bracket : LBRACKET pointer_dereference RBRACKET;
 
-ptr : '*' ptr |;
+ptr : '*' ptr | ;
 
 
 //////////////////////////////////////////////////////////
@@ -312,24 +309,26 @@ ptr : '*' ptr |;
 digits : DIGIT+;
 returntype : dec_type | VOID;
 
-dec_type : 
-	CHAR ptr
+dec_type 
+	: CHAR ptr
 	| FLOAT ptr
 	| INT ptr
-	| BOOL ptr;
+	| BOOL ptr
+	;
 
 true : TRUE;
 false : FALSE;
+
 
 //////////////////////////////////////////////////////////
 // Lexer Rules											//
 //////////////////////////////////////////////////////////
 
-
 INCLUDE_MACRO : '#include';
-INCLUDE_FILE : 
-	INCLUDE_MACRO OPERATOR_LT .*? OPERATOR_GT
-	| INCLUDE_MACRO ' '* OPERATOR_LT .*? OPERATOR_GT;
+INCLUDE_FILE 
+	: INCLUDE_MACRO OPERATOR_LT .*? OPERATOR_GT
+	| INCLUDE_MACRO ' '* OPERATOR_LT .*? OPERATOR_GT
+	;
 
 
 LSQUAREBRACKET : '[';
@@ -355,16 +354,9 @@ OPERATOR_LE : '<=' | '=<';
 
 OPERATOR_ADDROF : '&';
 
-OPERATOR_OR :
-	'||'
-	| 'or';
-OPERATOR_AND :
-	'&&'
-	| 'and';
-OPERATOR_NOT :
-	'!'
-	| 'not';
-
+OPERATOR_OR : '||' | 'or';
+OPERATOR_AND: '&&' | 'and';
+OPERATOR_NOT: '!'  | 'not';
 
 VOID : 'void';
 CHAR : 'char';

@@ -49,8 +49,6 @@ class UselessDecorator:
 					return
 				currentNode = currentNode.parent
 				
-			# TODO remove, here for debugging reasons
-			# print("Found a useless node!!!\n" + str(node.type) + " at " + "(" + ",".join([str(i) for i in node.position]) + ")" + "\n")
 			node.useless = True
 			self.nodeLevel = nodeLevel
 				
@@ -60,7 +58,6 @@ class UselessDecorator:
 		return node.type in potentialNodes
 		
 	def isUsefulNode(self, node):
-		# TODO make sure what to do with printf, scanf
 		usefulNodes = [ASTNodeType.Assignment, ASTNodeType.Initialization, ASTNodeType.FunctionCall, \
 			ASTNodeType.Or, ASTNodeType.And, ASTNodeType.Not, ASTNodeType.Equals, ASTNodeType.NotEquals, \
 			ASTNodeType.Greater, ASTNodeType.GreaterOrEqual, ASTNodeType.Less, ASTNodeType.LessOrEqual, \

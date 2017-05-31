@@ -122,8 +122,8 @@ class TypeDeductor:
 				partialCount = getPtrCount(currentNode, node, True)
 
 				if partialCount == 0:
-					# TODO add check for int values
-					pass
+					if not(newType == IntType()):
+						ErrorMsgHandler.addressOpNonInt(currentNode, newType)
 				elif type(newType) != PointerType:
 					ErrorMsgHandler.derefNonPointer(currentNode)
 				elif newType.ptrCount == 0:

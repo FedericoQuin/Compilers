@@ -57,11 +57,10 @@ class SymbolTableBuilder:
 	
 	def addFunctionSignature(self, node, initialized = False):
 		children = node.children
-		# TODO Func is a placeholder until subclassed
 		returnType = PointerType(mapNodeToVarType(children[0].value), children[0].value.ptrCount)
 		
 		# Iterate over the function arguments and add their types to the signature
-		# NOTE: The type attribute of the function arguments nodes are objects of the class PointerType.
+		# NOTE: The type attribute of the function arguments nodes are objects of the class pointerType.
 		#		The actual type has to be accessed by getting the type attribute from that class.
 		functionSignature = []
 		for i in children[1].children:
@@ -121,15 +120,11 @@ class SymbolTableBuilder:
 			self.symbolTable.insertEntry(str(node.value), symbolType, Scope.GLOBAL if self.currentLevel == 0 else Scope.LOCAL)
 
 	def getTypeDecl(self, node):
-		# TODO refactor to use method above, kind of hacked in for now
-		if node.type == ASTNodeType.FloatDecl:
-			return FloatType()
-		elif node.type == ASTNodeType.IntDecl:
-			return IntType()
-		elif node.type == ASTNodeType.CharDecl:
-			return CharType()
-		elif node.type == ASTNodeType.BoolDecl:
-			return BoolType()
+		if node.type == ASTNodeType.FloatDecl or \
+				node.type == ASTNodeType.IntDecl or \
+				node.type == ASTNodeType.CharDecl or \
+				node.type == ASTNodeType.BoolDecl:
+			return mapTypeToVarType(node.type)
 		elif node.type == ASTNodeType.ArrayDecl:
 			arrayType = PointerType(mapNodeToVarType(node.children[0].value), node.children[0].value.ptrCount)
 			size = node.children[1].value

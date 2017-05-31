@@ -71,12 +71,10 @@ class PTranslator:
         self.doTypeCheckingDecorating(nodes)
 
         # Actual translation
-        symbolTable = SymbolTable()
-        self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
-        self.fringe.append(nodes[0])
-
-        # TODO remove
         if translate:
+            symbolTable = SymbolTable()
+            self.symbolTableBuilder = SymbolTableBuilder(symbolTable)
+            self.fringe.append(nodes[0])
             self.parseExpression()
 
 
@@ -757,13 +755,12 @@ class PTranslator:
         arguments = self.symbolTableBuilder.symbolTable.lookupSymbol(functionNode.value).type.arguments
 
         for argument, argumentType in zip(functionNode.children, arguments):
-            # TODO include references and array elements and stuff
             if isinstance(argumentType, ReferenceType):
                 mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
                 followLinkCount = self.getFollowLinkCount(argument.value)
                 self.programText += "lda " + str(followLinkCount) + " " + str(mapping.address + 5) + "\n"
             else:
-                self.fringe = [(argument, nodeLevel + 1)] +  self.fringe
+                self.fringe = [(argument, nodeLevel + 1)] + self.fringe
                 self.parseExpression()
 
 
@@ -846,12 +843,13 @@ class PTranslator:
                 dataSizeNoArray += 1
                 globalDataSize += 1
 
-        text = "ssp " + str(5 + globalDataSize) + "\n"
 
         # Dirty things here
-        programText = deepcopy(self.programText)
+        old_programText = deepcopy(self.programText)
         self.programText = ""
         nextArrayAddress = 5 + dataSizeNoArray
+
+        self.programText = "ssp " + str(5 + globalDataSize) + "\n"
 
         self.symbolTableBuilder.processNode(node, nodeLevel)
 
@@ -867,21 +865,19 @@ class PTranslator:
                     # Set the rhs
                     self.addChildrenToFringe(child.children[0], nodeLevel + 1, deleteFront=False)
                     self.parseExpression()
-                    text += self.programText
-                    self.programText = ""
 
-                    text += "str " + Type.getPString() + " 0 " + str(offset) + "\n"
+                    self.programText += "str " + Type.getPString() + " 0 " + str(offset) + "\n"
                     offset += 1
 
                 else:
-                    text += "ldc " + Type.getPString() + " " + Type.getDefaultValue() + "\n"
-                    text += "str " + Type.getPString() + " 0 " + str(offset) + "\n"
+                    self.programText += "ldc " + Type.getPString() + " " + Type.getDefaultValue() + "\n"
+                    self.programText += "str " + Type.getPString() + " 0 " + str(offset) + "\n"
                     offset += 1
 
 
             elif child.type == ASTNodeType.ArrayDecl:
-                text += "lda 0 " + str(nextArrayAddress) + "\n"
-                text += "str a 0 " + str(offset) + "\n"
+                self.programText += "lda 0 " + str(nextArrayAddress) + "\n"
+                self.programText += "str a 0 " + str(offset) + "\n"
                 offset += 1
 
                 line = ""
@@ -889,13 +885,12 @@ class PTranslator:
                     Type = PointerType(IntType(), 1) if child.children[0].value.ptrCount != 0 else mapTypeToVarType(child.children[0].value.type)
 
                     for i in range(int(child.children[1].value)):
-                        text += "ldc " + Type.getPString() + " " + Type.getDefaultValue() + "\n" + \
+                        self.programText += "ldc " + Type.getPString() + " " + Type.getDefaultValue() + "\n" + \
                             "str " + Type.getPString() + " 0 " + str(nextArrayAddress) + "\n"
                         nextArrayAddress += 1
-                        self.programText = ""
 
-        text += "ujp main\n"
-        self.programText = text + programText
+        self.programText += "ujp main\n"
+        self.programText = self.programText + old_programText
 
         # Reset the symboltable
         symbolTable = SymbolTable()
@@ -958,7 +953,6 @@ class PTranslator:
             return False
 
     def isSimpleDeclaration(self, nodeType):
-        # TODO ptr?
         simpleDecls = [ASTNodeType.IntDecl or ASTNodeType.FloatDecl or ASTNodeType.CharDecl or ASTNodeType.BoolDecl]
         nodeToCheck = nodeType
         if type(nodeToCheck) is pointerType:
@@ -968,7 +962,6 @@ class PTranslator:
 
 
     def isSimpleRValue(self, nodeType):
-        # TODO ptr?
         if nodeType == ASTNodeType.RValueInt or nodeType == ASTNodeType.RValueID or nodeType == ASTNodeType.RValueFloat or \
             nodeType == ASTNodeType.RValueChar or nodeType == ASTNodeType.RValueAddress:
             return True

@@ -15,7 +15,6 @@ class AnsiEscapeCodes(Enum):
 			return "\033[0m"
 
 
-# Lowercase enum values because Warning is a python keyword :(
 class ExType(Enum):
 	error = 1
 	warning = 2
@@ -44,10 +43,6 @@ def determineExPrefix(exType, position):
 
 
 
-# TODO figure out if splitting up exceptions in different custom exceptions is of any value
-# TODO warning messages for (if time permits this):
-#	- reference before assignment of variable
-#	- access outside array
 
 class ErrorMsgHandler:
 	@staticmethod
@@ -96,7 +91,6 @@ class ErrorMsgHandler:
 	# ===================
 	@staticmethod
 	def extensiveDereferencing():
-		# TODO this has been one of the worst method namings... ever... in like... the history of all method namings.
 		ErrorMsgHandler.throwErrorMessage(ExType.error, "Cannot dereference variable more times than its pointer count.")
 
 	@staticmethod
@@ -175,7 +169,6 @@ class ErrorMsgHandler:
 
 	@staticmethod
 	def typesOperationWrong(node, type1, type2, operationNode):
-		# TODO make sure operationNode is always valid by checking TypeDeductor method
 		ErrorMsgHandler.throwErrorMessage(ExType.error, \
 			"Types for operation '" + str(operationNode.type.name) + "' don't match ('" + type1.getStrType() + "' and '" + type2.getStrType() + "').", \
 			node)
@@ -190,5 +183,9 @@ class ErrorMsgHandler:
 	@staticmethod
 	def negateInvalid(node, givenType):
 		ErrorMsgHandler.throwErrorMessage(ExType.error, "Cannot negate '" + givenType.getStrType() + "' (only 'int' and 'float' allowed).", node)
+
+	@staticmethod
+	def addressOpNonInt(node, givenType):
+		ErrorMsgHandler.throwErrorMessage(ExType.error, "Cannot add '" + givenType.getStrType() + "' value to pointer dereference.", node)
 
 
