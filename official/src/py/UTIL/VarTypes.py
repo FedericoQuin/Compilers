@@ -2,6 +2,35 @@
 from src.py.SA.ErrorMsgHandler import ErrorMsgHandler
 
 
+def strictEqual(obj1, obj2):
+	if type(obj1) is FunctionType:
+		return strictEqual(obj2, obj1.returnType)
+	elif type(obj1) is ArrayType:
+		return strictEqual(obj2, obj1.type)
+	elif type(obj1) is PointerType:
+		if obj1.ptrCount == 0:
+			return strictEqual(obj2, obj1.type)
+		elif obj1.ptrCount != 0 and type(obj2) is PointerType:
+			return obj1.ptrCount == obj2.ptrCount and strictEqual(obj1.type, obj2.type)
+	elif type(obj1) is ReferenceType:
+		strictEqual(obj2, obj1.type)
+
+	if type(obj2) is FunctionType:
+		return strictEqual(obj1, obj2.returnType)
+	elif type(obj2) is ArrayType:
+		return strictEqual(obj1, obj2.type)
+	elif type(obj2) is PointerType:
+		if obj2.ptrCount == 0:
+			return strictEqual(obj1, obj2.type)
+		elif obj2.ptrCount != 0 and type(obj1) is PointerType:
+			return obj2.ptrCount == obj1.ptrCount and strictEqual(obj2.type, obj1.type)
+	elif type(obj2) is ReferenceType:
+		strictEqual(obj1, obj2.type)
+
+
+	return type(obj1) == type(obj2)
+		
+
 class VarType:
 	def __init__(self):
 		self.memorySize = 0
@@ -27,7 +56,6 @@ class VarType:
 		return "default"
 
 
-
 class VoidType(VarType):
 	def __str__(self):
 		return "void"
@@ -43,7 +71,7 @@ class VoidType(VarType):
 
 class IntType(VarType):
 	def __init__(self):
-		self.memorySize = 4
+		self.memorySize = 1
 
 	def __str__(self):
 		return "int"
@@ -73,7 +101,7 @@ class IntType(VarType):
 
 class FloatType(VarType):
 	def __init__(self):
-		self.memorySize = 4
+		self.memorySize = 1
 
 	def __str__(self):
 		return "float"
@@ -184,7 +212,7 @@ class PointerType(VarType):
 	def __init__(self, _type, ptrCount):
 		self.type = _type
 		self.ptrCount = ptrCount
-		self.memorySize = 4
+		self.memorySize = 1
 
 	def __str__(self):
 		return str(self.type) + ''.join(["*" for i in range(self.ptrCount)])

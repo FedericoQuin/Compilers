@@ -450,6 +450,27 @@ def test_noIncludes():
 			string = str(inst)
 			assert(string == errorMessages[i])
 
+def test_formatString():
+	errorFiles = [
+		"printf_argument1.c",
+		"printf_argument2.c",
+		"scanf_argument1.c",
+		"scanf_argument2.c"
+	]
+	errorMessages = [
+		determineExPrefix(ExType.error, (7,37)) + "Type 'int' does not match the argument in the formatstring ('char' required, argument #1).",
+		determineExPrefix(ExType.error, (8,42)) + "Type 'char' does not match the argument in the formatstring ('char*' required, argument #2).",
+		determineExPrefix(ExType.error, (9,1)) + "Type 'float' does not match the argument in the formatstring ('int' required, argument #3).",
+		determineExPrefix(ExType.error, (7,1)) + "Type 'int' does not match the argument in the formatstring ('char*' required, argument #1).",
+	]
+	for i in range(len(errorFiles)):
+		try:
+			ASTNode.ID = 0
+			parseNoCatch(errorFiles[i], "", "")
+		except Exception as inst:
+			string = str(inst)
+			assert(string == errorMessages[i])
+
 def test_noMain():
 	errorFile = "nomain.c"
 	errorMessage = determineExPrefix(ExType.error, None) + "The program does not contain a 'main' function."

@@ -621,14 +621,22 @@ class PTranslator:
             sequenceList = self.getPrintSequence(node)
             argumentIndex = 1
             for item in sequenceList:
-                # Is the parsed item an argument provided, or just a normal char from the string?
+                # Is the parsed item an argument provided, or just a normal char from the formatstring?
 
                 # In case it it an argument provided that needs to be printed
                 if type(item) is ScanPrintArgument:
+                    argument = node.children[argumentIndex]
+                    
+                    requiredType = item.getType()
+                    givenType = TypeDeductor.deductType(argument, self.symbolTableBuilder.symbolTable)
+                    print(type(givenType), "\n", type(requiredType))
+                    if not(strictEqual(givenType, requiredType)):
+                        print("before error")
+                        ErrorMsgHandler.typeFormatWrong(argument, requiredType, givenType, argumentIndex)
                     # Special case for strings -> char array
                     if item.type == "s":
-                        mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(node.children[argumentIndex].value)
-                        followLinkCount = self.getFollowLinkCount(node.children[argumentIndex].value)
+                        mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
+                        followLinkCount = self.getFollowLinkCount(argument.value)
 
                         self.programText += "\n".join([ \
                             "lod a " + str(followLinkCount) + " " + str(mapping.address + 5) + "\nldc i " + str(i) + "\nixa 1\nind c\nout c" \
@@ -636,12 +644,12 @@ class PTranslator:
                         self.programText += "\n"
 
                     else:
-                        self.fringe = [(node.children[argumentIndex], nodeLevel+1)] + self.fringe
+                        self.fringe = [(argument, nodeLevel+1)] + self.fringe
                         self.parseExpression()
                         self.programText += "out " + item.type + "\n"
 
                     argumentIndex += 1
-                # In case it is the normal char from the string
+                # In case it is the normal char from the formatstring
                 else:
                     # Little hack for escaped characters --> python escapes the backslash parsed from the program
                     listIndex = 0
@@ -664,6 +672,11 @@ class PTranslator:
 
             for item in sequenceList:
                 argument = node.children[listIndex]
+                
+                requiredType = item.getType()
+                givenType = TypeDeductor.deductType(argument, self.symbolTableBuilder.symbolTable)
+                if not(strictEqual(givenType, requiredType)):
+                    ErrorMsgHandler.typeFormatWrong(node, requiredType, givenType, listIndex)
 
                 if item.type == "s":
                     mapping = self.symbolTableBuilder.symbolTable.lookupSymbol(argument.value)
@@ -991,3 +1004,13 @@ class ScanPrintArgument:
     def __repr__(self):
         return str(self)
 
+    def getType(self):
+        if self.type == "i":
+            return IntType()
+        elif self.type == "r":
+            return FloatType()
+        elif self.type == "c":
+            return CharType()
+        elif self.type == "s":
+            return ArrayType(CharType(), 0).addressOf() # size not relevant here
+        return None

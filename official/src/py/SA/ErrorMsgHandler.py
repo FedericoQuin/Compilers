@@ -189,3 +189,13 @@ class ErrorMsgHandler:
 		ErrorMsgHandler.throwErrorMessage(ExType.error, "Cannot add '" + givenType.getStrType() + "' value to pointer dereference.", node)
 
 
+	# ======================
+	# PTranslator exceptions
+	# ======================
+	@staticmethod
+	def typeFormatWrong(node, typeRequired, givenType, position):
+		ErrorMsgHandler.throwErrorMessage(ExType.error, \
+			"Type '" + givenType.getStrType() + "' does not match the argument in the formatstring " +\
+			"('" + typeRequired.getStrType() + "' required, argument #" + str(position) + ").", \
+			node)
+
