@@ -629,9 +629,7 @@ class PTranslator:
                     
                     requiredType = item.getType()
                     givenType = TypeDeductor.deductType(argument, self.symbolTableBuilder.symbolTable)
-                    print(type(givenType), "\n", type(requiredType))
                     if not(strictEqual(givenType, requiredType)):
-                        print("before error")
                         ErrorMsgHandler.typeFormatWrong(argument, requiredType, givenType, argumentIndex)
                     # Special case for strings -> char array
                     if item.type == "s":

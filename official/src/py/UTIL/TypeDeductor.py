@@ -146,9 +146,6 @@ class TypeDeductor:
 				if not(rType is IntType) and not(rType is PointerType):
 					ErrorMsgHandler.derefInvalidExpression(node)
 
-		
-		if derefType == None:
-			print("whyyyyyy")
 		return derefType
 
 

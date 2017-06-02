@@ -1,6 +1,10 @@
 
 #include <stdio.h>
 
+void printMyFloat(float& myFloat) {
+	printf("This is my special float: %f.\n", myFloat);
+}
+
 int main() {
 	char word[5];
 
@@ -11,4 +15,7 @@ int main() {
 	word[4] = 'o';
 
 	printf("This is my word: %s\n", word);
+
+	float yes = 5.3684;
+	printMyFloat(yes);
 }

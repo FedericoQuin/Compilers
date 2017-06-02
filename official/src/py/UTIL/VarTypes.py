@@ -13,7 +13,7 @@ def strictEqual(obj1, obj2):
 		elif obj1.ptrCount != 0 and type(obj2) is PointerType:
 			return obj1.ptrCount == obj2.ptrCount and strictEqual(obj1.type, obj2.type)
 	elif type(obj1) is ReferenceType:
-		strictEqual(obj2, obj1.type)
+		return strictEqual(obj2, obj1.referencedType)
 
 	if type(obj2) is FunctionType:
 		return strictEqual(obj1, obj2.returnType)
@@ -25,10 +25,9 @@ def strictEqual(obj1, obj2):
 		elif obj2.ptrCount != 0 and type(obj1) is PointerType:
 			return obj2.ptrCount == obj1.ptrCount and strictEqual(obj2.type, obj1.type)
 	elif type(obj2) is ReferenceType:
-		strictEqual(obj1, obj2.type)
+		return strictEqual(obj1, obj2.referencedType)
 
-
-	return type(obj1) == type(obj2)
+	return type(obj1) is type(obj2)
 		
 
 class VarType:
