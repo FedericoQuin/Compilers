@@ -205,8 +205,11 @@ def test_arrays():
 # 		  Global vars
 # ===============================
 
-def test_advanced_global_var():
-	parse("global_variables/advanced_global_var.c", "global_variables/advanced_global_var.dot", "global_variables/advanced_global_var.p")
+def test_advanced_global_vars1():
+	parse("global_variables/advanced_global_vars1.c", "global_variables/advanced_global_vars1.dot", "global_variables/advanced_global_vars1.p")
+
+def test_advanced_global_vars2():
+	parse("global_variables/advanced_global_vars2.c", "global_variables/advanced_global_vars2.dot", "global_variables/advanced_global_vars2.p")
 
 def test_global_vars():
 	parse("global_variables/global_vars.c", "global_variables/global_vars.dot", "global_variables/global_vars.p")

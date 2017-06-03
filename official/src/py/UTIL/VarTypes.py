@@ -221,6 +221,8 @@ class PointerType(VarType):
 			return object == self
 		elif type(object) is ReferenceType:
 			return object == self
+		elif type(object) is FunctionType:
+			return object == self
 		elif type(object) is IntType and self.ptrCount != 0:
 			return True
 		if self.ptrCount == 0 and object == self.type:

@@ -111,12 +111,14 @@ class TypeDeductor:
 
 			if currentNode.type == ASTNodeType.Dereference:
 				pass
-			elif currentNode.type == ASTNodeType.RValueID or currentNode.type == ASTNodeType.RValueArrayElement:
+			elif currentNode.type == ASTNodeType.RValueID or currentNode.type == ASTNodeType.RValueArrayElement or currentNode.type == ASTNodeType.FunctionCall:
 				newType = TypeDeductor.deductType(currentNode, symbolTable)
 				if type(newType) is ArrayType:
 					newType = newType.addressOf()
 				elif type(newType) is ReferenceType:
 					newType = newType.referencedType
+				elif type(newType) is FunctionType:
+					newType = newType.returnType
 
 				totalCount = getPtrCount(currentNode, node)
 				partialCount = getPtrCount(currentNode, node, True)
