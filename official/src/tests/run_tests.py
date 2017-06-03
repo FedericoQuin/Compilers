@@ -95,25 +95,25 @@ def parseNoCatch(inputFile, dotSolution, pSolution):
 # ===============================
 
 def test_address_assignment():
-	parse("address_assignment.c", "address_assignment.dot", "address_assignment.p")
+	parse("pointers/address_assignment.c", "pointers/address_assignment.dot", "pointers/address_assignment.p")
 
 def test_advanced_pointers1():
-	parse("advanced_pointers1.c", "advanced_pointers1.dot", "advanced_pointers1.p")
+	parse("pointers/advanced_pointers1.c", "pointers/advanced_pointers1.dot", "pointers/advanced_pointers1.p")
 	
 def test_advanced_pointers2():
-	parse("advanced_pointers2.c", "advanced_pointers2.dot", "advanced_pointers2.p")
+	parse("pointers/advanced_pointers2.c", "pointers/advanced_pointers2.dot", "pointers/advanced_pointers2.p")
 
 def test_advanced_pointers3():
-	parse("advanced_pointers3.c", "advanced_pointers3.dot", "advanced_pointers3.p")
+	parse("pointers/advanced_pointers3.c", "pointers/advanced_pointers3.dot", "pointers/advanced_pointers3.p")
 
 def test_dereference1():
-	parse("dereference1.c", "dereference1.dot", "dereference1.p")
+	parse("pointers/dereference1.c", "pointers/dereference1.dot", "pointers/dereference1.p")
 
 def test_dereference2():
-	parse("dereference2.c", "dereference2.dot", "dereference2.p")
+	parse("pointers/dereference2.c", "pointers/dereference2.dot", "pointers/dereference2.p")
 
 def test_pointer():
-	parse("pointer.c", "pointer.dot", "pointer.p")
+	parse("pointers/pointer.c", "pointers/pointer.dot", "pointers/pointer.p")
 
 	
 # ===============================
@@ -121,13 +121,13 @@ def test_pointer():
 # ===============================
 
 def test_assignments1bis():
-	parse("assignments1bis.c", "assignments1bis.dot", "assignments1bis.p")
+	parse("primitive_types/assignments1bis.c", "primitive_types/assignments1bis.dot", "primitive_types/assignments1bis.p")
 
 def test_assignments1():
-	parse("assignments1.c", "assignments1.dot", "assignments1.p")
+	parse("primitive_types/assignments1.c", "primitive_types/assignments1.dot", "primitive_types/assignments1.p")
 
 def test_assignments2():
-	parse("assignments2.c", "assignments2.dot", "assignments2.p")
+	parse("primitive_types/assignments2.c", "primitive_types/assignments2.dot", "primitive_types/assignments2.p")
 	
 
 # ===============================
@@ -135,13 +135,13 @@ def test_assignments2():
 # ===============================
 
 def test_mixed_comments():	
-	parse("mixed_comments.c", "mixed_comments.dot", "mixed_comments.p")
+	parse("comments/mixed_comments.c", "comments/mixed_comments.dot", "comments/mixed_comments.p")
 
 def test_multiline_comment():	
-	parse("multiline_comment.c", "multiline_comment.dot", "multiline_comment.p")
+	parse("comments/multiline_comment.c", "comments/multiline_comment.dot", "comments/multiline_comment.p")
 
 def test_singleline_comment():	
-	parse("singleline_comment.c", "singleline_comment.dot", "singleline_comment.p")
+	parse("comments/singleline_comment.c", "comments/singleline_comment.dot", "comments/singleline_comment.p")
 
 
 # ===============================
@@ -149,16 +149,16 @@ def test_singleline_comment():
 # ===============================
 
 def test_break_continue():
-	parse("break_continue.c", "break_continue.dot", "break_continue.p")
+	parse("flow_control/break_continue.c", "flow_control/break_continue.dot", "flow_control/break_continue.p")
 
 def test_for():
-	parse("for.c", "for.dot", "for.p")
+	parse("flow_control/for.c", "flow_control/for.dot", "flow_control/for.p")
 
 def test_ifelse():
-	parse("ifelse.c", "ifelse.dot", "ifelse.p")
+	parse("flow_control/ifelse.c", "flow_control/ifelse.dot", "flow_control/ifelse.p")
 
 def test_while():
-	parse("while.c", "while.dot", "while.p")
+	parse("flow_control/while.c", "flow_control/while.dot", "flow_control/while.p")
 
 		
 # ===============================
@@ -166,31 +166,31 @@ def test_while():
 # ===============================
 
 def test_advanced_function_calls():
-	parse("advanced_function_calls.c", "advanced_function_calls.dot", "advanced_function_calls.p")
+	parse("functions/advanced_function_calls.c", "functions/advanced_function_calls.dot", "functions/advanced_function_calls.p")
 
 def test_functions():
-	parse("functions.c", "functions.dot", "functions.p")
+	parse("functions/functions.c", "functions/functions.dot", "functions/functions.p")
 
 def test_function_calls():
-	parse("function_calls.c", "function_calls.dot", "function_calls.p")
+	parse("functions/function_calls.c", "functions/function_calls.dot", "functions/function_calls.p")
 
 def test_printf1():
-	parse("printf1.c", "printf1.dot", "printf1.p")
+	parse("functions/printf1.c", "functions/printf1.dot", "functions/printf1.p")
 
 def test_printf2():
-	parse("printf2.c", "printf2.dot", "printf2.p")
+	parse("functions/printf2.c", "functions/printf2.dot", "functions/printf2.p")
 
 def test_return_types1():
-	parse("return_types1.c", "return_types1.dot", "return_types1.p")
+	parse("functions/return_types1.c", "functions/return_types1.dot", "functions/return_types1.p")
 
 def test_return_types2():
-	parse("return_types2.c", "return_types2.dot", "return_types2.p")
+	parse("functions/return_types2.c", "functions/return_types2.dot", "functions/return_types2.p")
 
 def test_scanf1():
-	parse("scanf1.c", "scanf1.dot", "scanf1.p")
+	parse("functions/scanf1.c", "functions/scanf1.dot", "functions/scanf1.p")
 
 def test_scanf2():
-	parse("scanf2.c", "scanf2.dot", "scanf2.p")
+	parse("functions/scanf2.c", "functions/scanf2.dot", "functions/scanf2.p")
 
 
 # ===============================
@@ -198,7 +198,7 @@ def test_scanf2():
 # ===============================
 	
 def test_arrays():
-	parse("arrays.c", "arrays.dot", "arrays.p")
+	parse("miscellaneous/arrays.c", "miscellaneous/arrays.dot", "miscellaneous/arrays.p")
 
 	
 # ===============================
@@ -206,10 +206,10 @@ def test_arrays():
 # ===============================
 
 def test_advanced_global_var():
-	parse("advanced_global_var.c", "advanced_global_var.dot", "advanced_global_var.p")
+	parse("global_variables/advanced_global_var.c", "global_variables/advanced_global_var.dot", "global_variables/advanced_global_var.p")
 
 def test_global_vars():
-	parse("global_vars.c", "global_vars.dot", "global_vars.p")
+	parse("global_variables/global_vars.c", "global_variables/global_vars.dot", "global_variables/global_vars.p")
 
 
 # ===============================
@@ -217,10 +217,10 @@ def test_global_vars():
 # ===============================
 
 def test_minus_values():
-	parse("minus_values.c", "minus_values.dot", "minus_values.p")
+	parse("miscellaneous/minus_values.c", "miscellaneous/minus_values.dot", "miscellaneous/minus_values.p")
 
 def test_negative_expressions():
-	parse("negative_expressions.c", "negative_expressions.dot", "negative_expressions.p")
+	parse("miscellaneous/negative_expressions.c", "miscellaneous/negative_expressions.dot", "miscellaneous/negative_expressions.p")
 
 
 # ===============================
@@ -228,16 +228,16 @@ def test_negative_expressions():
 # ===============================
 
 def test_booleans1():
-	parse("booleans1.c", "booleans1.dot", "booleans1.p")
+	parse("primitive_types/booleans1.c", "primitive_types/booleans1.dot", "primitive_types/booleans1.p")
 
 def test_booleans2():
-	parse("booleans2.c", "booleans2.dot", "booleans2.p")
+	parse("primitive_types/booleans2.c", "primitive_types/booleans2.dot", "primitive_types/booleans2.p")
 
 def test_booleans3():
-	parse("booleans3.c", "booleans3.dot", "booleans3.p")
+	parse("primitive_types/booleans3.c", "primitive_types/booleans3.dot", "primitive_types/booleans3.p")
 
 def test_booleans4():
-	parse("booleans4.c", "booleans4.dot", "booleans4.p")
+	parse("primitive_types/booleans4.c", "primitive_types/booleans4.dot", "primitive_types/booleans4.p")
 
 
 # ===============================
@@ -245,32 +245,32 @@ def test_booleans4():
 # ===============================
 
 def test_brackets():
-	parse("brackets.c", "brackets.dot", "brackets.p")
+	parse("miscellaneous/brackets.c", "miscellaneous/brackets.dot", "miscellaneous/brackets.p")
 
 def test_factorial():
-	parse("factorial.c", "factorial.dot", "factorial.p")
+	parse("miscellaneous/factorial.c", "miscellaneous/factorial.dot", "miscellaneous/factorial.p")
 
 def test_includes():
-	parse("includes.c", "includes.dot", "includes.p")
+	parse("miscellaneous/includes.c", "miscellaneous/includes.dot", "miscellaneous/includes.p")
 
 def test_main_function():
-	parse("main_function.c", "main_function.dot", "main_function.p")
+	parse("miscellaneous/main_function.c", "miscellaneous/main_function.dot", "miscellaneous/main_function.p")
 
 def test_redefining_symbols():
-	parse("redefining_symbols.c", "redefining_symbols.dot", "redefining_symbols.p")
-
-	
-	
-	
+	parse("miscellaneous/redefining_symbols.c", "miscellaneous/redefining_symbols.dot", "miscellaneous/redefining_symbols.p")
 
 def test_by_reference():
-	parse("by_reference.c", "by_reference.dot", "by_reference.p")
+	parse("miscellaneous/by_reference.c", "miscellaneous/by_reference.dot", "miscellaneous/by_reference.p")
+	
+	
+	
+
 
 
 def test_errors():
 	errorFiles = [
-		"error_braces1.c",
-		"error_braces2.c",
+		"input_errors/error_braces1.c",
+		"input_errors/error_braces2.c",
 		# "error_braces3.c"			
 		# "error_no_semicolon.c"
 		# "error_rubbish.c",		
@@ -299,17 +299,17 @@ def test_errors():
 def test_types():
 	# Tests the typechecker
 	errorFiles = [
-		"type_check1.c",
-		"type_check2.c",
-		"type_check3.c",
-		"type_check4.c",
-		"type_check5.c",
-		"type_check6.c",
-		"type_check7.c",
-		"type_check8.c",
-		"type_check9.c",
-		"type_check10.c",
-		"type_check11.c",
+		"type_checking/type_check1.c",
+		"type_checking/type_check2.c",
+		"type_checking/type_check3.c",
+		"type_checking/type_check4.c",
+		"type_checking/type_check5.c",
+		"type_checking/type_check6.c",
+		"type_checking/type_check7.c",
+		"type_checking/type_check8.c",
+		"type_checking/type_check9.c",
+		"type_checking/type_check10.c",
+		"type_checking/type_check11.c",
 	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (2,8)) + "Types for initialization don't match ('char' and 'int').",
@@ -336,11 +336,11 @@ def test_types():
 def test_existences():
 	# Tests the existenceChecker
 	errorFiles = [
-		"existence1.c",
-		"existence2.c",
-		"existence3.c",
-		"existence4.c",
-		"existence5.c"
+		"existence/existence1.c",
+		"existence/existence2.c",
+		"existence/existence3.c",
+		"existence/existence4.c",
+		"existence/existence5.c"
 	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (2,1)) + "Variable 'a' referenced before declaration.",
@@ -359,8 +359,8 @@ def test_existences():
 
 def test_duplicate_declarations():
 	errorFiles = [
-		"dup_decl1.c",
-		"dup_decl2.c"
+		"existence/dup_decl1.c",
+		"existence/dup_decl2.c"
 	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (3,1)) + "Symbol 'a' has already been declared in this scope.",
@@ -377,8 +377,8 @@ def test_duplicate_declarations():
 
 def test_wrong_returns():
 	errorFiles = [
-		"wrong_return1.c",
-		"wrong_return2.c"
+		"type_checking/wrong_return1.c",
+		"type_checking/wrong_return2.c"
 	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (2,1)) + "Return type doesn't match 'testing' signature ('int' required, 'char' given).",
@@ -395,8 +395,8 @@ def test_wrong_returns():
 
 def test_array_wrongAccess():
 	errorFiles = [
-		"array_wrong_access1.c",
-		"array_wrong_access2.c"
+		"arrays/array_wrong_access1.c",
+		"arrays/array_wrong_access2.c"
 	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (5,1)) + "Elements of array 'a' should be accessed with an integer.",
@@ -413,10 +413,10 @@ def test_array_wrongAccess():
 
 def test_derefences():
 	errorFiles = [
-		"dereference1.c",
-		"dereference2.c",
-		"dereference3.c",
-		"dereference4.c",
+		"dereferencing/dereference1.c",
+		"dereferencing/dereference2.c",
+		"dereferencing/dereference3.c",
+		"dereferencing/dereference4.c",
 	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (5,5)) + "Cannot dereference variable 'a' 4 times (only 3 times allowed).",
@@ -435,8 +435,8 @@ def test_derefences():
 
 def test_noIncludes():
 	errorFiles = [
-		"scanf_include.c",
-		"printf_include.c"
+		"includes/scanf_include.c",
+		"includes/printf_include.c"
 	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (5,1)) + "'scanf' was not declared in this scope (try including header 'stdio.h').",
@@ -452,10 +452,10 @@ def test_noIncludes():
 
 def test_formatString():
 	errorFiles = [
-		"printf_argument1.c",
-		"printf_argument2.c",
-		"scanf_argument1.c",
-		"scanf_argument2.c"
+		"type_checking/printf_argument1.c",
+		"type_checking/printf_argument2.c",
+		"type_checking/scanf_argument1.c",
+		"type_checking/scanf_argument2.c"
 	]
 	errorMessages = [
 		determineExPrefix(ExType.error, (7,37)) + "Type 'int' does not match the argument in the formatstring ('char' required, argument #1).",
@@ -472,7 +472,7 @@ def test_formatString():
 			assert(string == errorMessages[i])
 
 def test_noMain():
-	errorFile = "nomain.c"
+	errorFile = "existence/nomain.c"
 	errorMessage = determineExPrefix(ExType.error, None) + "The program does not contain a 'main' function."
 
 	try:
