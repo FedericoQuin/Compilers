@@ -915,24 +915,34 @@ class PTranslator:
         if node.type == ASTNodeType.ArrayDecl:
             maximum = 3
 
-        elif node.type == ASTNodeType.RValueArrayElement or node.type == ASTNodeType.LValueArrayElement or node.type == ASTNodeType.FunctionCall:
-            maximum = 1
-            for child in node.children:
-                maximum += self.calculateEP(child, level + 1)
-
         elif self.isSimpleRValue(node.type):
             maximum = 1
 
-        elif self.isSimpleDeclaration(node.type):
+        elif node.type == ASTNodeType.RValueArrayElement or node.type == ASTNodeType.LValueArrayElement:
+
+            for child in node.children:
+                maximum = max(self.calculateEP(child, level + 1), maximum)
+
+            maximum += 1
+
+        elif node.type == ASTNodeType.FunctionCall:
+            for child in node.children:
+                candidateMaximum = self.calculateEP(child, level + 1) + len(node.children) - 1
+                maximum = max(maximum, candidateMaximum)
+            maximum = max(1, maximum)
+
+        elif self.isSimpleDeclaration(node.type) or node.type == ASTNodeType.FunctionCall or node.type == ASTNodeType.Dereference:
+
             for child in node.children:
                 maximum = max(self.calculateEP(child, level + 1), maximum)
             maximum = max(1, maximum)
 
         elif self.isRelationalOperator(node.type) or self.isMathematicalOperator(node.type) or node.type == ASTNodeType.Assignment or \
-            node.type == ASTNodeType.Initialization or node.type == ASTNodeType.Condition or node.type == ASTNodeType.Brackets:
+            node.type == ASTNodeType.Initialization or node.type == ASTNodeType.Condition or node.type == ASTNodeType.Brackets or node.type == ASTNodeType.Return:
 
             for child in node.children:
                 maximum += self.calculateEP(child, level + 1)
+
 
         elif node.type == ASTNodeType.For or node.type == ASTNodeType.ForBody or node.type == ASTNodeType.IfElse or \
             node.type == ASTNodeType.IfTrue or node.type == ASTNodeType.IfFalse or node.type == ASTNodeType.FunctionBody or \
@@ -945,6 +955,7 @@ class PTranslator:
         elif node.type == ASTNodeType.Function:
             maximum = self.calculateEP(node.children[2], level + 1)
 
+        print(node.type, " ", maximum)
         return maximum
 
     def isRelationalOperator(self, nodeType):
@@ -974,7 +985,7 @@ class PTranslator:
 
     def isSimpleRValue(self, nodeType):
         if nodeType == ASTNodeType.RValueInt or nodeType == ASTNodeType.RValueID or nodeType == ASTNodeType.RValueFloat or \
-            nodeType == ASTNodeType.RValueChar or nodeType == ASTNodeType.RValueAddress:
+            nodeType == ASTNodeType.RValueChar or nodeType == ASTNodeType.RValueAddress or nodeType == ASTNodeType.RValueBool:
             return True
         else:
             return False

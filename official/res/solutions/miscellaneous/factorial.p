@@ -2,7 +2,7 @@ ssp 5
 ujp main
 label_fac_rec:
 ssp 6
-sep 2
+sep 3
 ldc i 0
 str i 0 0
 lod i 0 5

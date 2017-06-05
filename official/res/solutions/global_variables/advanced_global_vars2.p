@@ -13,7 +13,7 @@ retf
 retf
 label_manipGlobalVariable:
 ssp 6
-sep 1
+sep 2
 mst 1
 cup 0 label_getAddressA
 lod i 0 5
@@ -25,7 +25,7 @@ cup 0 label_main
 hlt
 label_main:
 ssp 5
-sep 2
+sep 1
 ldc i 0
 str i 0 0
 mst 1

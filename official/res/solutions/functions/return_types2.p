@@ -12,7 +12,7 @@ cup 0 label_main
 hlt
 label_main:
 ssp 5
-sep 2
+sep 1
 ldc i 0
 str i 0 0
 mst 1

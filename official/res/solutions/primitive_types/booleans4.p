@@ -2,7 +2,7 @@ ssp 5
 ujp main
 label_just__why____:
 ssp 6
-sep 1
+sep 2
 ldc a 0
 str a 0 0
 lod a 0 5

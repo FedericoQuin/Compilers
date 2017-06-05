@@ -2,7 +2,7 @@ ssp 5
 ujp main
 label_doSomething:
 ssp 6
-sep 1
+sep 2
 lod a 0 5
 ind a
 ldc i 100
@@ -14,7 +14,7 @@ cup 0 label_main
 hlt
 label_main:
 ssp 7
-sep 2
+sep 1
 ldc i 0
 str i 0 0
 ldc a 0

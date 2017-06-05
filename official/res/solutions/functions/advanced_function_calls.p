@@ -45,7 +45,7 @@ getCookies3_ifelse_0_end:
 retf
 label_getOtherCookies:
 ssp 8
-sep 1
+sep 2
 ldc i 0
 str i 0 0
 ldc i 9001
@@ -60,7 +60,7 @@ cup 0 label_main
 hlt
 label_main:
 ssp 8
-sep 8
+sep 6
 ldc i 0
 str i 0 0
 ldc i 5
