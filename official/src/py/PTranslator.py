@@ -955,7 +955,6 @@ class PTranslator:
         elif node.type == ASTNodeType.Function:
             maximum = self.calculateEP(node.children[2], level + 1)
 
-        print(node.type, " ", maximum)
         return maximum
 
     def isRelationalOperator(self, nodeType):
