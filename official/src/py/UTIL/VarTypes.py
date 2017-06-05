@@ -3,31 +3,9 @@ from src.py.SA.ErrorMsgHandler import ErrorMsgHandler
 
 
 def strictEqual(obj1, obj2):
-	if type(obj1) is FunctionType:
-		return strictEqual(obj2, obj1.returnType)
-	elif type(obj1) is ArrayType:
-		return strictEqual(obj2, obj1.type)
-	elif type(obj1) is PointerType:
-		if obj1.ptrCount == 0:
-			return strictEqual(obj2, obj1.type)
-		elif obj1.ptrCount != 0 and type(obj2) is PointerType:
-			return obj1.ptrCount == obj2.ptrCount and strictEqual(obj1.type, obj2.type)
-	elif type(obj1) is ReferenceType:
-		return strictEqual(obj2, obj1.referencedType)
-
-	if type(obj2) is FunctionType:
-		return strictEqual(obj1, obj2.returnType)
-	elif type(obj2) is ArrayType:
-		return strictEqual(obj1, obj2.type)
-	elif type(obj2) is PointerType:
-		if obj2.ptrCount == 0:
-			return strictEqual(obj1, obj2.type)
-		elif obj2.ptrCount != 0 and type(obj1) is PointerType:
-			return obj2.ptrCount == obj1.ptrCount and strictEqual(obj2.type, obj1.type)
-	elif type(obj2) is ReferenceType:
-		return strictEqual(obj1, obj2.referencedType)
-
-	return type(obj1) is type(obj2)
+	if issubclass(type(obj1), VarType) and issubclass(type(obj2), VarType):
+		return obj1.getStrType() == obj2.getStrType()
+	return False
 		
 
 class VarType:
