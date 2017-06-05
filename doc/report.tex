@@ -39,9 +39,9 @@ The code for the different big parts (except for p translation) is located in di
 \hfill \break
 Firstly, the AST related classes make the decorated AST. \\ \\
 Secondly, the symbol table related classes make the symbol table based on this AST. The symbol table is a tree like structure. It provides a seperate level for the global scope, and different sublevels for all the local scopes. \\ \\
-Thirdly, syntax analysis does its part. This involves type checking of variables (for example assignments, return types, ...) and existence checking (checking if a variable/function is referenced before assignment). If anything fails, it will yield an error with an appropriate error message and on which line plus column number the error is located. \\ \\
+Thirdly, syntax analysis does its part. This involves type checking of variables (for example assignments, return types, ...) and existence checking (checking if a variable/function is referenced before it is declared). If anything fails, it will yield an error with an appropriate error message and on which line plus column number the error is located. \\ \\
 \hfill \break
-Compared to the first evaluation, we now added an extra part: the translation unit. Using the resulting AST and the symbol table, the C program is translated into a P program.
+Compared to the first evaluation, we now added an extra part: the translation unit. Using the resulting AST and the symbol table, the C program is translated into a P program. We also extended the error messages.
 
 \section{Testing}
 For testing our compiler, we chose for pytest. We have 52 test programs, where each program tests one encapsulated part of functionality. These tests also include several death tests.

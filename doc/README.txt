@@ -16,7 +16,7 @@ Output:
 	Currently, there are 2 output files which are generated: 'output.dot' and 'program.p'.
 	
 	> output.dot contains the decorated AST of the compiled c program.
-	> program.p contains the translated c program to p code.
+	> program.p contains the translation of the c program (to p code).
 
 Test structure:
 	NOTE: in order to run the tests, 'pytest' needs to be installed.
